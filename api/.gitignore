@@ -65,4 +65,6 @@ node_modules/
 .env
 
 # Enviroment files
-src/environments
+src/environments/cert/*.ts
+
+lib/
