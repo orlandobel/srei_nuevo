@@ -9,5 +9,6 @@ export const codigos = {
     guardandoEquipo:"0006",
     registroSinUs: "0007",
     datoNoEncontrado: "0008",
-    identificadorInvalido: "0009"
+    identificadorInvalido: "0009",
+    informacionNoEnviada: "0010",
 };

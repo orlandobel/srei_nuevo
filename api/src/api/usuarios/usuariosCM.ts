@@ -7,15 +7,19 @@
 import * as admin from 'firebase-admin';
 import { codigos } from '../../exceptions/codigos';
 import { variable } from '../variables';
+const jwt = require('jsonwebtoken');
 
 //import de exceptions
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
 import InternalServerException from '../../exceptions/InternalServerException';
+import BadRequestException from '../../exceptions/BadRequestException';
 
 // import interfaces
 import USR from '../../interfaces/colecciones/USR.interface';
+import LAB from '../../interfaces/colecciones/LAB.interface';
 
 const axios = require('axios');
+const TOKEN = 'c8b0e9c6b16c2499435ce026d5188674a567bb75e00a271ff6010d8c975c2723cdc81fcc5dc69f79afa85c22f8cdf3bbf488952f2ba18c1cda89f097e0c3597c';
 
 // client manager, contiene toda la logica del manejo de los datos
 export default class UsuariosCM {
@@ -23,6 +27,7 @@ export default class UsuariosCM {
     // variables de acceso a db
     private db = admin.firestore();
     private refUs = this.db.collection(variable['usuarios']);
+    private refLab = this.db.collection(variable['laboratorio']);
 
     /*
      * @description Endpoint para registrar o logearse dentro del sistema.
@@ -352,17 +357,48 @@ export default class UsuariosCM {
         return usuarios;
     }
 
+    public checkToken = async (usr_token: any) => {
+        if(usr_token === undefined || usr_token === null || usr_token === '') {
+            return new BadRequestException('Token no enviado o mal formado')
+        }
+
+        let lab;
+        let login = false;
+        const res = jwt.verify(usr_token, TOKEN, (err: any, usr: any) => {
+            if(err) console.error(err);
+            if(usr) console.log(usr);
+
+            return usr;
+        });
+
+        if(res != null && res != undefined) {
+            //const usr = res as USR;
+            const lab_ref = await this.refLab.where('id', '==', res.laboratorio).get();
+            lab = lab_ref.docs[0].data() as LAB;
+            login = true;
+        }
+
+        return { login, usuario: res as USR, laboratorio: lab };
+    }
+
     public testLogin = async (usuario: string, clave: string) => {
         if(usuario === undefined || usuario  === null||clave === undefined || clave === null){
            return new DataNotFoundException(codigos.datosNoEncontrados);
         }
 
-        const us = await  this.refUs.where('usuario','==', usuario).where('clave','==', clave).get();
-
-        if(us ===  undefined || us ===  null) {
-            return  new DataNotFoundException(codigos.datoNoEncontrado);
+        const us = await this.refUs.where('usuario','==', usuario).where('clave','==', clave).get();
+        
+        if(us ===  undefined || us ===  null || us.docs.length === 0) {
+            return new DataNotFoundException(codigos.datoNoEncontrado);
         }
+        
+        const usr = us.docs[0].data() as USR;
+        console.log('buscando usuario')
+        console.log(usr.laboratorio)
+        const lab_ref = await this.refLab.where('id', '==', usr.laboratorio).get();
+        const lab = lab_ref.docs[0].data() as LAB;
 
-        return us.docs[0].data() as USR;
+        const user_jwt = jwt.sign(usr, TOKEN, { expiresIn: "2h"});
+        return {token: user_jwt, usuario: usr , laboratorio: lab};
     }
 }

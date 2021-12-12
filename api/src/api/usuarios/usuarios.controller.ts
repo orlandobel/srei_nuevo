@@ -31,8 +31,9 @@ class UsuariosController implements Controller {
      * @author ibelmonte
      */
     initializeRoutes() {
-        this.router.get(this.path + '/login', this.ingresar);
-        this.router.get(this.path + '/login/test',this.testLogin);
+        this.router.post(this.path + '/login', this.ingresar);
+        this.router.post(this.path + '/login/test',this.testLogin);
+        this.router.get(this.path + '/login/verify', this.checkLogin);
         this.router.post(this.path + '/register', this.registrarEmpleado);
         this.router.get(this.path + '/vetado', this.berificarVetado);
         this.router.patch(this.path + '/vetado', this.cambiarVetado);
@@ -57,17 +58,26 @@ class UsuariosController implements Controller {
         res.send({ estatus: true, usuario: respuesta });
     }
 
-    private testLogin = async(req: Request, res: Response,next:   NextFunction) => {
-        const { usuario, clave }  = (Object.keys(req.body).length === 0)? req.query: req.body;
+    private testLogin = async (req: Request, res: Response,next: NextFunction) => {
+        const { usuario, clave }  = req.body;
         const respuesta = await this.usuariosCM.testLogin(usuario, clave);
 
         if(respuesta instanceof DataNotFoundException) {
-            next(respuesta);
-            //console.log(respuesta);
+            console.error('error')
+            console.error(respuesta)
+            res.status(404).send(respuesta);
             return;
         }
 
-        res.send({status: true,usuario: respuesta});
+        res.send({status: true, ...respuesta});
+    }
+
+    private checkLogin = async (req: Request, res: Response, next : NextFunction) => {
+        const token = req.headers['authorization'];
+
+        const respuesta = await this.usuariosCM.checkToken(token);
+
+        res.send({status: true, ...respuesta});
     }
 
     /*
