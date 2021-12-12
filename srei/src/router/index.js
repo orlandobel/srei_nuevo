@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-//import Home from '../views/Home.vue'
+import Home from '../views/Home.vue'
 
 import Login from '@/views/Login.vue'
 //import Inventario from '@/views/Inventarios.vue'
@@ -8,14 +8,14 @@ import isLogged from './middleware/auth';
 import store from '../store';
 
 const routes = [
-  /*{
+  {
     path: '/',
     name: 'bitacora',
     meta: {
       needLoggin: true,
     },
     component: Home,
-  },*/
+  },
   {
     path: '/login',
     name: 'login',
