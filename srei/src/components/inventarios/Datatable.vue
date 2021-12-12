@@ -1,0 +1,85 @@
+<template>
+    <div class="table-responsive">
+        <table id="inventario" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th scope="col" class="col-5">Nombre</th>
+                    <th scope="col" class="col-2">Modelo</th>
+                    <th scope="col" class="col-2">Fabricante</th>
+                    <th scope="col" >No. de serie</th>
+                    <th scope="col" >Disponibilidad</th>
+                    <th scope="col" >Editar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <elemento v-for="e in equipos" :key="e.id" :equipo_bind="e" />
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th scope="col">Nombre</th> 
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Fabricante</th>
+                    <th scope="col">No. de serie</th>
+                    <th scope="col">Disponibilidad</th>
+                    <th scope="col">Editar</th>
+                </tr>
+            </tfoot>
+        </table> 
+    </div>
+</template>
+
+<script>
+import 'jquery/dist/jquery.min.js'
+import 'datatables.net-bs5/js/dataTables.bootstrap5.min.js'
+import 'datatables.net-bs5/css/dataTables.bootstrap5.min.css'
+
+import $ from 'jquery'
+import Elemento from '@/components/inventarios/Elemento.vue'
+
+import { listar } from '@/api_queries/equipo'
+
+export default {
+    name: 'Datatable',
+    components: {Elemento, },
+    data() {
+        return {
+            inventario: null,
+            equipos: [],
+        }
+    },
+    computed: {
+        usuario: function() {
+            return this.$store.getters.usuario
+        },
+    },
+    watch: {
+        // call method if the route changes
+        '$route': 'reInitialize'
+    },
+    methods: {
+        initTable() {
+            this.$nextTick(() => { this.inventario = $('#inventario').DataTable() })
+        },
+        initData() {
+            const tipo = this.$route.params.tipo
+            console.log(this.usuario.laboratorio)
+
+            listar(tipo, this.usuario.laboratorio).then(res => {
+                console.log('initData()')
+                this.equipos = res
+                console.log(this.equipos)
+                this.initTable()
+            })
+        },
+        reInitialize() {
+            this.equipos = []
+            this.inventario.destroy()
+            this.initData()
+        }
+    },
+    mounted() {
+        console.log('mounted')
+        this.initData()
+    },
+}
+</script>

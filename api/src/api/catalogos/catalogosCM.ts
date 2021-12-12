@@ -44,12 +44,18 @@ export default class CatalogosCM {
     }
 
     // Endpoint para retornar subcoleccion de la coleccion EQP por tipo.
-    public obtenerEquipoTipo = async (tipo: string) => {
+    public obtenerEquipoTipo = async (tipo: string, lab: string) => {
         const elements: EQP[]| PromiseLike<EQP[]> = [];
+
         if (tipo === undefined || tipo === null || tipo === '') {
             return new DataNotFoundException(codigos.identificadorInvalido);
         }
-        const registro = await this.refEqp.where("tipo","==",tipo).get()
+
+        if (lab === undefined || lab === null || lab === '') {
+            return new DataNotFoundException(codigos.identificadorInvalido);
+        }
+        
+        const registro = await this.refEqp.where("tipo","==",tipo).where('laboratorio', '==', lab).get()
             .then(data => {
                 if (!data.empty){
                     for (let index = 0; index < data.size; index++) {
