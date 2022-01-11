@@ -9,12 +9,21 @@
             <span v-else>Ocupado</span>
         </td>
         <td>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal">Info</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal" @click="set_element">Info</button>
         </td>
     </tr>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
+const actions = [
+    'set_nombre',
+    'set_caracteristicas',
+    'toggle_checklist',
+    'set_checklist',
+]
+
 export default {
     name: 'Elemento',
     props: {
@@ -23,6 +32,19 @@ export default {
     data() {
         return {
             equipo: this.equipo_bind
+        }
+    },
+    methods: {
+        ...mapActions('equipo_inventario', actions),
+        set_element() {
+            this.set_nombre(this.equipo.nombre),
+            this.set_caracteristicas(this.equipo.caracteristicas)
+
+            if(Object.keys(this.equipo).includes('checklist')) {
+                console.log(this.equipo.checklist)
+                this.set_checklist(this.equipo.checklist)
+                this.toggle_checklist(true)
+            }
         }
     }
 }

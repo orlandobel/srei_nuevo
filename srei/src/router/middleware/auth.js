@@ -8,7 +8,7 @@ function logout(store, path, next) {
 }
 
 export default async function isLogged({to, next, store}) {
-    if(localStorage.getItem('usr_token') === null) logout(store, to.path, next);
+    if(localStorage.getItem('usr_token') === null) logout(store, to.fullPath, next);
     else 
         try {
             const response = await axios.get('usuarios/login/verify');

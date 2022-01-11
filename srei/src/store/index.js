@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import equipo from './equipo-inventario'
+import equipo_inventario from './equipo_inventario'
 
 export default createStore({
   state: {
@@ -35,6 +35,6 @@ export default createStore({
     laboratorio: (state) => state.laboratorio
   },
   modules: {
-    equipo
+    equipo_inventario,
   }
 })

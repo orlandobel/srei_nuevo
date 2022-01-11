@@ -62,12 +62,9 @@ export default {
         },
         initData() {
             const tipo = this.$route.params.tipo
-            console.log(this.usuario.laboratorio)
 
             listar(tipo, this.usuario.laboratorio).then(res => {
-                console.log('initData()')
                 this.equipos = res
-                console.log(this.equipos)
                 this.initTable()
             })
         },
@@ -78,7 +75,6 @@ export default {
         }
     },
     mounted() {
-        console.log('mounted')
         this.initData()
     },
 }

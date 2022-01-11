@@ -2,47 +2,47 @@
     <div>
         <div class="modal-header">
             <h5 class="modal-title">Checklist</h5>
-            <input type="number" v-on:input="update_list()" v-model="checklist_length" min="0">
+            <input type="number" @click="update_list()" @keypress.enter="update_list()" v-model="checklist_length" min="0">
         </div>
 
         <div class="modal-body text-start h-25 mh-25">
-            <input type="text" class="form-control mb-2" v-for="(_, index) in checklist_fields" :key="index" v-model="checklist_fields[index]">
+            <input type="text" class="form-control mb-2" v-for="(_, index) in checklist" :key="index" v-model="checklist[index].nombre">
         </div>
     </div>   
 </template>
 
 <script>
+import {  mapActions, mapGetters } from 'vuex'
+
 export default {
     name: 'Checklist',
     data() {
         return {
             checklist_length : 0,
-            checklist_fields: []
         }
     },
+    computed: {
+        ...mapGetters('equipo_inventario', ['checklist'])
+    },
     methods: {
-        add_item(dif) {
-            for(let i=0; i< dif; i++)
-                this.checklist_fields.push('')
-        },
-        delete_item(start, end) {
-            this.checklist_fields.splice(start, end); 
-        },
+        ...mapActions('equipo_inventario', ['add_checklist_element', 'remove_checklist_elements']),
         update_list() {
-            const current_length = this.checklist_fields.length
+            const current_length = this.checklist.length
 
             if(this.checklist_length > current_length) {
                 const dif = this.checklist_length - current_length
-                this.add_item(dif)
+                for(let i=0; i< dif; i++)
+                    this.add_checklist_element()
             } else {
                 const end = current_length - this.checklist_length
-                this.delete_item(this.checklist_length, end)
+                this.remove_checklist_elements({start: this.checklist_length, end})
             }
 
         },
     },
-    mounted() {
-        this.delete_item()
+    updated() {
+        if(this.checklist_length < this.checklist.length) this.checklist_length = this.checklist.length
+        if(this.checklist.length === 0 && this.checklist_length > 0) this.checklist_length = 0
     }
 }
 </script>

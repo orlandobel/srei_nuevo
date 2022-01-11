@@ -6,7 +6,7 @@
                     <li class="nav-item">
                         <a href="#datos-tab" class="nav-link active" id="nav-datos-tab" data-bs-toggle="tab" >Datos</a>
                     </li>
-                    <li class="nav-item" :class="{'visually-hidden': !checklist}">
+                    <li class="nav-item" :class="{'visually-hidden': !tiene_checklist}">
                         <a href="#checklist-tab" class="nav-link" id="nav-checklist-tab" data-bs-toggle="tab" >Checklist</a>
                     </li>
                 </ul>
@@ -21,7 +21,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-danger" data-bs-dismiss="modal" @click="reiniciar">Cancelar</button>
                     <button class="btn btn-success">Guardar</button>
                 </div>
             </div>
@@ -32,6 +32,14 @@
 <script>
 import Datos from '@/components/inventarios/modaltabs/Datos.vue'
 import Checklist from '@/components/inventarios/modaltabs/Checklist.vue'
+import { mapActions, mapGetters } from 'vuex'
+
+const actions = [
+    'set_nombre',
+    'set_caracteristicas',
+    'set_checklist',
+    'toggle_checklist',
+]
 
 export default {
     name: 'EquipoModal',
@@ -41,13 +49,26 @@ export default {
     },
     data() {
         return {
-            checklist: false
+            
         }
     },
+    computed: {
+        ...mapGetters('equipo_inventario', ['tiene_checklist'])
+    },
     methods: {
-        toggle_checklist(chl) {
-            this.checklist = chl
-            console.log(this.checklist)
+        ...mapActions('equipo_inventario', actions),
+        reiniciar() {
+            const caracteristicas_template = {
+                fabricante: '',
+                modelo: '',
+                serie: '',
+                descripcion: '',
+            }
+
+            this.set_nombre('')
+            this.set_caracteristicas(caracteristicas_template)
+            this.set_checklist([])
+            this.toggle_checklist(false)
         }
     }
 }
