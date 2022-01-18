@@ -42,6 +42,7 @@ class CatalogosController implements Controller {
         this.router.post(this.path + '/crear', validationMiddleware(CrearEquipo, true), this.crearEquipo);
         this.router.put(this.path + '/editar', validationMiddleware(EditarEquipo, true), this.editarEquipo);
         this.router.delete(this.path + '/:id', this.eliminarEquipo);
+        //this.router.get(this.path + '/foo', this.qr);
     }
 
     /*
@@ -54,7 +55,9 @@ class CatalogosController implements Controller {
     private obtenerEquipo = async (req: Request, res: Response, next: NextFunction) => {
         const prueba = req.params.uid;
         const respuesta = await this.catalogosCM.obtenerEquipo(prueba);
-
+        
+        //const respuesta = await this.catalogosCM.generarQr('03tzuLLEBBueUOa2I9DI', 'cizalla', 'Electronica I', 'Tarjetas Programables');
+        
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
         }
@@ -158,6 +161,13 @@ class CatalogosController implements Controller {
         
         res.send({ estatus: true, creado: true, eqp: respuesta });
     }
+
+    /*private qr = async (req: Request, res: Response) => {
+        console.log('hey');
+        const resp = await this.catalogosCM.generarQr();
+
+        res.send(resp);
+    }*/
 
 }
 

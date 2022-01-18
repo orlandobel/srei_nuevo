@@ -10,6 +10,7 @@
 import * as admin from 'firebase-admin';
 import { variable } from '../variables';
 import { codigos } from '../../exceptions/codigos';
+const QRCode = require('qrcode');
 
 // import de exceptions
 import InternalServerException from '../../exceptions/InternalServerException';
@@ -23,6 +24,8 @@ export default class CatalogosCM {
     // variables de acceso a db
     private db = admin.firestore();
     private refEqp = this.db.collection(variable['equipo']);
+    //private storage = new Storage();
+    private bucket = admin.storage().bucket('gs://srei-dc583.appspot.com/'); // 'gs://srei-dc583.appspot.com/'
 
     // Endpoint para retornar un registro de la coleccion EQP.
     public obtenerEquipo = async (equipo: string) => {
@@ -127,12 +130,18 @@ export default class CatalogosCM {
         if (equipo === undefined || equipo === null) {
             return new DataNotFoundException(codigos.datosNoEncontrados);
         }
+
+        // TODO: Generar QR antes de crear el registro en base de datos
+
         const actual = admin.firestore.Timestamp.now().toDate(); // obtener hora y fecha del servidor
+
         equipo.actualizado = actual;
         equipo.creacion = actual;
+
         if (equipo.checklist === undefined || equipo.checklist === null) {
             equipo.checklist = null;
         }
+
         const creado = await this.refEqp.add(equipo)
             .then(async data => {
                 const key = data.id;
@@ -148,11 +157,49 @@ export default class CatalogosCM {
             .catch(err => {
                 return new InternalServerException(codigos.datoNoEncontrado, err);
             });
+
         if (creado instanceof InternalServerException) {
             return creado;
         }
+
         const document = await this.obtenerEquipo(creado);
         return document;
     }
 
+    public generarQr = async (id:String, nombre: String, laboratorio: String, tipo: String) => {
+        // Formateando laboratorio para las rutas en el store
+        const lab_split = laboratorio.split(' ');        
+        const lab = lab_split[0].toLowerCase()+lab_split[1];
+
+        // Formateando 'tipo' para la ruta en store
+        tipo = tipo.toLowerCase();
+        if(tipo.split(' ').length > 1) {
+            const tipo_split = tipo.split(' ');
+            tipo = tipo_split[0]+'_'+tipo_split[1];
+        }
+
+        // Crea el objeto que se almacenará en el código QR
+        const obj: Object = {
+            id,
+            nombre,
+            laboratorio
+        }
+        const data = JSON.stringify(obj);
+
+        // TODO: Mejorar el manejo de errores de la generación de QR y subida al store
+
+        try { 
+            // Crea el código QR y lo almacena en una imagen en el servidor
+            await QRCode.toFile('./qr.png', data, { color: {dark: "#000",light: "#FFF"} });
+            
+            // Busca la imagen del QR y la sube a firebase storage
+            await this.bucket.upload('./qr.png', {resumable: false, destination: `${lab}/electronica/${id}/qr.png`})
+            
+        } catch(err){
+            console.error(err);
+            return false;
+        }
+
+        return true;
+    }
 }
