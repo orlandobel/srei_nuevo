@@ -21,6 +21,12 @@ import CatalogosCM from './catalogosCM';
 import InternalServerException from '../../exceptions/InternalServerException';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
 
+const multer = require('multer')
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+})
+
 // controlador para rutas de equipo
 class CatalogosController implements Controller {
     public router = Router();
@@ -40,8 +46,9 @@ class CatalogosController implements Controller {
         this.router.get(this.path + '/:uid', this.obtenerEquipo);
         this.router.get(this.path + '/tipo/:tipo/:lab', this.obtenerEquipoTipo)
         this.router.post(this.path + '/crear', validationMiddleware(CrearEquipo, true), this.crearEquipo);
+        this.router.post(this.path + '/imagenes', upload.single('imagen'), this.generarImagenes);
         this.router.put(this.path + '/editar', validationMiddleware(EditarEquipo, true), this.editarEquipo);
-        this.router.delete(this.path + '/:id', this.eliminarEquipo);
+        this.router.delete(this.path + 'eliminar/:id', this.eliminarEquipo);
         //this.router.get(this.path + '/foo', this.qr);
     }
 
@@ -102,8 +109,9 @@ class CatalogosController implements Controller {
     * @author Belmont
     */
     private editarEquipo = async (req: Request, res: Response) => {
-        const eqp = req.body;
+        const { eqp } = req.body;
         const respuesta = await this.catalogosCM.editarEquipo(eqp);
+
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
             return;
@@ -148,9 +156,11 @@ class CatalogosController implements Controller {
     * @author Belmont
     */
     private crearEquipo = async (req: Request, res: Response) => {
-        const eqp = req.body;
-        const respuesta = await this.catalogosCM.crearEquipo(eqp);
-
+        const { eqp, laboratorio } = req.body;
+        
+        const respuesta = await this.catalogosCM.crearEquipo(eqp, laboratorio);
+        console.log(respuesta);
+        
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
         }
@@ -159,7 +169,25 @@ class CatalogosController implements Controller {
             res.send(respuesta);
         }
         
-        res.send({ estatus: true, creado: true, eqp: respuesta });
+        res.send({ estatus: true, creado: true, ...respuesta });
+    }
+
+    private generarImagenes = async (req: Request, res: Response) => {
+        const { ruta } = req.body;
+        const imagen = req.file;
+
+        const respuesta = await this.catalogosCM.subirImagen(imagen, ruta);
+
+        if (respuesta instanceof DataNotFoundException) {
+            res.send(respuesta);
+        }
+
+        if (respuesta instanceof InternalServerException) {
+            res.send(respuesta);
+        }
+
+        res.send({status: 200, estatus: respuesta})
+
     }
 
     /*private qr = async (req: Request, res: Response) => {

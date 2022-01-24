@@ -22,6 +22,7 @@ const actions = [
     'set_caracteristicas',
     'toggle_checklist',
     'set_checklist',
+    'set_creacion',
 ]
 
 export default {
@@ -39,6 +40,7 @@ export default {
         set_element() {
             this.set_nombre(this.equipo.nombre),
             this.set_caracteristicas(this.equipo.caracteristicas)
+            this.set_creacion(false)
 
             if(Object.keys(this.equipo).includes('checklist')) {
                 console.log(this.equipo.checklist)

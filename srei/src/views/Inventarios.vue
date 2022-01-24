@@ -7,7 +7,7 @@
                 <div class="col-lg-12 d-flex flex-column">
                     <div class="row justify-content-end my-3">
                         <div class="col-lg-2">
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal" >Añadir equipo</button>
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal" @click="set_creacion(true)">Añadir equipo</button>
                         </div>
                     </div>
                     <div class="row flex-grow-1">
@@ -30,6 +30,7 @@
 import Sidebar from '@/components/Sidebar.vue'
 import Datatable from '@/components/inventarios/Datatable.vue'
 import EquipoModal from '@/components/inventarios/EquipoModal.vue'
+import { mapActions } from 'vuex'
 
 export default {
     name: "Inventario",
@@ -38,6 +39,9 @@ export default {
         Datatable,
         EquipoModal,
     },
+    methods: {
+        ...mapActions('equipo_inventario', ['set_creacion'])
+    }
 }
 </script>
 

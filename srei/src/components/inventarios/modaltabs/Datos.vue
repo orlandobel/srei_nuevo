@@ -38,6 +38,16 @@
             <div class="row mb-2">
                 <div class="col-lg-12">
                     <div class="form-group">
+                        <label for="imgaen_field" class="form">imgen</label>
+                        <input type="file" name="imagen_field" id="imagen_field" ref="imagen_field"
+                            class="form-control" accept="image/*" @input="update_imagen()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-2">
+                <div class="col-lg-12">
+                    <div class="form-group">
                         <label for="descripcion" class="form-label">Descripción</label>
                         <textarea cols="30" rows="5" class="form-control" v-model="caracteristicas.descripcion" 
                             ref="descripcion_field" @input="update_descripcion()" />
@@ -64,6 +74,7 @@ import { mapGetters, mapActions } from 'vuex'
 
 const actions = [
     'set_nombre',
+    'set_imagen',
     'set_fabricante',
     'set_modelo',
     'set_serie',
@@ -79,7 +90,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('equipo_inventario', ['nombre', 'caracteristicas', 'tiene_checklist']),
+        ...mapGetters('equipo_inventario', ['nombre', 'caracteristicas', 'imagen', 'tiene_checklist']),
         usuario: function() {
             return this.$store.getters.usuario
         },
@@ -92,6 +103,29 @@ export default {
         },
         update_nombre() {
             this.set_nombre(this.$refs.nombre_field.value)
+        },
+        update_imagen() {
+            const imagen = this.$refs.imagen_field.files[0]
+
+            console.log(imagen.buffer)
+            const img = {
+                lastModified: imagen.lastModified,
+                lastModifiedDate: imagen.lastModifiedDate,
+                name: imagen.name,
+                size: imagen.size,
+                type: imagen.type,
+                webkitRelativePath: imagen.webkitRelativePath,
+            }    
+
+            this.set_imagen(imagen)
+            /*const reader = new FileReader()
+            reader.onload = () => {
+                const dataURL = reader.result
+
+                console.log(dataURL)
+            }
+
+            reader.readAsDataURL(img)*/
         },
         update_fabricante() {
             this.set_fabricante(this.$refs.fabricante_field.value)

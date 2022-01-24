@@ -1,7 +1,9 @@
 export default{
     namespaced: true,
     state: {
+        crear: true,
         nombre: '',
+        imagen: null,
         caracteristicas: {
             fabricante: '',
             modelo: '',
@@ -12,8 +14,14 @@ export default{
         checklist: [],
     },
     mutations: {
+        // Mutación de creación o edición
+        crear: (state, creacion) => { state.crear = creacion },
+
         // Mutaciónes del nombre
         nombre: (state, nombre) => { state.nombre = nombre },
+
+        // Mutación de la imágen
+        imagen: (state, imagen) => { state.imagen = imagen },
 
         // Mutaciónes de caracteristicas
         fabricante: (state, fabricante) => { state.caracteristicas.fabricante = fabricante },
@@ -29,8 +37,14 @@ export default{
         set_checklist: (state, checklist) => { state.checklist = checklist },
     },
     actions: {
+        // Acción para creación o edición de equipo
+        set_creacion: (context, creacion) => { context.commit('crear', creacion)},
+        
         // Acciones del nombre
         set_nombre: (context, nombre) => { context.commit('nombre', nombre) },
+
+        // Acción de la imágen
+        set_imagen: (context, imagen) => { context.commit('imagen', imagen) },
 
         // Acciones de caracteristicas
         set_fabricante: (context, fabricante) => { context.commit('fabricante', fabricante) },
@@ -47,8 +61,10 @@ export default{
     },
     getters: {
         nombre: (state) => state.nombre,
+        imagen: (state) => state.imagen,
         caracteristicas: (state) => state.caracteristicas,
         tiene_checklist: (state) => state.tiene_checklist,
         checklist: (state) => state.checklist,
+        creacion: (state) => state.crear,
     },
 };

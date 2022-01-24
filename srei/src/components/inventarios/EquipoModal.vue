@@ -22,7 +22,7 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-danger" data-bs-dismiss="modal" @click="reiniciar">Cancelar</button>
-                    <button class="btn btn-success">Guardar</button>
+                    <button class="btn btn-success" @click="guardar">Guardar</button>
                 </div>
             </div>
         </div>
@@ -33,12 +33,23 @@
 import Datos from '@/components/inventarios/modaltabs/Datos.vue'
 import Checklist from '@/components/inventarios/modaltabs/Checklist.vue'
 import { mapActions, mapGetters } from 'vuex'
+import { guardar } from '@/api_queries/equipo'
+import $ from 'jquery'
 
 const actions = [
     'set_nombre',
     'set_caracteristicas',
     'set_checklist',
     'toggle_checklist',
+]
+
+const getters = [
+    'nombre',
+    'imagen',
+    'caracteristicas',
+    'tiene_checklist',
+    'checklist',
+    'creacion',
 ]
 
 export default {
@@ -53,7 +64,7 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('equipo_inventario', ['tiene_checklist'])
+        ...mapGetters('equipo_inventario', getters)
     },
     methods: {
         ...mapActions('equipo_inventario', actions),
@@ -69,7 +80,22 @@ export default {
             this.set_caracteristicas(caracteristicas_template)
             this.set_checklist([])
             this.toggle_checklist(false)
-        }
+        },
+        guardar() {
+            const laboratorio = this.$store.getters.laboratorio
+
+            const equipo = {
+                nombre: this.nombre,
+                caracteristicas: this.caracteristicas,
+                disponible: true,
+                estado: 0,
+                laboratorio: laboratorio.id,
+                tipo: this.$route.params.tipo,
+                propietario: 'A4RaNBQ0L6OrDtGZuIc7',
+            }
+
+            guardar(equipo, laboratorio.nombre, this.imagen, this.creacion)
+        },
     }
 }
 </script>

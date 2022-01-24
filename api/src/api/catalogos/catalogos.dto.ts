@@ -1,6 +1,14 @@
-import { IsString, IsNotEmpty, IsDefined, IsNumber, IsBoolean, IsArray, IsOptional, IsObject } from 'class-validator';
+import { IsString, IsNotEmpty, IsDefined, IsNumber, IsBoolean, IsArray, IsOptional, IsObject, ValidateNested } from 'class-validator';
 
 export class CrearEquipo {
+    @IsDefined({
+        message: "El Equipo no puede ser nulo"
+    })
+    @ValidateNested()
+    public eqp!: Equipo
+}
+
+class Equipo {
     @IsDefined({
         message: "El nombre del Equipo no puede ser nulo."
     })

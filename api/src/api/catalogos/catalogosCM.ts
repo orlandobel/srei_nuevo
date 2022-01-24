@@ -24,7 +24,6 @@ export default class CatalogosCM {
     // variables de acceso a db
     private db = admin.firestore();
     private refEqp = this.db.collection(variable['equipo']);
-    //private storage = new Storage();
     private bucket = admin.storage().bucket('gs://srei-dc583.appspot.com/'); // 'gs://srei-dc583.appspot.com/'
 
     // Endpoint para retornar un registro de la coleccion EQP.
@@ -126,17 +125,30 @@ export default class CatalogosCM {
     }
 
     // Endpoint para crear un registro en la coleccion EQP.
-    public crearEquipo = async (equipo: EQP) => {
+    public crearEquipo = async (equipo: EQP, laboratorio: String) => {
         if (equipo === undefined || equipo === null) {
             return new DataNotFoundException(codigos.datosNoEncontrados);
         }
 
-        // TODO: Generar QR antes de crear el registro en base de datos
+        if (laboratorio === undefined || laboratorio === null || laboratorio === '') {
+            return new DataNotFoundException(codigos.informacionNoEnviada);
+        }
 
         const actual = admin.firestore.Timestamp.now().toDate(); // obtener hora y fecha del servidor
 
         equipo.actualizado = actual;
         equipo.creacion = actual;
+
+        const lab_split = laboratorio.split(' ');        
+        const lab = lab_split[0].toLowerCase()+lab_split[1];
+        
+        let tipo = equipo.tipo.toLowerCase();
+        if(tipo.split(' ').length > 1) {
+            const tipo_split = tipo.split(' ');
+            tipo = tipo_split[0]+'_'+tipo_split[1];
+        }
+
+        let dir = `${lab}/${tipo}`;
 
         if (equipo.checklist === undefined || equipo.checklist === null) {
             equipo.checklist = null;
@@ -152,7 +164,22 @@ export default class CatalogosCM {
                     .catch(err => {
                         return new InternalServerException(codigos.datoNoEncontrado, err);
                     });
-                return eqp;
+
+                dir += `/${key}`;
+                
+                const qr_data = {
+                    id: key,
+                    nombre: equipo.nombre,
+                    laboratorio
+                }
+
+                const qr_generation = await this.generarQr(qr_data, dir)
+
+                if(qr_generation)
+                    return eqp;
+                else
+                    this.refEqp.doc(key).delete()
+                    return new InternalServerException(codigos.indefinido);
             })
             .catch(err => {
                 return new InternalServerException(codigos.datoNoEncontrado, err);
@@ -163,37 +190,19 @@ export default class CatalogosCM {
         }
 
         const document = await this.obtenerEquipo(creado);
-        return document;
+        return {eqp: document, ruta: dir}
     }
 
-    public generarQr = async (id:String, nombre: String, laboratorio: String, tipo: String) => {
-        // Formateando laboratorio para las rutas en el store
-        const lab_split = laboratorio.split(' ');        
-        const lab = lab_split[0].toLowerCase()+lab_split[1];
-
-        // Formateando 'tipo' para la ruta en store
-        tipo = tipo.toLowerCase();
-        if(tipo.split(' ').length > 1) {
-            const tipo_split = tipo.split(' ');
-            tipo = tipo_split[0]+'_'+tipo_split[1];
-        }
-
-        // Crea el objeto que se almacenará en el código QR
-        const obj: Object = {
-            id,
-            nombre,
-            laboratorio
-        }
-        const data = JSON.stringify(obj);
+    private generarQr = async (qr_data:Object, ruta: String) => {
+        const data = JSON.stringify(qr_data);
 
         // TODO: Mejorar el manejo de errores de la generación de QR y subida al store
-
         try { 
             // Crea el código QR y lo almacena en una imagen en el servidor
             await QRCode.toFile('./qr.png', data, { color: {dark: "#000",light: "#FFF"} });
             
             // Busca la imagen del QR y la sube a firebase storage
-            await this.bucket.upload('./qr.png', {resumable: false, destination: `${lab}/electronica/${id}/qr.png`})
+            await this.bucket.upload('./qr.png', {resumable: false, destination: `${ruta}/qr.png`})
             
         } catch(err){
             console.error(err);
@@ -201,5 +210,53 @@ export default class CatalogosCM {
         }
 
         return true;
+    }
+
+    public subirImagen = async (img: any, ruta: string) => {
+        if(img === undefined || img === null) {
+            return new InternalServerException(codigos.indefinido);
+        }
+
+        const extension = img.mimetype.split('/')[1];
+
+        const file = this.bucket.file(`${ruta}/imagen.${extension}`);
+            //console.log(file);
+            /*const writer = file.createWriteStream({
+                resumable: false,
+                metadata: {
+                    contentType: img.mimetype
+                }
+            });
+    
+            writer.on('error', (error) => {
+                console.error(error);
+                return new InternalServerException(codigos.indefinido, error)
+            });
+    
+            writer.on('finish', () => {
+                return true
+            })
+    
+            writer.end(img.buffer)*/
+
+        const options = {
+            resumable: false,
+            metadata: {
+                contentType: img.mimetype
+            }
+        }
+
+        file.save(img.buffer, options)
+            .then(() => {
+                console.log('saved');
+                return true;
+            })
+            .catch((error) => {
+                console.log(error)
+                return new InternalServerException(codigos.indefinido, error)
+            });
+
+
+        return true
     }
 }
