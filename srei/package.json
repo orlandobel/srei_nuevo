@@ -23,6 +23,7 @@
     "vue": "^3.2.22",
     "vue-axios": "^3.4.0",
     "vue-router": "^4.0.0-0",
+    "vue3-qrcode-reader": "0.0.1",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {

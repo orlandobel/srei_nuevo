@@ -125,11 +125,11 @@ export default class CatalogosCM {
     }
 
     // Endpoint para crear un registro en la coleccion EQP.
-    public crearEquipo = async (equipo: EQP, laboratorio: String) => {
+    public crearEquipo = async (equipo: EQP, laboratorio: String) => {    
         if (equipo === undefined || equipo === null) {
             return new DataNotFoundException(codigos.datosNoEncontrados);
         }
-
+        
         if (laboratorio === undefined || laboratorio === null || laboratorio === '') {
             return new DataNotFoundException(codigos.informacionNoEnviada);
         }
