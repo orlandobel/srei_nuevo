@@ -86,6 +86,14 @@ class Equipo {
 
 export class EditarEquipo {
     @IsDefined({
+        message: "El Equipo no puede ser nulo"
+    })
+    @ValidateNested()
+    public eqp!: Editar
+}
+
+class Editar {
+    @IsDefined({
         message: "El id del Equipo no puede ser nulo."
     })
     @IsString({

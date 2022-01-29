@@ -18,7 +18,9 @@
 import { mapActions } from 'vuex'
 
 const actions = [
+    'set_id',
     'set_nombre',
+    'set_imagen_src',
     'set_caracteristicas',
     'toggle_checklist',
     'set_checklist',
@@ -32,20 +34,28 @@ export default {
     },
     data() {
         return {
-            equipo: this.equipo_bind
+            equipo: this.equipo_bind,
+            campos: Object.keys(this.equipo_bind)
         }
     },
     methods: {
         ...mapActions('equipo_inventario', actions),
         set_element() {
-            this.set_nombre(this.equipo.nombre),
+            this.set_id(this.equipo.id)
+            this.set_nombre(this.equipo.nombre)
             this.set_caracteristicas(this.equipo.caracteristicas)
             this.set_creacion(false)
 
-            if(Object.keys(this.equipo).includes('checklist')) {
-                console.log(this.equipo.checklist)
-                this.set_checklist(this.equipo.checklist)
+            if(this.campos.includes('checklist')) {
+                console.log(Object.values(this.equipo.checklist))
+                this.set_checklist(Object.values(this.equipo.checklist))
                 this.toggle_checklist(true)
+            }
+
+            if(this.campos.includes('img_path')) {
+                console.info('Cambiando path')
+                console.log(this.equipo.img_path);
+                this.set_imagen_src(this.equipo.img_path)
             }
         }
     }

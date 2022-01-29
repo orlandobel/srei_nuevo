@@ -13,7 +13,7 @@
                 
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="datos-tab" role="tabpanel" aria-labelledby="nav-datos-tab" >
-                        <datos v-on:tiene_checklist="toggle_checklist"/>
+                        <datos ref="datos" v-on:tiene_checklist="toggle_checklist"/>
                     </div>
                     <div class="tab-pane fade" id="checklist-tab" role="tabpanel" aria-labelledby="nav-checklist-tab" >
                         <checklist />
@@ -34,16 +34,18 @@ import Datos from '@/components/inventarios/modaltabs/Datos.vue'
 import Checklist from '@/components/inventarios/modaltabs/Checklist.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { guardar } from '@/api_queries/equipo'
-import $ from 'jquery'
 
 const actions = [
+    'set_id',
     'set_nombre',
+    'set_imagen',
     'set_caracteristicas',
     'set_checklist',
     'toggle_checklist',
 ]
 
 const getters = [
+    'id',
     'nombre',
     'imagen',
     'caracteristicas',
@@ -76,10 +78,14 @@ export default {
                 descripcion: '',
             }
 
+            this.set_id('')
             this.set_nombre('')
             this.set_caracteristicas(caracteristicas_template)
             this.set_checklist([])
+            this.set_imagen(null)
             this.toggle_checklist(false)
+
+            this.$refs.datos.reiniciar_imagen()
         },
         guardar() {
             const laboratorio = this.$store.getters.laboratorio
@@ -92,6 +98,14 @@ export default {
                 laboratorio: laboratorio.id,
                 tipo: this.$route.params.tipo,
                 propietario: 'A4RaNBQ0L6OrDtGZuIc7',
+            }
+
+            if(!this.creacion)
+                equipo.id = this.id
+
+            if(this.tiene_checklist) {
+                console.log(typeof(this.checklist))
+                equipo.checklist = this.checklist
             }
 
             guardar(equipo, laboratorio.nombre, this.imagen, this.creacion)

@@ -7,6 +7,8 @@ export default interface EQP {
     propietario: string;
     laboratorio: string;
     caracteristicas: caracteristica;
+    qr_path: string;
+    img_path: string;
     checklist: check[] | null;
     creacion: any;
     actualizado: any;
