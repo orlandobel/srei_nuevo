@@ -30,10 +30,12 @@
 
                     <div v-for="rest in results" :key="results.id" class="card" >
 
-                        <div v-if="isValidHttpUrl(rest)" class="card-body">
-                            <h6 class="card-title"><b>Url alumno</b></h6>
-                            <p class="card-text">Liga: {{ rest }}</p>
-                            <a href="#" class="card-link">go to</a>
+                        <div v-if="isValidStudent(rest)" class="card-horizontal">
+                            <div v-html="rest.imagen" class="img-square-wrapper"></div>
+                            <div class="card-body">
+                                <h6 class="card-title"><b>Alumno: </b>{{ rest.nombre }}</h6>
+                                <p class="card-text">{{ rest.boleta }}</p>    
+                            </div>
                         </div>
                         <div v-else-if="validateJSONdata(rest)" class="card-horizontal">
                             <div class="img-square-wrapper">
@@ -42,7 +44,7 @@
                             <div class="card-body">
                                 <h6 class="card-title"><b>{{ rest.nombre }}</b></h6>
                                 <p class="card-text">ID: {{ rest.id }} <br/> Laboratorio: {{ rest.laboratorio }}</p>
-                         </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -56,7 +58,8 @@
 </template>
 
 <script>
-    import { QrcodeStream } from 'vue3-qrcode-reader'
+    import { QrcodeStream } from "vue3-qrcode-reader";
+    import axios from "axios";
 
     export default {
         name: "QRScanner",
@@ -111,10 +114,32 @@
                         this.isValid = false
                         this.validMsg = "QR obtenido no es una herramienta de laboratorio"
                     }
-                }else if (result.startsWith('http') ){
-                    
-                    this.validMsg = "Lectura URL alumno exitosa"
-                    this.results.push(result)
+                }else if (this.isValidHttpUrl(result)){
+                        
+                    let alumDatos = await this.axiosConsult(result).then( data =>{
+                        let getNombre = data.split("<div class='nombre'>")[1].split("</div>")[0]
+                        let getBoleta = data.split("<div class='boleta' style='font-size: 200%;' >")[1].split("</div>")[0]
+                        let getImagen = data.split("<div class='pic'>")[2].split("</div>")[0]
+                        
+                        let jsonResp ={
+                            "nombre" : getNombre,
+                            "boleta" : getBoleta,
+                            "imagen" : getImagen
+                        }
+
+                        return jsonResp
+
+                        }).catch(err => {
+                            console.log(err)
+                            return "error"
+                            }
+                        )
+
+                    if (alumDatos != "error"){ 
+                        this.results.push(alumDatos)                    
+                        this.validMsg = "Lectura URL alumno exitosa"
+                    }
+
                 } else {
                     this.isValid = false
                     this.validMsg = "Fallo inesperado"
@@ -145,14 +170,22 @@
             },
 
             isValidHttpUrl(string) {
-            let url;
-            
-            try {
-                 url = new URL(string);
-            } catch (e) {
-                return false;  
-            }
+                try {
+                    let url = new URL(string);
+                } catch (e) {
+                    return false;  
+                }
                 return true;
+            },
+
+            isValidStudent(aux){
+                try{
+                    if ("nombre" in aux && "boleta" in aux && "imagen" in aux){
+                        return true;
+                    }
+                }catch(e){
+                    return false;
+                }
             },
 
             resetValidationState () {
@@ -193,7 +226,21 @@
                 return new Promise(resolve => {
                     window.setTimeout(resolve, ms)
                 })
-            }
+            },
+
+            axiosConsult(url){
+                
+                const promese = axios.get(url,{ 
+                        transformRequest: (data, headers) => {
+                            delete headers.common['Authorization'];
+                            return data;
+                        },
+                    })
+                const dataProm = promese.then(response =>  response.data)
+
+                return dataProm
+
+            },
         },
     }
 </script>
