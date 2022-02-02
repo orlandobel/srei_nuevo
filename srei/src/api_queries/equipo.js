@@ -15,21 +15,27 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
         laboratorio,
     }
 
-    const eqp_response = await axios.post(url, eqp_data)
-    console.log(eqp_response)
-    if(eqp_response != 200 || eqp_response.data.status != 200)
-        console.log('error')
+    console.warn(eqp_data)
+
+    const eqp_response = crear? await axios.post(url, eqp_data) : await axios.put(url, eqp_data)
+    if(eqp_response.status != 200 || eqp_response.data.status != 200){
+        console.error(eqp_response)
+        return false
+    }
     
-    if(imagen != null) {
+    if(imagen != null && imagen != undefined) {
         const img_data = new FormData()
         img_data.append('ruta', eqp_response.data.ruta)
+        img_data.append('id', eqp_response.data.eqp.id)
         img_data.append('imagen', imagen)
 
         const headers = {'Content-Type': 'multipart/form-data'}
         const img_response = await axios.post('equipo/imagenes', img_data, headers)
 
-        if(img_response != 200 || img_response.data.status != 200)
+        if(img_response.status != 200 || img_response.data.status != 200)  {
+            console.error(img_response)
             return false
+        }
     }
 
     return true

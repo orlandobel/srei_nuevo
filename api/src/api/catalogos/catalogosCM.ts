@@ -77,20 +77,33 @@ export default class CatalogosCM {
     }
 
     // Endpoint para editar un registro de la coleccion EQP.
-    public editarEquipo = async (equipo: EQP) => {
+    public editarEquipo = async (equipo: EQP, laboratorio: String) => {
         if (equipo === undefined || equipo === null) {
             return new DataNotFoundException(codigos.datosNoEncontrados);
         }
+
         const key = equipo.id;
         const existe = await this.obtenerEquipo(key);
+
         if (existe instanceof DataNotFoundException) {
             return existe;
         }
+
         if (existe instanceof InternalServerException) {
             return existe;
         }
+
+        const dir = this.generarRuta(laboratorio, equipo.tipo, key);
+        
+        equipo.qr_path = existe.img_path;
+
+        if(existe.img_path != null && existe.img_path != undefined)
+            equipo.img_path = existe.img_path;
+            
         const actual = admin.firestore.Timestamp.now().toDate(); // obtener hora y fecha del servidor
         equipo.actualizado = actual;
+
+
         const editado = await this.refEqp.doc(key).update(equipo)
             .then(async () => {
                 const document = await this.obtenerEquipo(key);
@@ -99,7 +112,8 @@ export default class CatalogosCM {
             .catch(err => {
                 return new InternalServerException(codigos.datoNoEncontrado, err);
             });
-        return editado;
+
+        return {eqp: editado, ruta: dir};
     }
 
     // Endpoint para eliminar un registro de la coleccion EQP.
@@ -139,47 +153,40 @@ export default class CatalogosCM {
         equipo.actualizado = actual;
         equipo.creacion = actual;
 
-        const lab_split = laboratorio.split(' ');        
-        const lab = lab_split[0].toLowerCase()+lab_split[1];
-        
-        let tipo = equipo.tipo.toLowerCase();
-        if(tipo.split(' ').length > 1) {
-            const tipo_split = tipo.split(' ');
-            tipo = tipo_split[0]+'_'+tipo_split[1];
-        }
-
-        let dir = `${lab}/${tipo}`;
-
-        if (equipo.checklist === undefined || equipo.checklist === null) {
-            equipo.checklist = null;
-        }
+        let dir = '';
 
         const creado = await this.refEqp.add(equipo)
             .then(async data => {
                 const key = data.id;
-                const eqp = await this.refEqp.doc(key).update({ id: key })
-                    .then(() => {
-                        return key;
-                    })
-                    .catch(err => {
-                        return new InternalServerException(codigos.datoNoEncontrado, err);
-                    });
+                let eqp = await this.refEqp.doc(key).update({ id: key })
+                    .then(() => key)
+                    .catch(err => new InternalServerException(codigos.datoNoEncontrado, err));
 
-                dir += `/${key}`;
-                
-                const qr_data = {
-                    id: key,
-                    nombre: equipo.nombre,
-                    laboratorio
+                if(!(eqp instanceof InternalServerException)) {
+                    dir = this.generarRuta(laboratorio, equipo.tipo, key);
+                    
+                    const qr_data = {
+                        id: key,
+                        nombre: equipo.nombre,
+                        laboratorio
+                    }
+
+                    const qr_generation = await this.generarQr(qr_data, dir)
+
+                    if(qr_generation instanceof InternalServerException){
+                        await this.refEqp.doc(key).delete()
+                        return qr_generation
+                    }
+                    
+                    eqp = await this.refEqp.doc(key).update({qr_path: qr_generation})
+                        .then(() => key)
+                        .catch(async error => {
+                            await this.refEqp.doc(key).delete();
+                            return new InternalServerException(codigos.indefinido, error)
+                        });
+                    
                 }
-
-                const qr_generation = await this.generarQr(qr_data, dir)
-
-                if(qr_generation)
-                    return eqp;
-                else
-                    this.refEqp.doc(key).delete()
-                    return new InternalServerException(codigos.indefinido);
+                return eqp;
             })
             .catch(err => {
                 return new InternalServerException(codigos.datoNoEncontrado, err);
@@ -195,67 +202,99 @@ export default class CatalogosCM {
 
     private generarQr = async (qr_data:Object, ruta: String) => {
         const data = JSON.stringify(qr_data);
+        let publicURL = '';
 
-        // TODO: Mejorar el manejo de errores de la generación de QR y subida al store
         try { 
             // Crea el código QR y lo almacena en una imagen en el servidor
             await QRCode.toFile('./qr.png', data, { color: {dark: "#000",light: "#FFF"} });
+
+            const options = {
+                resumable: false, 
+                destination: `${ruta}/qr.png`,
+                
+            };
             
             // Busca la imagen del QR y la sube a firebase storage
-            await this.bucket.upload('./qr.png', {resumable: false, destination: `${ruta}/qr.png`})
+            const generated = await this.bucket.upload('./qr.png', options);
+            const qr = generated[0]
+            await qr.makePublic()
+
+            publicURL = qr.metadata.mediaLink
             
         } catch(err){
             console.error(err);
-            return false;
+            return new InternalServerException(codigos.indefinido, err);
         }
 
-        return true;
+        return publicURL;
     }
 
-    public subirImagen = async (img: any, ruta: string) => {
+    private generarRuta = (laboratorio: String, tipo: String, id: String) => {
+        const lab_split = laboratorio.split(' ');        
+        const lab = lab_split[0].toLowerCase()+lab_split[1];
+        
+        tipo = tipo.toLowerCase();
+        if(tipo.split(' ').length > 1) {
+            const tipo_split = tipo.split(' ');
+            tipo = tipo_split[0]+'_'+tipo_split[1];
+        }
+
+        return `${lab}/${tipo}/${id}`;
+    }
+
+    public subirImagen = async (img: any, ruta: string, id: string) => {
+        // Verificación de datos nulos
         if(img === undefined || img === null) {
             return new InternalServerException(codigos.indefinido);
         }
 
-        const extension = img.mimetype.split('/')[1];
+        if(ruta === undefined || ruta === null || ruta === '') 
+            return new InternalServerException(codigos.indefinido);
+        
+        if(id === undefined || id === null || id === '')
+            return new DataNotFoundException(codigos.identificadorInvalido);
 
+        // Obtención del equipo para agregar la ruta de la imagen al registro
+        const equipo = await this.obtenerEquipo(id);
+        if(equipo instanceof DataNotFoundException || equipo instanceof InternalServerException)
+            return equipo;
+
+        // Obtención o creación del archivo en firebase storage
+        const extension = img.mimetype.split('/')[1]
         const file = this.bucket.file(`${ruta}/imagen.${extension}`);
-            //console.log(file);
-            /*const writer = file.createWriteStream({
-                resumable: false,
-                metadata: {
-                    contentType: img.mimetype
-                }
-            });
-    
-            writer.on('error', (error) => {
-                console.error(error);
-                return new InternalServerException(codigos.indefinido, error)
-            });
-    
-            writer.on('finish', () => {
-                return true
-            })
-    
-            writer.end(img.buffer)*/
-
+        
+        // Objeto de opciones de la escritura del archivo
         const options = {
             resumable: false,
             metadata: {
-                contentType: img.mimetype
-            }
+                contentType: img.mimetype,
+            },
         }
+        
+        try {
+            // Guardando la imágen en firebase storage
+            await file.save(img.buffer, options);
+            await file.makePublic();
 
-        file.save(img.buffer, options)
-            .then(() => {
-                console.log('saved');
-                return true;
-            })
-            .catch((error) => {
-                console.log(error)
-                return new InternalServerException(codigos.indefinido, error)
-            });
+            // Obtención de la ruta pública de la imágen
+            const publicUrl = file.metadata.mediaLink;
 
+            // Añadiendo la ruta de la imágen al registro en base de datos del equipo
+            equipo.img_path = publicUrl;
+            const actualizado = await this.refEqp.doc(id).update(equipo)
+                .then(() => console.log('Imgen agregada al equipo'))
+                .catch(error => {
+                    console.error(error);
+                    return new InternalServerException(codigos.indefinido, error);
+                });
+
+            if(actualizado instanceof InternalServerException)
+                return actualizado;
+        } catch(error) {
+            console.log('\x1b[31m%s\x1b[0m', 'erro al actualizar');
+            console.log(error);
+            return new InternalServerException(codigos.indefinido, error);
+        }
 
         return true
     }

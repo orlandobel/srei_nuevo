@@ -56,7 +56,7 @@ class CatalogosController implements Controller {
     * @description Endpoint para retornar un registro de la coleccion EQP.
     * @params uid
     * @param  uid(id del usuario tomado de params) 
-    * @retuns {estatus:true/false, eqp: {...} }	
+    * @retuns {status:200, eqp: {...} }	
     * @author Belmont
     */
     private obtenerEquipo = async (req: Request, res: Response, next: NextFunction) => {
@@ -73,14 +73,14 @@ class CatalogosController implements Controller {
             res.send(respuesta);
         }
 
-        res.send({ estatus: true, eqp: respuesta });
+        res.send({ status: 200, eqp: respuesta });
     }
 
     /*
     * @description Endpoint para retornar una sub coleccion de la coleccion EQP.
     * @params tipo
     * @param  tipo(tipo del equipo tomado de params) 
-    * @retuns {estatus:Exito/error, eqps: {...} }
+    * @retuns {status: 200, eqps: {...} }
     * @author GBautista	
     */
    private obtenerEquipoTipo = async (req: Request, res: Response, next: NextFunction) => {
@@ -95,7 +95,7 @@ class CatalogosController implements Controller {
         res.send(respuesta);
     }
 
-    res.send({ estatus: true, eqps: respuesta });
+    res.send({ status: 200, eqps: respuesta });
 }
 
     /*
@@ -105,12 +105,12 @@ class CatalogosController implements Controller {
     * disponible(indica si se encuentra disponible), propietario(dueño del equipo UPIIZ), 
     * caracteristicas(Arreglo en el que se especifican características generales del equipo),
     * checklist(Array solo está presente en la maquinaria)
-    * @retuns {estatus:Exito/error, editado: true, eqp: {...} }	
+    * @retuns {status: 200, editado: true, eqp: {...} }	
     * @author Belmont
     */
     private editarEquipo = async (req: Request, res: Response) => {
-        const { eqp } = req.body;
-        const respuesta = await this.catalogosCM.editarEquipo(eqp);
+        const { eqp, laboratorio } = req.body;
+        const respuesta = await this.catalogosCM.editarEquipo(eqp, laboratorio);
 
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
@@ -120,14 +120,14 @@ class CatalogosController implements Controller {
             res.send(respuesta);
             return;
         }
-        res.send({ estatus: true, editado: true, eqp: respuesta });
+        res.send({ status: 200, editado: true, ...respuesta });
     }
 
     /*
     * @description Endpoint para eliminar un registro de la coleccion EQP.
     * @params id
     * @param  id(id del registro tomado de params)
-    * @retuns {estatus:Exito/error, eliminado: true, eqp: '...' }
+    * @retuns {status: 200, eliminado: true, eqp: '...' }
     * @author Belmont
     */
     private eliminarEquipo = async (req: Request, res: Response) => {
@@ -142,7 +142,7 @@ class CatalogosController implements Controller {
             res.send(respuesta);
         }
 
-        res.send({ estatus: true, eliminado: true, eqp: respuesta });
+        res.send({ status: 200, eliminado: true, eqp: respuesta });
     }
 
     /*
@@ -152,7 +152,7 @@ class CatalogosController implements Controller {
     * disponible(indica si se encuentra disponible), propietario(dueño del equipo UPIIZ), 
     * caracteristicas(Arreglo en el que se especifican características generales del equipo),
     * checklist(Array solo está presente en la maquinaria)
-    * @retuns {estatus:Exito/error, creado: true, eqp: {...} }	
+    * @retuns {status: 200, creado: true, eqp: {...} }	
     * @author Belmont
     */
     private crearEquipo = async (req: Request, res: Response) => {
@@ -169,14 +169,14 @@ class CatalogosController implements Controller {
             res.send(respuesta);
         }
         
-        res.send({ estatus: true, creado: true, ...respuesta });
+        res.send({ status: 200, creado: true, ...respuesta });
     }
 
     private generarImagenes = async (req: Request, res: Response) => {
-        const { ruta } = req.body;
+        const { ruta, id } = req.body;
         const imagen = req.file;
 
-        const respuesta = await this.catalogosCM.subirImagen(imagen, ruta);
+        const respuesta = await this.catalogosCM.subirImagen(imagen, ruta, id);
 
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
@@ -189,13 +189,6 @@ class CatalogosController implements Controller {
         res.send({status: 200, estatus: respuesta})
 
     }
-
-    /*private qr = async (req: Request, res: Response) => {
-        console.log('hey');
-        const resp = await this.catalogosCM.generarQr();
-
-        res.send(resp);
-    }*/
 
 }
 

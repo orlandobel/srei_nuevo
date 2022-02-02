@@ -37,11 +37,15 @@
 
             <div class="row mb-2">
                 <div class="col-lg-12">
-                    <div class="form-group">
+                    <div class="form-group mb-2">
                         <label for="imgaen_field" class="form">imgen</label>
                         <input type="file" name="imagen_field" id="imagen_field" ref="imagen_field"
                             class="form-control" accept="image/*" @input="update_imagen()">
                     </div>
+
+                    <img :src="this.imagen_src ?? sin_imagen" 
+                        width="200" height="200" ref="imagen_equipo"
+                        class="img-thumbnail">
                 </div>
             </div>
 
@@ -75,6 +79,7 @@ import { mapGetters, mapActions } from 'vuex'
 const actions = [
     'set_nombre',
     'set_imagen',
+    'set_imagen_src',
     'set_fabricante',
     'set_modelo',
     'set_serie',
@@ -86,11 +91,11 @@ export default {
     name: 'Datos',
     data() {
         return {
-            
+            sin_imagen: require('../../../assets/inventario/fondo_imagen_equipo.png'),
         }
     },
     computed: {
-        ...mapGetters('equipo_inventario', ['nombre', 'caracteristicas', 'imagen', 'tiene_checklist']),
+        ...mapGetters('equipo_inventario', ['nombre', 'caracteristicas', 'imagen', 'imagen_src', 'tiene_checklist']),
         usuario: function() {
             return this.$store.getters.usuario
         },
@@ -107,25 +112,16 @@ export default {
         update_imagen() {
             const imagen = this.$refs.imagen_field.files[0]
 
-            console.log(imagen.buffer)
-            const img = {
-                lastModified: imagen.lastModified,
-                lastModifiedDate: imagen.lastModifiedDate,
-                name: imagen.name,
-                size: imagen.size,
-                type: imagen.type,
-                webkitRelativePath: imagen.webkitRelativePath,
-            }    
-
             this.set_imagen(imagen)
-            /*const reader = new FileReader()
+
+            const reader = new FileReader()
             reader.onload = () => {
                 const dataURL = reader.result
 
-                console.log(dataURL)
+                this.$refs.imagen_equipo.src = dataURL
             }
 
-            reader.readAsDataURL(img)*/
+            reader.readAsDataURL(imagen)
         },
         update_fabricante() {
             this.set_fabricante(this.$refs.fabricante_field.value)
@@ -139,7 +135,15 @@ export default {
         update_descripcion() {
             this.set_descripcion(this.$refs.descripcion_field.value)
         },
-    }
-    
+        reiniciar_imagen() {
+            console.log('reiniciando')
+            this.$refs.imagen_field.value = null
+            this.$refs.imagen_equipo.src = require('../../../assets/inventario/fondo_imagen_equipo.png')
+
+            console.log(this.imagen)
+            this.set_imagen(null)
+            console.log('reiniciado')
+        },
+    },
 }
 </script>
