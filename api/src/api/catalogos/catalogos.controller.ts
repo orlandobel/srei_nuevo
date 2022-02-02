@@ -48,7 +48,7 @@ class CatalogosController implements Controller {
         this.router.post(this.path + '/crear', validationMiddleware(CrearEquipo, true), this.crearEquipo);
         this.router.post(this.path + '/imagenes', upload.single('imagen'), this.generarImagenes);
         this.router.put(this.path + '/editar', validationMiddleware(EditarEquipo, true), this.editarEquipo);
-        this.router.delete(this.path + 'eliminar/:id', this.eliminarEquipo);
+        this.router.delete(this.path + '/eliminar/:id/:laboratorio', this.eliminarEquipo);
         //this.router.get(this.path + '/foo', this.qr);
     }
 
@@ -131,8 +131,12 @@ class CatalogosController implements Controller {
     * @author Belmont
     */
     private eliminarEquipo = async (req: Request, res: Response) => {
-        const key = req.params.id;
-        const respuesta = await this.catalogosCM.eliminarEquipo(key);
+        const { id, laboratorio} = req.params;
+        console.log(req.params);
+        
+        console.log(id)
+        console.log(laboratorio)
+        const respuesta = await this.catalogosCM.eliminarEquipo(id, laboratorio);
 
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);

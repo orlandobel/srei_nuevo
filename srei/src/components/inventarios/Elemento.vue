@@ -9,13 +9,27 @@
             <span v-else>Ocupado</span>
         </td>
         <td>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal" @click="set_element">Info</button>
+            <table>
+                <tr >
+                    <td class="btn-cell">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal" @click="set_element">
+                            <fa-icon :icon="['fas', 'pen']" />
+                        </button>
+                    </td>
+                    <td class="btn-cell">
+                        <button class="btn btn-danger" @click="consulta_eliminar">
+                            <fa-icon :icon="['fas', 'trash']" />
+                        </button>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import { eliminar } from '@/api_queries/equipo'
 
 const actions = [
     'set_id',
@@ -57,7 +71,16 @@ export default {
                 console.log(this.equipo.img_path);
                 this.set_imagen_src(this.equipo.img_path)
             }
+        },
+        consulta_eliminar() {
+            eliminar(this.equipo.id, this.$store.getters.laboratorio.nombre)
         }
     }
 }
 </script>
+
+<style lang="scss" scoped>
+.btn-cell {
+    border: none;
+}
+</style>

@@ -40,3 +40,23 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
 
     return true
 }
+
+export async function eliminar(id, laboratorio) {
+    const url = `equipo/eliminar/${id}/${laboratorio}`
+    
+    const data = {
+        id,
+        laboratorio,
+    }
+
+    const response = await axios.delete(url, data)
+
+    console.log(response);
+
+    if(response.status === 200 || response.data.status ===  200) { 
+        return false;
+    }
+
+    return true;
+
+}

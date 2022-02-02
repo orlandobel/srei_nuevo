@@ -8,7 +8,7 @@
                     <th scope="col" class="col-2">Fabricante</th>
                     <th scope="col" >No. de serie</th>
                     <th scope="col" >Disponibilidad</th>
-                    <th scope="col" >Editar</th>
+                    <th scope="col" >Acciones</th>
                 </tr>
             </thead>
             <tbody>

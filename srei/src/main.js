@@ -11,7 +11,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faAngleDown, faBolt, faBook, faCogs, faList, faMicrochip, faMinus, faQrcode, faSearch, faUserPlus }from '@fortawesome/free-solid-svg-icons'
+import { faAngleDown, faBolt, faBook, faCogs, faList, faMicrochip, faMinus, faPen, faQrcode, faSearch, faTrash, faUserPlus }from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 axios.defaults.baseURL = 'http://localhost:3001/API_SREI/'
@@ -28,7 +28,9 @@ library.add(
     faMicrochip,
     faCogs,
     faBolt,
-    faAngleDown
+    faAngleDown,
+    faPen,
+    faTrash,
 )
 
 createApp(App)

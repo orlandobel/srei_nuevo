@@ -117,24 +117,36 @@ export default class CatalogosCM {
     }
 
     // Endpoint para eliminar un registro de la coleccion EQP.
-    public eliminarEquipo = async (equipo: string) => {
+    public eliminarEquipo = async (equipo: string, laboratorio: string) => {
         if (equipo === undefined || equipo === null || equipo === '') {
             return new DataNotFoundException(codigos.identificadorInvalido);
         }
+
+        if(laboratorio === null || laboratorio === undefined || laboratorio === '') {
+            return new DataNotFoundException(codigos.informacionNoEnviada);
+        }
+
         const existe = await this.obtenerEquipo(equipo);
+
         if (existe instanceof DataNotFoundException) {
             return existe;
         }
+
         if (existe instanceof InternalServerException) {
             return existe;
         }
+
+        const dir = this.generarRuta(laboratorio, existe.tipo, equipo);
+
         const eliminar = await this.refEqp.doc(equipo).delete()
-            .then(() => {
+            .then(async () => {
+                await this.eliminarFolder(dir);
                 return equipo;
             })
             .catch(err => {
                 return new InternalServerException(codigos.datoNoEncontrado, err);
             });
+
         return eliminar;
     }
 
@@ -297,5 +309,21 @@ export default class CatalogosCM {
         }
 
         return true
+    }
+
+    private eliminarFolder = async (dir: string) => {
+        
+        try {
+            await this.bucket.deleteFiles({
+                directory: dir,
+                prefix: dir,
+            });
+        } catch(error) {
+            console.error('\x1b[31m%s\x1b[0m', 'erro al eliminar los archivos');
+            console.error(error);
+            return new InternalServerException(codigos.indefinido, error);
+        }
+
+        return true;
     }
 }
