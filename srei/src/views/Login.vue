@@ -3,7 +3,7 @@
         <div class="col-xl-3 col-xxl-2 align-self-center">
             <div class="card">
                 <div v-if="errorMsg !== ''" class="alert alert-danger">
-                    <strong>¡Error!</strong> {{errorMsg}}
+                    <div v-html="errorMsg" class="mensajeError"></div>
                 </div>
                 <h5 class="card-header">Login</h5>
                 <div class="card-body px-4">
@@ -62,10 +62,16 @@ export default {
                 this.$router.push(nextPath)
             } catch(error) {
                 const response = error.response
-                let status = response.status 
-                if (status == 404) this.errorMsg = "Las credenciales son incorrectas, favor de comprobar su usuario y contraseña sean correctos"
-                if (params.usuario == "") this.errorMsg += "\n Asegúrese de escribir su nombre de usuario"
-                if (params.clave == "") this.errorMsg += "\n Asegúrese de escribir su contraseña única"
+                const status = response.status 
+                if (status == 404) this.errorMsg = "<p><strong>¡Error de inicio de sesión!</strong></p>"
+                if (params.usuario == "" || params.clave == ""){
+                    this.errorMsg += "<ul>"
+                    if (params.usuario == "") this.errorMsg += "<li>Asegúrese de escribir su nombre de usuario.</li>"
+                    if (params.clave == "") this.errorMsg += "<li>Asegúrese de escribir su clave o contraseña única.</li>"
+                    this.errorMsg += "</ul>"
+                }else{
+                    this.errorMsg += "<p>Las credenciales son incorrectas, favor de comprobar que su usuario y/o contraseña sean correctos.</p>"
+                }
             }
         },
     },
@@ -82,5 +88,8 @@ export default {
 
 .bg {
     background-color: $red-600;
+}
+.mensajeError{
+text-align: justify;
 }
 </style>
