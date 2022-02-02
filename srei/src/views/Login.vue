@@ -2,6 +2,9 @@
     <div class="row bg vh-100 justify-content-center">
         <div class="col-xl-3 col-xxl-2 align-self-center">
             <div class="card">
+                <div v-if="errorMsg !== ''" class="alert alert-danger">
+                    <strong>¡Error!</strong> {{errorMsg}}
+                </div>
                 <h5 class="card-header">Login</h5>
                 <div class="card-body px-4">
                     <form action @submit.prevent="login">
@@ -32,6 +35,7 @@ export default {
         return {
             rfc: '',
             password: '',
+            errorMsg: '',
         }
     },
     methods: {
@@ -57,8 +61,11 @@ export default {
 
                 this.$router.push(nextPath)
             } catch(error) {
-                console.log(error)
-                if(error.response.status === 404) console.log(404)
+                const response = error.response
+                let status = response.status 
+                if (status == 404) this.errorMsg = "Las credenciales son incorrectas, favor de comprobar su usuario y contraseña sean correctos"
+                if (params.usuario == "") this.errorMsg += "\n Asegúrese de escribir su nombre de usuario"
+                if (params.clave == "") this.errorMsg += "\n Asegúrese de escribir su contraseña única"
             }
         },
     },
