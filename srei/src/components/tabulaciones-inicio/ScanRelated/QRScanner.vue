@@ -1,3 +1,10 @@
+<!-- 
+    TODO: Encender o apagar la cámara automaticamente al abrir y cerrar el modal
+        puedes acceder a un método de un componente añadiendo la etiqueta "ref" 
+        y haciendo referencia a este desde el padre como se indica:
+            this.$refs.<nombre de la referencia>.<método a ejecutar>()
+ -->
+
 <template>
     <div class="modal fade mh-75 h-75" id="scanModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="scanModalLabel" aria-hidden="true">
         <div class="modal-dialog">
