@@ -1,13 +1,12 @@
 <template>
     <div class="row overflow-hidden">
-        <QRScanner />
-
+        <QRScanner ref="qrComponent"/>
         <div class="col-lg-8">
             <!-- Lado izquierdo de la cabezera de la sección -->
             <div class="row header pd-1">
                 <div class="col-9 d-flex">
                     <b class="h3 align-self-center fw-bolder me-4">Prestamos</b>
-                    <button type="button" class="btn btn-outline-secondary icon-button" data-bs-toggle="modal" data-bs-target="#scanModal">
+                    <button v-on:click="this.$refs.qrComponent.turnCameraOn()" type="button" class="btn btn-outline-secondary icon-button" data-bs-toggle="modal" data-bs-target="#scanModal">
                         <fa-icon :icon="['fas','qrcode']" size="2x"/>
                     </button>
                 </div>
@@ -114,7 +113,7 @@ export default {
         PrestamosListElement,
         QRScanner,
         
-        },
+    },
 }
 </script>
 
