@@ -17,17 +17,14 @@ import DataNotFoundException from '../../exceptions/DataNotFoundException';
 import EQP from '../../interfaces/colecciones/EQP.interface';
 
 // client manager, contiene toda la logica del manejo de los datos
-export default class BitacotaCM {
+export default class BitacoraCM {
 
     // variables de acceso a db
     private db = admin.firestore();
 
     //agregar referencias para agregar 
     private refEqp = this.db.collection(variable['equipo']);
-
-    // en caso de referencia imagen descomentar el bucket
-    //private bucket = admin.storage().bucket('gs://srei-dc583.appspot.com/'); // 'gs://srei-dc583.appspot.com/'
-
+    
     // Endpoint para conocer la disponibilidad de un equipo .
     public verDisponibilidadEQP = async (equipo: string) => {
         if (equipo === undefined || equipo === null || equipo === '') {
@@ -37,8 +34,7 @@ export default class BitacotaCM {
             .then(data => {
                 if (data.exists) {
                     const document = data.data() as EQP;
-                    if (document.disponible) return true;
-                    return false;
+                    return document.disponible;
                 }
                 return new DataNotFoundException(codigos.equipoNoEncontrado);
             })
@@ -47,36 +43,6 @@ export default class BitacotaCM {
             });
         return registro;
     }
-
-    // Endpoint para conocer la disponibilidad de un grupo de equipos
-    public equiposDisponibles = async (equipos: [string]) => {
-        //funcion arrow para ver tipo de dato
-        const checkRegistro = (registro: any) => typeof registro;
-        //if check nulos
-        if (equipos === undefined || equipos === null) {
-            return new DataNotFoundException(codigos.datoNoEncontrado);
-        }
-        //leo todos los registros 
-        const registros = equipos.map((equipo) => await this.verDisponibilidadEQP(equipo));
-        //check en caso de error
-        const errorRegistro = registros.find(equipo => checkRegistro(equipo) == "object" );
-        //en caso de no encontrar error buscar un false
-        if (errorRegistro === undefined){
-            let retorno = null;
-            registros.some( (registro) => {
-                if (registro == false){
-                    retorno = new DataNotFoundException(codigos.equipoNoEncontrado); 
-                }
-                    // este check tiene que escribirse así por semántica
-            })
-            if (retorno = null) return registros
-            else return retorno
-        }else{
-            return errorRegistro
-        }
-    }
-
-
 }
 
 
