@@ -2,7 +2,7 @@ export default{
     namespaced: true,
     state: {
         crear: true,
-        id: '',
+        id: null,
         nombre: '',
         imagen: null,
         imagen_src: null,

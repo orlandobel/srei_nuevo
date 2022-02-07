@@ -8,6 +8,8 @@ export async function listar(tipo, lab) {
 }
 
 export async function guardar(equipo, laboratorio, imagen, crear) {
+    let guardado = true
+    let errores
     const url = crear? `equipo/crear` : `equipo/editar`
 
     const eqp_data = {
@@ -15,12 +17,19 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
         laboratorio,
     }
 
-    console.warn(eqp_data)
-
     const eqp_response = crear? await axios.post(url, eqp_data) : await axios.put(url, eqp_data)
-    if(eqp_response.status != 200 || eqp_response.data.status != 200){
-        console.error(eqp_response)
-        return false
+    
+    if(eqp_response.status != 200 || eqp_response.data.status != 200) {
+        guardado = false
+
+        const msg = eqp_response.data.mensaje.substr(5)
+        errores = msg.split(',')
+
+        if(errores.length > 1 && errores[1].includes('caracteristicas')) {
+            errores[1] = errores[1].split(': ')[1]
+        }
+
+        return { guardado, errores}
     }
     
     if(imagen != null && imagen != undefined) {
