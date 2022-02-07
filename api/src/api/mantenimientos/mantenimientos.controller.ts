@@ -50,12 +50,13 @@ class MantenimientosController implements Controller {
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
             return;
-        }
-        if (respuesta instanceof InternalServerException) {
+        }else if (respuesta instanceof InternalServerException) {
             res.send(respuesta);
             return;
-        }
-        res.send({ estatus: true, mnt: respuesta });
+        }else{
+            res.send({ estatus: true, mnt: respuesta });
+        }   
+
     }
 
     /*
@@ -71,12 +72,12 @@ class MantenimientosController implements Controller {
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
             return;
-        }
-        if (respuesta instanceof InternalServerException) {
+        }else if (respuesta instanceof InternalServerException) {
             res.send(respuesta);
             return;
+        }else{
+            res.send({ estatus: true, mnts: respuesta });
         }
-        res.send({ estatus: true, mnts: respuesta });
     }
 }
 

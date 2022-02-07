@@ -59,8 +59,9 @@ export default class MantenimientoCM {
                         fullcalendar: ret
                     };
                     return response;
+                }else{
+                    return new DataNotFoundException(codigos.datoNoEncontrado);
                 }
-                return new DataNotFoundException(codigos.datoNoEncontrado);
             })
             .catch(err => {
                 return new InternalServerException(codigos.datoNoEncontrado, err);
@@ -109,8 +110,9 @@ export default class MantenimientoCM {
                         }
                     }
                     return elements;
+                }else{
+                    return new DataNotFoundException(codigos.datoNoEncontrado);
                 }
-                return new DataNotFoundException(codigos.datoNoEncontrado);
             }).catch(err=>{
                 return new InternalServerException(codigos.datoNoEncontrado, err);
             });

@@ -22,21 +22,17 @@ import DataNotFoundException from '../../exceptions/DataNotFoundException';
 class BitacoraController implements Controller {
     public router = Router();
     public path = '/prestamo'; // path principal de acceso a las rutas del controlador
-
     // imports de classes CM
     private bitacoraCM = new BitacoraCM();
-
     // constructor del controlador
     constructor(pathGeneral: string) {
         this.path = pathGeneral + '' + this.path;
         this.initializeRoutes();
     }
-
     // Al iniciar el controlador carga las respectivas rutas
     initializeRoutes() {
         this.router.get(this.path + '/:uid', this.disponibilidadEquipo);
     }
-
     /*
     * @description Endpoint para ver disponibilidad de herramienta 
     * @params uid
@@ -50,13 +46,11 @@ class BitacoraController implements Controller {
         
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
-        }
-
-        if (respuesta instanceof InternalServerException) {
+        }else if (respuesta instanceof InternalServerException) {
             res.send(respuesta);
+        }else{
+            res.send({ status: 200, disponible: respuesta });
         }
-
-        res.send({ status: 200, disponible: respuesta });
     }
 
 }

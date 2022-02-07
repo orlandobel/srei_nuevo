@@ -35,7 +35,7 @@ class UsuariosController implements Controller {
         this.router.post(this.path + '/login/test',this.testLogin);
         this.router.get(this.path + '/login/verify', this.checkLogin);
         this.router.post(this.path + '/register', this.registrarEmpleado);
-        this.router.get(this.path + '/vetado', this.berificarVetado);
+        this.router.get(this.path + '/vetado', this.verificarVetado);
         this.router.patch(this.path + '/vetado', this.cambiarVetado);
         this.router.get(this.path + '/usuarios/tipo', this.grupoUsuarios);
     }
@@ -125,13 +125,13 @@ class UsuariosController implements Controller {
            respuesta instanceof InternalServerException) {
            
             res.send(respuesta);
+        }else{
+            res.send({
+                estatus: true, 
+                editado: true,
+                usuario: respuesta
+            });
         }
-
-        res.send({
-            estatus: true, 
-            editado: true,
-            usuario: respuesta
-        });
     }
 
     /*
@@ -146,20 +146,20 @@ class UsuariosController implements Controller {
      *      }
      * @author obelmonte
      */
-    private berificarVetado = async (req: Request, res: Response) => {
+    private verificarVetado = async (req: Request, res: Response) => {
         const { usuario_id, laboratorio_id} = req.body;
-        const vetado = await this.usuariosCM.rebisarVetado(usuario_id, laboratorio_id);
+        const vetado = await this.usuariosCM.revisarVetado(usuario_id, laboratorio_id);
 
         if(vetado instanceof DataNotFoundException ||
             vetado instanceof InternalServerException) {
             
              res.send(vetado);
+        }else{
+            res.send({
+                estatus: true,
+                vetado: vetado,
+            });
         }
-
-        res.send({
-            estatus: true,
-            vetado
-        });
     }
 
     /*
@@ -185,12 +185,13 @@ class UsuariosController implements Controller {
            usuarios instanceof InternalServerException) {
 
             res.send(usuarios);
-        }
+        }else{
 
-        res.send({
-            estatus: true,
-            usuarios
-        });
+            res.send({
+                estatus: true,
+                usuarios
+            });
+        }
     }
 }
 

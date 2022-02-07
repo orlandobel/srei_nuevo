@@ -30,13 +30,14 @@ export default class BitacoraCM {
         if (equipo === undefined || equipo === null || equipo === '') {
             return new DataNotFoundException(codigos.datoNoEncontrado);
         }
-        const registro = await this.refEqp.doc(equipo).get()
+        let registro = await this.refEqp.doc(equipo).get()
             .then(data => {
                 if (data.exists) {
                     const document = data.data() as EQP;
                     return document.disponible;
-                }
-                return new DataNotFoundException(codigos.equipoNoEncontrado);
+                }else{
+                    return new DataNotFoundException(codigos.datoNoEncontrado);
+                } 
             })
             .catch(err => {
                 return new InternalServerException(codigos.datoNoEncontrado);
@@ -44,5 +45,3 @@ export default class BitacoraCM {
         return registro;
     }
 }
-
-

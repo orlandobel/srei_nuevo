@@ -242,8 +242,9 @@ export default class UsuariosCM {
                     const document = data.data() as USR;
 
                     return document
+                }else{
+                    return new DataNotFoundException(codigos.datosNoEncontrados);
                 }
-                return new DataNotFoundException(codigos.datosNoEncontrados);
             }).catch((error) => {
                 return new InternalServerException(codigos.datoNoEncontrado);
             });
@@ -305,22 +306,26 @@ export default class UsuariosCM {
      * @returns  true/false
      * @author obelmonte
      */
-    public rebisarVetado = async (usuario_id: string, laboratorio_id: string) => {
+    public revisarVetado = async (usuario_id: string, laboratorio_id: string) => {
         if(usuario_id === undefined || usuario_id === null || usuario_id === ''
         || laboratorio_id === undefined || laboratorio_id === null || laboratorio_id === '') {
             return new DataNotFoundException(codigos.identificadorInvalido);
         }
 
-        const registro = await  this.obtenerUsuario(usuario_id);
-        
-        if(registro instanceof DataNotFoundException || 
-           registro instanceof InternalServerException) {
-            return registro;
-        }
+        const registro = await  this.obtenerUsuario(usuario_id).then( user =>{
+            if(user instanceof DataNotFoundException || 
+                user instanceof InternalServerException) {
+                 return user;
+             }else{
+                 const vetado = new Map(Object.entries(user.vetado)).get(laboratorio_id);
+                 return vetado;
+             }
 
-        const vetado = new Map(Object.entries(registro.vetado));
+        }).catch(error =>{
+            return new InternalServerException(codigos.datoNoEncontrado, error);
+        })
 
-        return vetado.get(laboratorio_id);
+        return registro;
     }
 
     /*
@@ -348,8 +353,9 @@ export default class UsuariosCM {
                     }
                 }
                 return elements;
+            }else{
+                return new DataNotFoundException(codigos.datoNoEncontrado);
             }
-            return new DataNotFoundException(codigos.datoNoEncontrado);
         }).catch(err=>{
             return new InternalServerException(codigos.datoNoEncontrado, err);
         });
