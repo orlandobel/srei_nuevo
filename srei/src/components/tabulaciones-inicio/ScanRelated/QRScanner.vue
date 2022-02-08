@@ -1,23 +1,12 @@
-<!-- 
-    TODO: Encender o apagar la cámara automaticamente al abrir y cerrar el modal
-        puedes acceder a un método de un componente añadiendo la etiqueta "ref" 
-        y haciendo referencia a este desde el padre como se indica:
-            this.$refs.<nombre de la referencia>.<método a ejecutar>()
- -->
-
 <template>
-    <div class="modal fade mh-75 h-75" id="scanModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="scanModalLabel" aria-hidden="true">
+    <div class="modal fade mh-75 h-75" id="scanModal" data-bs-backdrop="static" data-bs-keyboard="false"  tabindex="-1" aria-labelledby="scanModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="equipoModalLabel">Lista de prestamos</h5>
+                    <button class="btn btn-outline-danger" data-bs-dismiss="modal" @click="reiniciar">X</button>
                 </div>
                 <div class="modal-body">
-                    
-                    <button @click="toggelCamera">
-                        <fa-icon :icon="['fas','microchip']" size="2x"/>
-                    </button>
-                    
                     <div>
                         <qrcode-stream :camera="camera" @decode="onDecode" @init="onInit">
                             
@@ -35,7 +24,7 @@
                         </qrcode-stream>
                     </div>
 
-                    <div v-for="rest in results" :key="results.id" class="card" >
+                    <div v-for="rest in results" :key="rest.id" class="card" >
 
                         <div v-if="isValidStudent(rest)" class="card-horizontal">
                             <div v-html="rest.imagen" class="img-square-wrapper"></div>
@@ -215,18 +204,6 @@
 
             turnCameraOff () {
                 this.camera = 'off'
-            },
-
-            toggelCamera () {
-                switch (this.camera) {
-                    case 'off':
-                        this.turnCameraOn()
-                        break
-                    case 'auto':
-                        this.turnCameraOff()
-                        this.validMsg = "Camara desactivada"
-                        break
-                }
             },
 
             timeout (ms) {
