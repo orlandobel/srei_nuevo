@@ -4,7 +4,7 @@ import { environment } from './environments/environments'; // importa archivo co
 
 // import de controladores
 import CatalogosController from './api/catalogos/catalogos.controller'; // importa controlador de catalogos
-
+import BitacoraController from './api/bitacora/bitacora.controller';
 import MantenimientosController from './api/mantenimientos/mantenimientos.controller'; // importa controlador de mantenimientos
 import UsuariosController from './api/usuarios/usuarios.controller';
 
@@ -31,6 +31,8 @@ const app = new App(
         new MantenimientosController(path),
 
         new UsuariosController(path),
+
+        new BitacoraController(path),
 
         new TestController(path)
     ]

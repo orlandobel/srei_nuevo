@@ -67,13 +67,11 @@ class CatalogosController implements Controller {
         
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
-        }
-
-        if (respuesta instanceof InternalServerException) {
+        }else if (respuesta instanceof InternalServerException) {
             res.send(respuesta);
+        }else{
+            res.send({ status: 200, eqp: respuesta });
         }
-
-        res.send({ status: 200, eqp: respuesta });
     }
 
     /*
@@ -89,13 +87,11 @@ class CatalogosController implements Controller {
     const respuesta = await this.catalogosCM.obtenerEquipoTipo(tipo, lab);
     if (respuesta instanceof DataNotFoundException) {
         res.send(respuesta);
-    }
-
-    if (respuesta instanceof InternalServerException) {
+    }else if (respuesta instanceof InternalServerException) {
         res.send(respuesta);
+    }else{
+        res.send({ status: 200, eqps: respuesta });
     }
-
-    res.send({ status: 200, eqps: respuesta });
 }
 
     /*
@@ -115,12 +111,12 @@ class CatalogosController implements Controller {
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
             return;
-        }
-        if (respuesta instanceof InternalServerException) {
+        }else if (respuesta instanceof InternalServerException) {
             res.send(respuesta);
             return;
+        }else{
+            res.send({ status: 200, editado: true, ...respuesta });
         }
-        res.send({ status: 200, editado: true, ...respuesta });
     }
 
     /*
@@ -140,13 +136,11 @@ class CatalogosController implements Controller {
 
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
-        }
-
-        if (respuesta instanceof InternalServerException) {
+        }else if (respuesta instanceof InternalServerException) {
             res.send(respuesta);
+        }else{
+            res.send({ status: 200, eliminado: true, eqp: respuesta });
         }
-
-        res.send({ status: 200, eliminado: true, eqp: respuesta });
     }
 
     /*
@@ -167,13 +161,11 @@ class CatalogosController implements Controller {
         
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
-        }
-
-        if (respuesta instanceof InternalServerException) {
+        }else if (respuesta instanceof InternalServerException) {
             res.send(respuesta);
+        }else{
+            res.send({ status: 200, creado: true, ...respuesta });
         }
-        
-        res.send({ status: 200, creado: true, ...respuesta });
     }
 
     private generarImagenes = async (req: Request, res: Response) => {
@@ -184,14 +176,11 @@ class CatalogosController implements Controller {
 
         if (respuesta instanceof DataNotFoundException) {
             res.send(respuesta);
-        }
-
-        if (respuesta instanceof InternalServerException) {
+        }else if (respuesta instanceof InternalServerException) {
             res.send(respuesta);
+        }else{
+            res.send({status: 200, estatus: respuesta})
         }
-
-        res.send({status: 200, estatus: respuesta})
-
     }
 
 }

@@ -36,8 +36,9 @@ export default class CatalogosCM {
                 if (data.exists) {
                     const document = data.data() as EQP;
                     return document;
+                }else{
+                    return new DataNotFoundException(codigos.datoNoEncontrado);
                 }
-                return new DataNotFoundException(codigos.datoNoEncontrado);
             })
             .catch(err => {
                 return new InternalServerException(codigos.datoNoEncontrado);
@@ -68,8 +69,10 @@ export default class CatalogosCM {
                         }
                     }
                     return elements;
+                }else{
+                    return new DataNotFoundException(codigos.datoNoEncontrado);
                 }
-                return new DataNotFoundException(codigos.datoNoEncontrado);
+
             }).catch(err=>{
                 return new InternalServerException(codigos.datoNoEncontrado, err);
             });
