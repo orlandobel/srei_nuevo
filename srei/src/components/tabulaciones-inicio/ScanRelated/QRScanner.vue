@@ -104,8 +104,29 @@
                 if (this.validateJSON(result)){
                     let aux = JSON.parse(result)
                     if (this.validateJSONdata(aux)){
-                        this.validMsg = "Lectura de herramienta exitosa"
-                        this.results.push(aux)
+
+                        try {
+                            console.log(aux.id)
+
+                            const response = await this.axios.get('/prestamo/'+aux.id);
+                            const data = response.data;
+                            if (data.status == 404){
+                                this.isValid = false
+                                this.validMsg = "Error en al encontrar Herramienta"
+                            }
+
+                            if (data.disponible){
+                                this.results.push(aux)
+                                this.validMsg = "Lectura QR exitosa"
+                            }else{
+                                this.validMsg = "Herramienta no disponible"
+                            }
+   
+                        } catch (error) {
+                            this.isValid = false
+                            this.validMsg = "QR no pudo conectar con base de datos"  
+                        }
+                    
                     }else{
                         this.isValid = false
                         this.validMsg = "QR obtenido no es una herramienta de laboratorio"
@@ -125,11 +146,10 @@
 
                         return jsonResp
 
-                        }).catch(err => {
-                            console.log(err)
-                            return "error"
-                            }
-                        )
+                    }).catch(err => {
+                        console.log(err)
+                        return "error"
+                    })
 
                     if (alumDatos != "error"){ 
                         this.results.push(alumDatos)                    
@@ -138,7 +158,7 @@
 
                 } else {
                     this.isValid = false
-                    this.validMsg = "Fallo inesperado"
+                    this.validMsg = "Error inesperado de lectura..."
                 }
 
                 // some more delay, so users have time to read the message
