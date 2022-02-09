@@ -1,7 +1,7 @@
 <template>
     <div class="row">
         <sidebar />
-        <equipo-modal />
+        <equipo-modal v-on:guardado="equipo_guardado($event)" />
         <div class="col-lg-10">
             <div class="row justify-content-center h-100 mh-100">
                 <div class="col-lg-12 d-flex flex-column">
@@ -10,6 +10,11 @@
                             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#equipoModal" @click="set_creacion(true)">Añadir equipo</button>
                         </div>
                     </div>
+
+                    <api-message v-if="msg != null"
+                        :error_bind="false" :message_bind="msg" />
+                    <api-message v-if="error_imagen"
+                        :error_bind="true" message_bind="Error al guardar la imagen, intentelo de nuevo más tarde" />
                     <div class="row flex-grow-1">
                         <div class="col-lg-12 pb-3">
                             <div class="card align-self-center h-100 mh-100 w-100 mh-100">
@@ -31,6 +36,7 @@ import Sidebar from '@/components/Sidebar.vue'
 import Datatable from '@/components/inventarios/Datatable.vue'
 import EquipoModal from '@/components/inventarios/EquipoModal.vue'
 import { mapActions } from 'vuex'
+import ApiMessage from '@/components/inventarios/ApiMessage.vue'
 
 export default {
     name: "Inventario",
@@ -38,9 +44,27 @@ export default {
         Sidebar,
         Datatable,
         EquipoModal,
+        ApiMessage,
+    },
+    data() {
+        return {
+            msg: null,
+            error_imagen: false
+        }
     },
     methods: {
-        ...mapActions('equipo_inventario', ['set_creacion'])
+        ...mapActions('equipo_inventario', ['set_creacion']),
+        equipo_guardado(event) {
+            this.msg = event.msg;
+            this.error_imagen = event.error_imagen;
+
+            setTimeout(() => this.msg = null, 3000)
+            setTimeout(() => this.error_imagen = false, 5000)
+        },
+        reset_msg() {
+            console.log('reiniciando mensaje');
+            this.msg = null
+        }
     }
 }
 </script>

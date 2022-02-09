@@ -10,6 +10,8 @@ export async function listar(tipo, lab) {
 export async function guardar(equipo, laboratorio, imagen, crear) {
     let guardado = true
     let errores
+    let error_imagen = false
+
     const url = crear? `equipo/crear` : `equipo/editar`
 
     const eqp_data = {
@@ -31,9 +33,12 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
 
         return { guardado, errores}
     }
+
+    const msg = crear? "Equipo creado con exito": "Cambios guardados"
     
     if(imagen != null && imagen != undefined) {
         const img_data = new FormData()
+
         img_data.append('ruta', eqp_response.data.ruta)
         img_data.append('id', eqp_response.data.eqp.id)
         img_data.append('imagen', imagen)
@@ -41,13 +46,11 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
         const headers = {'Content-Type': 'multipart/form-data'}
         const img_response = await axios.post('equipo/imagenes', img_data, headers)
 
-        if(img_response.status != 200 || img_response.data.status != 200)  {
-            console.error(img_response)
-            return false
-        }
+        if(img_response.status != 200 || img_response.data.status != 200)
+            error_imagen = true
     }
 
-    return true
+    return { guardado, msg, error_imagen }
 }
 
 export async function eliminar(id, laboratorio) {

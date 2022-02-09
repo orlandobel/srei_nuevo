@@ -127,8 +127,12 @@ export default {
                 document.getElementById("close_btn").click()
                 this.reiniciar()
 
-                // TODO: emitir evento de eccito al guardar el equipo,
-                // si hubo errores al guardar la imagen se debe enviar en el mismo evento
+                const event_params = { 
+                    msg: 'Equipo creado con exito',
+                    error_imagen: true
+                }
+
+                this.$emit('guardado', respuesta)
             }
         },
     },

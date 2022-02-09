@@ -95,7 +95,7 @@ export default class CatalogosCM {
 
         const dir = this.generarRuta(laboratorio, equipo.tipo, key);
         
-        equipo.qr_path = existe.img_path;
+        equipo.qr_path = existe.qr_path;
 
         if(existe.img_path != null && existe.img_path != undefined)
             equipo.img_path = existe.img_path;
