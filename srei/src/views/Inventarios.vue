@@ -15,12 +15,15 @@
                         :error_bind="false" :message_bind="msg" />
                     <api-message v-if="error_imagen"
                         :error_bind="true" message_bind="Error al guardar la imagen, intentelo de nuevo más tarde" />
+                    <api-message v-if="eliminado != null"
+                        :error_bind="!eliminado" :message_bind="msg_eliminado" />
+
                     <div class="row flex-grow-1">
                         <div class="col-lg-12 pb-3">
                             <div class="card align-self-center h-100 mh-100 w-100 mh-100">
                                 <h3 class="card-header text-start fw-bold py-3 ps-4">Inventario de eléctronica</h3>
                                 <div class="card-body p-2 overflow-auto">
-                                    <datatable />
+                                    <datatable v-on:removido="elm_msg($event)"/>
                                 </div>
                             </div>
                         </div>
@@ -49,7 +52,9 @@ export default {
     data() {
         return {
             msg: null,
-            error_imagen: false
+            error_imagen: false,
+            eliminado: null,
+            msg_eliminado: ''
         }
     },
     methods: {
@@ -64,6 +69,13 @@ export default {
         reset_msg() {
             console.log('reiniciando mensaje');
             this.msg = null
+        },
+        elm_msg(elm) {
+            this.eliminado = elm
+            this.msg_eliminado = elm? "Equipo eliminado exitosamente" 
+                                    : "Error al eliminar, intentelo de nuevo más tarde"
+
+            setTimeout(() => this.eliminado = null, 5000)
         }
     }
 }

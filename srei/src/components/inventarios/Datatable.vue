@@ -12,7 +12,8 @@
                 </tr>
             </thead>
             <tbody>
-                <elemento v-for="e in equipos" :key="e.id" :equipo_bind="e" />
+                <elemento v-for="(e, index) in equipos" :key="e.id" :equipo_bind="e" :index="index" 
+                    v-on:eliminado="remover($event)" v-on:error_eliminar="error_eliminar()"/>
             </tbody>
             <tfoot>
                 <tr>
@@ -72,6 +73,15 @@ export default {
             this.equipos = []
             this.inventario.destroy()
             this.initData()
+        },
+        remover(index) {
+            console.log(index)
+            this.equipos.splice(index, 1)
+
+            this.$emit('removido', true)
+        },
+        error_eliminar() {
+            this.$emit('removido', false)
         }
     },
     mounted() {

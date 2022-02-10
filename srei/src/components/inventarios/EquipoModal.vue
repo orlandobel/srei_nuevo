@@ -127,11 +127,6 @@ export default {
                 document.getElementById("close_btn").click()
                 this.reiniciar()
 
-                const event_params = { 
-                    msg: 'Equipo creado con exito',
-                    error_imagen: true
-                }
-
                 this.$emit('guardado', respuesta)
             }
         },
