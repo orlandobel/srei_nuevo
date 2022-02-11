@@ -45,7 +45,7 @@ class CatalogosController implements Controller {
     initializeRoutes() {
         this.router.get(this.path + '/:uid', this.obtenerEquipo);
         this.router.get(this.path + '/tipo/:tipo/:lab', this.obtenerEquipoTipo)
-        this.router.post(this.path + '/crear', validationMiddleware(CrearEquipo, true), this.crearEquipo);
+        this.router.post(this.path + '/crear', validationMiddleware(CrearEquipo, false), this.crearEquipo);
         this.router.post(this.path + '/imagenes', upload.single('imagen'), this.generarImagenes);
         this.router.put(this.path + '/editar', validationMiddleware(EditarEquipo, true), this.editarEquipo);
         this.router.delete(this.path + '/eliminar/:id/:laboratorio', this.eliminarEquipo);
@@ -181,6 +181,7 @@ class CatalogosController implements Controller {
         }else{
             res.send({status: 200, estatus: respuesta})
         }
+
     }
 
 }

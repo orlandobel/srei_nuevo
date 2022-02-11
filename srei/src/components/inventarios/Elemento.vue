@@ -44,12 +44,13 @@ const actions = [
 export default {
     name: 'Elemento',
     props: {
-        equipo_bind: { type: Object, required: true }
+        equipo_bind: { type: Object, required: true },
+        index: { type: Number, required: true }
     },
     data() {
         return {
             equipo: this.equipo_bind,
-            campos: Object.keys(this.equipo_bind)
+            campos: Object.keys(this.equipo_bind),
         }
     },
     methods: {
@@ -73,7 +74,13 @@ export default {
             }
         },
         consulta_eliminar() {
-            eliminar(this.equipo.id, this.$store.getters.laboratorio.nombre)
+            /*const result = eliminar(this.equipo.id, this.$store.getters.laboratorio.nombre)
+
+            if(result) {
+                this.$emit('eliminado', this.index)
+            } else {*/
+                this.$emit('error_eliminar')
+            //}
         }
     }
 }

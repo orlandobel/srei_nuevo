@@ -1,6 +1,11 @@
 <template>
-    <div class="modal fade mh-75 h-75" id="equipoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="equipoModal" data-bs-backdrop="static" 
+      data-bs-keyboard="false" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
         <div class="modal-dialog">
+            
+            <api-message v-for="(error, index) in errores" :key="index"
+                :error_bind="true" :message_bind="error" />
+        
             <div class="modal-content">
                 <ul class="pt-2 ps-1 nav nav-tabs" role="tablist">
                     <li class="nav-item">
@@ -21,7 +26,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-danger" data-bs-dismiss="modal" @click="reiniciar">Cancelar</button>
+                    <button class="btn btn-danger" id="close_btn" data-bs-dismiss="modal" @click="reiniciar">Cancelar</button>
                     <button class="btn btn-success" @click="guardar">Guardar</button>
                 </div>
             </div>
@@ -32,6 +37,7 @@
 <script>
 import Datos from '@/components/inventarios/modaltabs/Datos.vue'
 import Checklist from '@/components/inventarios/modaltabs/Checklist.vue'
+import ApiMessage from '@/components/inventarios/ApiMessage.vue'
 import { mapActions, mapGetters } from 'vuex'
 import { guardar } from '@/api_queries/equipo'
 
@@ -59,10 +65,11 @@ export default {
     components: {
         Datos,
         Checklist,
+        ApiMessage,
     },
     data() {
         return {
-            
+            errores: [],
         }
     },
     computed: {
@@ -86,8 +93,10 @@ export default {
             this.toggle_checklist(false)
 
             this.$refs.datos.reiniciar_imagen()
+
+            this.errores = []
         },
-        guardar() {
+        async guardar() {
             const laboratorio = this.$store.getters.laboratorio
 
             const equipo = {
@@ -104,13 +113,23 @@ export default {
                 equipo.id = this.id
 
             if(this.tiene_checklist) {
-                console.log(typeof(this.checklist))
                 equipo.checklist = this.checklist
             }
 
-            guardar(equipo, laboratorio.nombre, this.imagen, this.creacion)
+            const respuesta = await guardar(equipo, laboratorio.nombre, this.imagen, this.creacion)
+            respuesta.crear = this.creacion
+            
+            if(!respuesta.guardado) {
+                document.getElementById('equipoModal').scrollTop = 0
+                this.errores = respuesta.errores
+            } else {
+                document.getElementById("close_btn").click()
+                this.reiniciar()
+
+                this.$emit('guardado', respuesta)
+            }
         },
-    }
+    },
 }
 </script>
 

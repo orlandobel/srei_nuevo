@@ -20,7 +20,7 @@ export default async function isLogged({to, next, store}) {
                 }
                 next() 
             }
-            else logout(store, to.name, next)
+            else logout(store, to.fullPath, next)
         } catch(error) {
             logout(store, to.name, next)
         }

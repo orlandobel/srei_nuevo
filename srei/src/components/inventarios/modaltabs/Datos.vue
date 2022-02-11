@@ -136,13 +136,10 @@ export default {
             this.set_descripcion(this.$refs.descripcion_field.value)
         },
         reiniciar_imagen() {
-            console.log('reiniciando')
             this.$refs.imagen_field.value = null
             this.$refs.imagen_equipo.src = require('../../../assets/inventario/fondo_imagen_equipo.png')
 
-            console.log(this.imagen)
             this.set_imagen(null)
-            console.log('reiniciado')
         },
     },
 }

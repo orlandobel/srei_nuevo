@@ -111,6 +111,7 @@ export default {
 
 #sidebar-wrapper {
     position: sticky;
+    top: 0%;
     z-index: 1;
     min-height: 100vh;
     height: 100vh;
