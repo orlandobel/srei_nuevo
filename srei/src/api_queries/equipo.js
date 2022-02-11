@@ -50,7 +50,7 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
             error_imagen = true
     }
 
-    return { guardado, msg, error_imagen }
+    return { guardado, msg, error_imagen, eqp: eqp_response.data.eqp }
 }
 
 export async function eliminar(id, laboratorio) {

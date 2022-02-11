@@ -23,7 +23,7 @@
                             <div class="card align-self-center h-100 mh-100 w-100 mh-100">
                                 <h3 class="card-header text-start fw-bold py-3 ps-4">Inventario de eléctronica</h3>
                                 <div class="card-body p-2 overflow-auto">
-                                    <datatable v-on:removido="elm_msg($event)"/>
+                                    <datatable v-on:removido="elm_msg($event)" ref="lista" />
                                 </div>
                             </div>
                         </div>
@@ -65,6 +65,12 @@ export default {
 
             setTimeout(() => this.msg = null, 3000)
             setTimeout(() => this.error_imagen = false, 5000)
+
+            if(event.crear) {
+                this.$refs.lista.agregar(event.eqp)
+            } else {
+                this.$refs.lista.actualizar_equipo(event.eqp)
+            }
         },
         reset_msg() {
             console.log('reiniciando mensaje');

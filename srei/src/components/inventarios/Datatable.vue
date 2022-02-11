@@ -82,6 +82,16 @@ export default {
         },
         error_eliminar() {
             this.$emit('removido', false)
+        },
+        agregar(eqp) {
+            this.equipos.push(eqp)
+            
+            this.inventario.destroy()
+            this.initData()
+        },
+        actualizar_equipo(eqp) {
+            const index = this.equipos.findIndex(element => element.id === eqp.id)
+            this.equipos[index] = eqp
         }
     },
     mounted() {

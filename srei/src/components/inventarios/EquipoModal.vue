@@ -113,12 +113,11 @@ export default {
                 equipo.id = this.id
 
             if(this.tiene_checklist) {
-                console.log(typeof(this.checklist))
                 equipo.checklist = this.checklist
             }
 
             const respuesta = await guardar(equipo, laboratorio.nombre, this.imagen, this.creacion)
-            console.info(respuesta)
+            respuesta.crear = this.creacion
             
             if(!respuesta.guardado) {
                 document.getElementById('equipoModal').scrollTop = 0
