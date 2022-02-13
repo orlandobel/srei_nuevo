@@ -87,15 +87,15 @@
         },
         
         methods: {
-            onInit (promise) {
+            onInit(promise) {
                 promise
                     .catch(console.error)
                     .then(this.resetValidationState)
             },
 
-            async onDecode (result) {
+            async onDecode(result) {
 
-                this.turnCameraOff()
+                this.camera = 'off'
                 this.validMsg = "Cargando..."
                 // pretend it's taking time
                 await this.timeout(200)
@@ -117,6 +117,7 @@
 
                             if (data.disponible){
                                 this.results.push(aux)
+                                this.$emit('addPrestamo',aux)
                                 this.validMsg = "Lectura QR exitosa"
                             }else{
                                 this.validMsg = "Herramienta no disponible"
@@ -151,7 +152,8 @@
                         return "error"
                     })
 
-                    if (alumDatos != "error"){ 
+                    if (alumDatos != "error"){
+                        this.$emit('addAlumnos', alumDatos) 
                         this.results.push(alumDatos)                    
                         this.validMsg = "Lectura URL alumno exitosa"
                     }
@@ -163,8 +165,7 @@
 
                 // some more delay, so users have time to read the message
                 await this.timeout(300)
-
-                this.turnCameraOn()
+                this.camera = 'auto'
             },
             validateJSON(str){
                 try {
@@ -204,7 +205,7 @@
                 }
             },
 
-            resetValidationState () {
+            resetValidationState() {
                 this.isValid = undefined
             },
 
@@ -218,15 +219,7 @@
             guardar() {
             },
 
-            turnCameraOn () {
-                this.camera = 'auto'
-            },
-
-            turnCameraOff () {
-                this.camera = 'off'
-            },
-
-            timeout (ms) {
+            timeout(ms) {
                 return new Promise(resolve => {
                     window.setTimeout(resolve, ms)
                 })

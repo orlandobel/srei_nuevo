@@ -1,12 +1,12 @@
 <template>
     <div class="row overflow-hidden">
-        <QRScanner ref="qrComponent"/>
+        <QRScanner ref="qrComponent" @addPrestamo="addEquipo($event)" @addAlumnos="addAlumno($event)"/>
         <div class="col-lg-8">
             <!-- Lado izquierdo de la cabezera de la sección -->
             <div class="row header pd-1">
                 <div class="col-9 d-flex">
                     <b class="h3 align-self-center fw-bolder me-4">Prestamos</b>
-                    <button v-on:click="this.$refs.qrComponent.turnCameraOn()" type="button" class="btn btn-outline-secondary icon-button" data-bs-toggle="modal" data-bs-target="#scanModal">
+                    <button v-on:click="this.$refs.qrComponent.camera = 'auto' " type="button" class="btn btn-outline-secondary icon-button" data-bs-toggle="modal" data-bs-target="#scanModal">
                         <fa-icon :icon="['fas','qrcode']" size="2x"/>
                     </button>
                 </div>
@@ -26,29 +26,7 @@
                 <div class="col-12 py-2 px-2 h-100 mh-100">
                     <ul class="list-group list-group-flush p-2 border border-dark rounded-3 h-100 mh-100 overflow-auto ">
                         <h5 class="text-start fw-bold ps-3 border-bottom border-secondary">Materiales</h5>
-                        <prestamos-list-element nombre="Elemento 1" />
-                        <prestamos-list-element nombre="Elemento 2" />
-                        <prestamos-list-element nombre="Elemento 3" />
-                        <prestamos-list-element nombre="Elemento 4" />
-                        <prestamos-list-element nombre="Elemento 5" />
-                        <prestamos-list-element nombre="Elemento 6" />
-                        <prestamos-list-element nombre="Elemento 6" />
-                        <prestamos-list-element nombre="Elemento 6" />
-                        <prestamos-list-element nombre="Elemento 6" />
-                        <prestamos-list-element nombre="Elemento 7" />
-                        <prestamos-list-element nombre="Elemento 8" />
-                        <prestamos-list-element nombre="Elemento 9" />
-                        <prestamos-list-element nombre="Elemento 10" />
-                        <prestamos-list-element nombre="Elemento 11" />
-                        <prestamos-list-element nombre="Elemento 12" />
-                        <prestamos-list-element nombre="Elemento 13" />
-                        <prestamos-list-element nombre="Elemento 14" />
-                        <prestamos-list-element nombre="Elemento 14" />
-                        <prestamos-list-element nombre="Elemento 14" />
-                        <prestamos-list-element nombre="Elemento 14" />
-                        <prestamos-list-element nombre="Elemento 14" />
-                        <prestamos-list-element nombre="Elemento 14" />
-                        <prestamos-list-element nombre="Elemento 14" />
+                        <prestamos-list-element v-for="eq in equipo" :key="eq.key" :nombre="eq.nombre" :id="eq.id" />
                     </ul>
                 </div>
             </div>
@@ -71,19 +49,7 @@
             <div class="row alumnos-wrapper w-100 mw-100">
                 <ul class="list-group list-group-flush p-2 border border-dark rounded-3 h-100 mh-100 overflow-auto">
                     <h5 class="text-start ps-3 fw-bold border-bottom border-secondary">Alumnos en mesa</h5>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
-                    <prestamos-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281"/>
+                    <prestamos-list-element v-for="al in alumnos" :key="al.key" :nombre="al.nombre" :boleta="al.boleta" />
                 </ul>
             </div>
             <!-- Fin de la lista de alumnos -->
@@ -111,9 +77,23 @@ export default {
     name: 'PrestamosTab',
     components: { 
         PrestamosListElement,
-        QRScanner,
-        
+        QRScanner
     },
+     data () {
+        return {
+            equipos: [],
+            alumnos: [],
+        }
+    },
+
+    methods: {
+        addEquipo(equipo){
+            this.equipos.push(equipo)
+        },
+        addAlumno(alumno){
+            this.alumnos.push(alumno)
+        }
+    }
 }
 </script>
 
