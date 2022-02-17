@@ -87,15 +87,15 @@
         },
         
         methods: {
-            onInit (promise) {
+            onInit(promise) {
                 promise
                     .catch(console.error)
                     .then(this.resetValidationState)
             },
 
-            async onDecode (result) {
+            async onDecode(result) {
 
-                this.turnCameraOff()
+                this.camera = 'off'
                 this.validMsg = "Cargando..."
                 // pretend it's taking time
                 await this.timeout(200)
@@ -104,8 +104,30 @@
                 if (this.validateJSON(result)){
                     let aux = JSON.parse(result)
                     if (this.validateJSONdata(aux)){
-                        this.validMsg = "Lectura de herramienta exitosa"
-                        this.results.push(aux)
+
+                        try {
+                            console.log(aux.id)
+
+                            const response = await this.axios.get('/prestamo/'+aux.id);
+                            const data = response.data;
+                            if (data.status == 404){
+                                this.isValid = false
+                                this.validMsg = "Error en al encontrar Herramienta"
+                            }
+
+                            if (data.disponible){
+                                this.results.push(aux)
+                                this.$emit('addPrestamo',aux)
+                                this.validMsg = "Lectura QR exitosa"
+                            }else{
+                                this.validMsg = "Herramienta no disponible"
+                            }
+   
+                        } catch (error) {
+                            this.isValid = false
+                            this.validMsg = "QR no pudo conectar con base de datos"  
+                        }
+                    
                     }else{
                         this.isValid = false
                         this.validMsg = "QR obtenido no es una herramienta de laboratorio"
@@ -125,26 +147,25 @@
 
                         return jsonResp
 
-                        }).catch(err => {
-                            console.log(err)
-                            return "error"
-                            }
-                        )
+                    }).catch(err => {
+                        console.log(err)
+                        return "error"
+                    })
 
-                    if (alumDatos != "error"){ 
+                    if (alumDatos != "error"){
+                        this.$emit('addAlumnos', alumDatos) 
                         this.results.push(alumDatos)                    
                         this.validMsg = "Lectura URL alumno exitosa"
                     }
 
                 } else {
                     this.isValid = false
-                    this.validMsg = "Fallo inesperado"
+                    this.validMsg = "Error inesperado de lectura..."
                 }
 
                 // some more delay, so users have time to read the message
                 await this.timeout(300)
-
-                this.turnCameraOn()
+                this.camera = 'auto'
             },
             validateJSON(str){
                 try {
@@ -184,7 +205,7 @@
                 }
             },
 
-            resetValidationState () {
+            resetValidationState() {
                 this.isValid = undefined
             },
 
@@ -198,15 +219,7 @@
             guardar() {
             },
 
-            turnCameraOn () {
-                this.camera = 'auto'
-            },
-
-            turnCameraOff () {
-                this.camera = 'off'
-            },
-
-            timeout (ms) {
+            timeout(ms) {
                 return new Promise(resolve => {
                     window.setTimeout(resolve, ms)
                 })
