@@ -12,7 +12,7 @@
                 </tr>
             </thead>
             <tbody>
-                <elemento v-for="(e, index) in equipos" :key="e.id" :equipo_bind="e" :index="index" 
+                <elemento v-for="(e, index) in equipos" :key="e._id" :equipo_bind="e" :index="index" 
                     v-on:eliminado="remover($event)" v-on:error_eliminar="error_eliminar()"/>
             </tbody>
             <tfoot>
@@ -90,7 +90,7 @@ export default {
             this.initData()
         },
         actualizar_equipo(eqp) {
-            const index = this.equipos.findIndex(element => element.id === eqp.id)
+            const index = this.equipos.findIndex(element => element._id === eqp._id)
             this.equipos[index] = eqp
         }
     },

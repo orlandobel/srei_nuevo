@@ -53,22 +53,22 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
     return { guardado, msg, error_imagen, eqp: eqp_response.data.eqp }
 }
 
-export async function eliminar(id, laboratorio) {
-    const url = `equipo/eliminar/${id}/${laboratorio}`
+export async function eliminar(ruta) {
+    const url = `equipo/eliminar/${ruta}`
     
-    const data = {
-        id,
-        laboratorio,
-    }
 
-    const response = await axios.delete(url, data)
-
-    console.log(response);
-
-    if(response.status === 200 || response.data.status ===  200) { 
+    try {
+        const response = await axios.delete(url)
+        console.log(response);
+    
+        if(response.status != 200 || response.data.status !=  200) { 
+            return false;
+        }
+    
+        return true;
+    } catch(error) {
+        console.warn(error);
         return false;
     }
-
-    return true;
 
 }

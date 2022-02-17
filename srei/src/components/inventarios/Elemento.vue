@@ -56,7 +56,7 @@ export default {
     methods: {
         ...mapActions('equipo_inventario', actions),
         set_element() {
-            this.set_id(this.equipo.id)
+            this.set_id(this.equipo._id)
             this.set_nombre(this.equipo.nombre)
             this.set_caracteristicas(this.equipo.caracteristicas)
             this.set_creacion(false)
@@ -74,13 +74,23 @@ export default {
             }
         },
         consulta_eliminar() {
-            /*const result = eliminar(this.equipo.id, this.$store.getters.laboratorio.nombre)
+            console.log(this.equipo)
+            eliminar(this.equipo.path)
+                .then(result => {
+                    console.log(result);
 
-            if(result) {
-                this.$emit('eliminado', this.index)
-            } else {*/
-                this.$emit('error_eliminar')
-            //}
+                    if(result) {
+                        this.$emit('eliminado', this.index)
+                    } else {
+                        console.log('error al eliminar')
+                        this.$emit('error_eliminar')
+                    }
+                })
+                .catch(() => {
+                    console.log('error al eliminar')
+                    this.$emit('error_eliminar')
+                })
+
         }
     }
 }
