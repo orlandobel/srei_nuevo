@@ -169,7 +169,7 @@ class CatalogosController implements Controller {
     }
 
     private generarImagenes = async (req: Request, res: Response) => {
-        /*const { ruta, id } = req.body;
+        const { ruta, id } = req.body;
         const imagen = req.file;
 
         const respuesta = await this.catalogosCM.subirImagen(imagen, ruta, id);

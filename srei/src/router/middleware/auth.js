@@ -11,7 +11,7 @@ export default async function isLogged({to, next, store}) {
     if(localStorage.getItem('usr_token') === null) logout(store, to.fullPath, next);
     else 
         try {
-            const response = await axios.get('usuarios/login/verify');
+            const response = await axios.post('usuarios/login/verify');
             
             if(response.data.login) { // data.login describe si el token a cadicado o no
                 if(store.getters.usuario === null || store.getters.usuario === undefined) {
