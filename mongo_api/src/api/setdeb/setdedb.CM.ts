@@ -123,7 +123,7 @@ class SetdebCM {
             
             arrRegistros.forEach(async arr =>{
                 const labres = await LAB.findById(arr.laboratorio, 'nombre').exec() 
-                
+
                 const labpick = labres as Laboratorio;
 
                 const lab_split = labpick.nombre.split(' ');        
@@ -135,7 +135,7 @@ class SetdebCM {
                     'laboratorio' : lab
                 }
 
-                const tipo = arr.tipo.toLowerCase();
+                const tipo = arr.tipo.toLowerCase().replace(" ", "_");
 
                 this.generarQr(qrImage, lab, tipo, arr._id);
                 

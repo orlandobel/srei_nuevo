@@ -116,7 +116,7 @@ class SetdebCM {
                         'nombre': arr.nombre,
                         'laboratorio': lab
                     };
-                    const tipo = arr.tipo.toLowerCase();
+                    const tipo = arr.tipo.toLowerCase().replace(" ", "_");
                     this.generarQr(qrImage, lab, tipo, arr._id);
                 }));
                 return arrRegistros;
