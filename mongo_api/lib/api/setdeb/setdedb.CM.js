@@ -166,6 +166,48 @@ class SetdebCM {
                 return new InternalServerException_1.default(codigos_1.codigos.indefinido, err);
             }
         });
+        this.agregarPATH = () => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const registro = yield EQP_interface_1.default.find().exec();
+                if (registro === null || registro === undefined)
+                    return new DataNotFoundException_1.default(codigos_1.codigos.identificadorInvalido);
+                const arrRegistros = registro;
+                arrRegistros.forEach((arr) => __awaiter(this, void 0, void 0, function* () {
+                    //defino valores dentro del path
+                    const labres = yield LAB_interface_1.default.findById(arr.laboratorio, 'nombre').exec();
+                    const labpick = labres;
+                    const lab_split = labpick.nombre.split(' ');
+                    const lab = lab_split[0].toLowerCase() + lab_split[1];
+                    const tipo = arr.tipo.toLowerCase().replace(" ", "_");
+                    const _id = arr._id;
+                    arr.path = `${lab}/${tipo}/${arr._id}`;
+                    yield EQP_interface_1.default.findOneAndUpdate({ _id }, { $set: arr }, { new: true });
+                }));
+                return { 'msg': 'todo correcto' };
+            }
+            catch (error) {
+                console.log(`Error al obtener equipo: ${error}`.red);
+                return new InternalServerException_1.default(codigos_1.codigos.indefinido, error);
+            }
+            /*
+                    if(eqp === null || eqp === undefined)
+                        return new DataNotFoundException(codigos.informacionNoEnviada);
+            
+                    const _id = eqp._id;
+            
+                    try {
+                        const edited = await EQP.findOneAndUpdate({_id}, { $set: eqp }, { new: true });
+            
+                        if(edited === null || edited === undefined)
+                            return new DataNotFoundException(codigos.datoNoEncontrado);
+            
+                        return edited
+                    } catch(error) {
+                        console.log(`Error al editar equipo: ${error}`.red);
+                        return new InternalServerException(codigos.indefinido, error);
+                    }
+                 */
+        });
     }
 }
 exports.default = SetdebCM;

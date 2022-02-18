@@ -190,6 +190,60 @@ class SetdebCM {
             return new InternalServerException(codigos.indefinido, err);
         }
     }
+
+    public agregarPATH = async (): Promise<any> => {
+
+        try {
+            const registro = await EQP.find().exec();
+
+            if(registro === null || registro === undefined) 
+                return new DataNotFoundException(codigos.identificadorInvalido);
+
+            const arrRegistros = registro as Equipo[];
+
+            arrRegistros.forEach(async (arr) => {
+                //defino valores dentro del path
+                const labres = await LAB.findById(arr.laboratorio, 'nombre').exec();
+
+                const labpick = labres as Laboratorio;
+
+                const lab_split = labpick.nombre.split(' ');
+                const lab = lab_split[0].toLowerCase() + lab_split[1];
+                const tipo = arr.tipo.toLowerCase().replace(" ", "_");
+
+                const _id = arr._id;
+
+                arr.path = `${lab}/${tipo}/${arr._id}`;
+
+                await EQP.findOneAndUpdate({ _id }, { $set: arr }, { new: true });
+            });
+            
+            return {'msg': 'todo correcto'}
+        } catch(error) {
+            console.log(`Error al obtener equipo: ${error}`.red);
+            return new InternalServerException(codigos.indefinido, error);
+        }
+
+
+/*
+        if(eqp === null || eqp === undefined) 
+            return new DataNotFoundException(codigos.informacionNoEnviada);
+
+        const _id = eqp._id;
+
+        try {
+            const edited = await EQP.findOneAndUpdate({_id}, { $set: eqp }, { new: true });
+
+            if(edited === null || edited === undefined)
+                return new DataNotFoundException(codigos.datoNoEncontrado);
+
+            return edited
+        } catch(error) {
+            console.log(`Error al editar equipo: ${error}`.red);
+            return new InternalServerException(codigos.indefinido, error);
+        }
+     */   
+    }
 }
 
 export default SetdebCM

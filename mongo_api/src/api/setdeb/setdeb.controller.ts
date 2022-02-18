@@ -20,6 +20,7 @@ class SetdebController implements Controller {
         this.router.get(this.path, this.initialgizeDB);
         this.router.get(this.path + '/remover',  this.removerCampos);
         this.router.get(this.path + '/qrG', this.setQR);
+        this.router.put(this.path + '/pathToDB', this.updatePATH);
     }
 
     public initialgizeDB = async (req: Request, res: Response, next: NextFunction) => {
@@ -47,6 +48,16 @@ class SetdebController implements Controller {
             res.status(respuesta.status).send(respuesta);
         } else {
             res.send({ status: 200, ...respuesta });
+        }
+    }
+    public updatePATH =async(req: Request, res: Response, next: NextFunction)=> {
+
+        const respuesta = await this.setdebCM.agregarPATH();
+
+        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, eqp: respuesta });
         }
     }
 }

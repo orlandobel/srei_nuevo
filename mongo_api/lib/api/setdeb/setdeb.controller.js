@@ -41,6 +41,15 @@ class SetdebController {
                 res.send(Object.assign({ status: 200 }, respuesta));
             }
         });
+        this.updatePATH = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const respuesta = yield this.setdebCM.agregarPATH();
+            if (respuesta instanceof DataNotFoundException_1.default || respuesta instanceof InternalServerException_1.default) {
+                res.status(respuesta.status).send(respuesta);
+            }
+            else {
+                res.send({ status: 200, eqp: respuesta });
+            }
+        });
         this.path = basePath + this.path;
         this.initializeRoutes();
     }
@@ -48,6 +57,7 @@ class SetdebController {
         this.router.get(this.path, this.initialgizeDB);
         this.router.get(this.path + '/remover', this.removerCampos);
         this.router.get(this.path + '/qrG', this.setQR);
+        this.router.put(this.path + '/pathToDB', this.updatePATH);
     }
 }
 exports.default = SetdebController;
