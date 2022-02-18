@@ -102,13 +102,23 @@ class SetdebCM {
         this.generateQRs = () => __awaiter(this, void 0, void 0, function* () {
             //cambiar al obtener todos los miembros de la colecion equipos y crear filtro de objeto
             try {
-                const registro = yield EQP_interface_1.default.find({}, '_id nombre laboratorio').exec();
+                const registro = yield EQP_interface_1.default.find({}, '_id nombre laboratorio tipo').exec();
                 if (registro === null || registro === undefined)
                     return new DataNotFoundException_1.default(codigos_1.codigos.identificadorInvalido);
                 const arrRegistros = registro;
-                arrRegistros.forEach(arr => {
-                    this.generarQr(arr, arr.laboratorio, arr._id);
-                });
+                arrRegistros.forEach((arr) => __awaiter(this, void 0, void 0, function* () {
+                    const labres = yield LAB_interface_1.default.findById(arr.laboratorio, 'nombre').exec();
+                    const labpick = labres;
+                    const lab_split = labpick.nombre.split(' ');
+                    const lab = lab_split[0].toLowerCase() + lab_split[1];
+                    const qrImage = {
+                        '_id': arr._id,
+                        'nombre': arr.nombre,
+                        'laboratorio': lab
+                    };
+                    const tipo = arr.tipo.toLowerCase();
+                    this.generarQr(qrImage, lab, tipo, arr._id);
+                }));
                 return arrRegistros;
             }
             catch (error) {
@@ -139,16 +149,16 @@ class SetdebCM {
             */
         });
         /* Generación del código QR para el equpo */
-        this.generarQr = (qr_data, carpeta, pngName) => __awaiter(this, void 0, void 0, function* () {
+        this.generarQr = (qr_data, cpLab, cpTipo, cpID) => __awaiter(this, void 0, void 0, function* () {
             const data = JSON.stringify(qr_data);
             try {
                 // Directorio destinado a guardar los archivos relacionados con el equipo
-                const ruta = `./storage/QRs/${carpeta}`;
+                const ruta = `./storage/${cpLab}/${cpTipo}/${cpID}`;
                 // Si el directorio anterior no existe lo crea de manera recursiva
                 if (!fs.existsSync(ruta))
                     fs.mkdirSync(ruta, { recursive: true });
                 // Crea el código QR y lo almacena en una imagen en el directorio desiggando
-                yield QRCode.toFile(`${ruta}/${pngName}.png`, data, { color: { dark: "#000", light: "#FFF" } });
+                yield QRCode.toFile(`${ruta}/qr.png`, data, { color: { dark: "#000", light: "#FFF" } });
                 console.log(ruta);
             }
             catch (err) {

@@ -114,17 +114,32 @@ class SetdebCM {
     public generateQRs = async () => {
         //cambiar al obtener todos los miembros de la colecion equipos y crear filtro de objeto
         try {
-            const registro = await EQP.find({},'_id nombre laboratorio').exec();
+            const registro = await EQP.find({},'_id nombre laboratorio tipo').exec();
 
             if(registro === null || registro === undefined) 
                 return new DataNotFoundException(codigos.identificadorInvalido);
 
             const arrRegistros = registro as Equipo[];
             
-            arrRegistros.forEach(arr =>{
-                this.generarQr(arr, arr.laboratorio , arr._id);
+            arrRegistros.forEach(async arr =>{
+                const labres = await LAB.findById(arr.laboratorio, 'nombre').exec() 
                 
-    
+                const labpick = labres as Laboratorio;
+
+                const lab_split = labpick.nombre.split(' ');        
+                const lab = lab_split[0].toLowerCase()+lab_split[1];
+                
+                const qrImage = {
+                    '_id' : arr._id,
+                    'nombre' : arr.nombre,
+                    'laboratorio' : lab
+                }
+
+                const tipo = arr.tipo.toLowerCase();
+
+                this.generarQr(qrImage, lab, tipo, arr._id);
+                
+                
             });
             
             return arrRegistros
@@ -156,19 +171,19 @@ class SetdebCM {
 */
     }
     /* Generación del código QR para el equpo */
-    private generarQr = async (qr_data: Object, carpeta: string, pngName: string): Promise<any> => {
+    private generarQr = async (qr_data: Object, cpLab: string, cpTipo: string, cpID: string): Promise<any> => {
         const data = JSON.stringify(qr_data);
 
         try { 
             // Directorio destinado a guardar los archivos relacionados con el equipo
-            const ruta = `./storage/QRs/${carpeta}`
+            const ruta = `./storage/${cpLab}/${cpTipo}/${cpID}`
             
             // Si el directorio anterior no existe lo crea de manera recursiva
             if(!fs.existsSync(ruta)) 
                 fs.mkdirSync(ruta, { recursive: true });
             
             // Crea el código QR y lo almacena en una imagen en el directorio desiggando
-            await QRCode.toFile(`${ruta}/${pngName}.png`, data, { color: {dark: "#000",light: "#FFF"} });
+            await QRCode.toFile(`${ruta}/qr.png`, data, { color: {dark: "#000",light: "#FFF"} });
             console.log(ruta)
         } catch(err){
             console.error(err);
