@@ -14,6 +14,11 @@ const bcrypt = require("bcrypt");
 const EQP_interface_1 = require("../../interfaces/collections/EQP.interface");
 const USR_interface_1 = require("../../interfaces/collections/USR.interface");
 const LAB_interface_1 = require("../../interfaces/collections/LAB.interface");
+const fs = require("fs");
+const InternalServerException_1 = require("../../exceptions/InternalServerException");
+const codigos_1 = require("../../exceptions/codigos");
+const DataNotFoundException_1 = require("../../exceptions/DataNotFoundException");
+const QRCode = require('qrcode');
 const Encrypt = {
     cryptPassword: (password) => bcrypt.genSalt(10)
         .then((salt => bcrypt.hash(password, salt)))
@@ -93,6 +98,63 @@ class SetdebCM {
         });
         this.removerCampos = () => __awaiter(this, void 0, void 0, function* () {
             yield EQP_interface_1.default.updateMany({}, { $unset: { id: '', propietario: '', qr_path: '', img_path: '' } });
+        });
+        this.generateQRs = () => __awaiter(this, void 0, void 0, function* () {
+            //cambiar al obtener todos los miembros de la colecion equipos y crear filtro de objeto
+            try {
+                const registro = yield EQP_interface_1.default.find({}, '_id nombre laboratorio').exec();
+                if (registro === null || registro === undefined)
+                    return new DataNotFoundException_1.default(codigos_1.codigos.identificadorInvalido);
+                const arrRegistros = registro;
+                arrRegistros.forEach(arr => {
+                    this.generarQr(arr, arr.laboratorio, arr._id);
+                });
+                return arrRegistros;
+            }
+            catch (error) {
+                console.log(`Error al obtener equipo: ${error}`.red);
+                return new InternalServerException_1.default(codigos_1.codigos.indefinido, error);
+            }
+            /*
+                    const arrObj = [
+                        {
+                            'id': '1234',
+                            'nombre': 'wop1',
+                            'laboratorio' : 'el'
+            
+                        },
+                        {
+                            'id': '1234',
+                            'nombre': 'wop2',
+                            'laboratorio' : 'el'
+            
+                        },
+                        {
+                            'id': '1234',
+                            'nombre': 'wop3',
+                            'laboratorio' : 'el'
+            
+                        },
+                    ];
+            */
+        });
+        /* Generación del código QR para el equpo */
+        this.generarQr = (qr_data, carpeta, pngName) => __awaiter(this, void 0, void 0, function* () {
+            const data = JSON.stringify(qr_data);
+            try {
+                // Directorio destinado a guardar los archivos relacionados con el equipo
+                const ruta = `./storage/QRs/${carpeta}`;
+                // Si el directorio anterior no existe lo crea de manera recursiva
+                if (!fs.existsSync(ruta))
+                    fs.mkdirSync(ruta, { recursive: true });
+                // Crea el código QR y lo almacena en una imagen en el directorio desiggando
+                yield QRCode.toFile(`${ruta}/${pngName}.png`, data, { color: { dark: "#000", light: "#FFF" } });
+                console.log(ruta);
+            }
+            catch (err) {
+                console.error(err);
+                return new InternalServerException_1.default(codigos_1.codigos.indefinido, err);
+            }
         });
     }
 }
