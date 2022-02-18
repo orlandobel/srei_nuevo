@@ -44,6 +44,17 @@ class CatalogosController {
                 res.send({ status: 200, eqps: respuesta });
             }
         });
+        this.obtenerImagen = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const { laboratorio, tipo, id, imagen } = req.params;
+            const ruta = `${laboratorio}/${tipo}/${id}/${imagen}`;
+            const respuesta = yield this.catalogosCM.obtenerImagen(ruta);
+            if (respuesta instanceof DataNotFoundException_1.default || respuesta instanceof InternalServerException_1.default) {
+                res.status(respuesta.status).send(respuesta);
+            }
+            else {
+                res.sendFile(respuesta);
+            }
+        });
         this.crearEquipo = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { eqp, laboratorio } = req.body;
             const respuesta = yield this.catalogosCM.crearEquipo(eqp, laboratorio);
@@ -92,6 +103,7 @@ class CatalogosController {
     initializeRoutes() {
         this.router.get(this.path + '/:uid', this.obtenerEquipo);
         this.router.get(this.path + '/tipo/:tipo/:lab', this.obtenerEquipoTipo);
+        this.router.get(this.path + '/:laboratorio/:tipo/:id/:imagen', this.obtenerImagen);
         this.router.post(this.path + '/crear', (0, validation_middleware_1.default)(catalogos_dto_1.CrearEquipo, true), this.crearEquipo);
         this.router.post(this.path + '/imagenes', upload.single('imagen'), this.generarImagen);
         this.router.put(this.path + '/editar', (0, validation_middleware_1.default)(catalogos_dto_1.EditarEquipo, true), this.editarEquipo);

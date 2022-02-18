@@ -29,6 +29,7 @@ class CatalogosController implements Controller {
     initializeRoutes() {
         this.router.get(this.path + '/:uid', this.obtenerEquipo);
         this.router.get(this.path + '/tipo/:tipo/:lab', this.obtenerEquipoTipo);
+        this.router.get(this.path + '/:laboratorio/:tipo/:id/:imagen', this.obtenerImagen);
         this.router.post(this.path + '/crear', validationMiddleware(CrearEquipo, true), this.crearEquipo);
         this.router.post(this.path + '/imagenes', upload.single('imagen'), this.generarImagen);
         this.router.put(this.path + '/editar', validationMiddleware(EditarEquipo, true), this.editarEquipo);
@@ -55,6 +56,19 @@ class CatalogosController implements Controller {
             res.status(respuesta.status).send(respuesta);
         } else {
             res.send({ status: 200, eqps: respuesta });
+        }
+    }
+
+    private obtenerImagen = async (req: Request, res: Response, next: NextFunction) => {
+        const { laboratorio, tipo, id, imagen } = req.params; 
+        const ruta = `${laboratorio}/${tipo}/${id}/${imagen}`;
+        
+        const respuesta = await this.catalogosCM.obtenerImagen(ruta);
+
+        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.sendFile(respuesta);
         }
     }
 

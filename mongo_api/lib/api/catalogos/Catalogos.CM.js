@@ -65,6 +65,19 @@ class CatalogoCM {
                 return new InternalServerException_1.default(codigos_1.codigos.indefinido, error);
             }
         });
+        this.obtenerImagen = (ruta) => __awaiter(this, void 0, void 0, function* () {
+            if (ruta === null || ruta === undefined || ruta === '')
+                return new DataNotFoundException_1.default(codigos_1.codigos.indefinido);
+            try {
+                const img = fs.realpathSync(`./storage/${ruta}`);
+                console.log(img);
+                return img;
+            }
+            catch (error) {
+                console.log(`Error al buscar la imagen: ${error}`.red);
+                return new DataNotFoundException_1.default(codigos_1.codigos.datoNoEncontrado);
+            }
+        });
         /*
          * Crea un nuevo equipo en la base de datos junto con la creación y almacenamiento del respectivo código QR
          * @param equipo: objeto con las caracteristicas minimas necesarias para crear un equipo segun la interfaz

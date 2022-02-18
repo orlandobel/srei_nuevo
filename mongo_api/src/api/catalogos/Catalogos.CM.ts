@@ -67,6 +67,20 @@ class CatalogoCM {
         }
     }
 
+    public obtenerImagen = async(ruta: string): Promise<any> => {
+        if(ruta === null || ruta === undefined || ruta === '')
+            return new DataNotFoundException(codigos.indefinido)
+
+        try {
+            const img = fs.realpathSync(`./storage/${ruta}`);
+            console.log(img);
+            return img
+        } catch(error) {
+            console.log(`Error al buscar la imagen: ${error}`.red);
+            return new DataNotFoundException(codigos.datoNoEncontrado)
+        }
+    }
+
     /*
      * Crea un nuevo equipo en la base de datos junto con la creación y almacenamiento del respectivo código QR
      * @param equipo: objeto con las caracteristicas minimas necesarias para crear un equipo segun la interfaz

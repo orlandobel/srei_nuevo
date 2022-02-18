@@ -40,6 +40,7 @@ class UsuariosCM {
             }
             try {
                 const consulta = yield USR_interface_1.default.find({ usuario });
+                console.log(consulta);
                 const filtro = consulta.find((e) => __awaiter(this, void 0, void 0, function* () { return Encrypt.comparePassword(clave, e.clave); }));
                 if (filtro === null || filtro === undefined) {
                     console.log('Usuario no encontrado'.red);
