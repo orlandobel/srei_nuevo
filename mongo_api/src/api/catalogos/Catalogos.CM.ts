@@ -72,9 +72,10 @@ class CatalogoCM {
             return new DataNotFoundException(codigos.indefinido)
 
         try {
-            const img = fs.realpathSync(`./storage/${ruta}`);
-            console.log(img);
-            return img
+            const fsPromise = fs.promises;
+            const file = await fsPromise.readFile(`./storage/${ruta}`, { encoding: 'base64' });
+            
+            return file;
         } catch(error) {
             console.log(`Error al buscar la imagen: ${error}`.red);
             return new DataNotFoundException(codigos.datoNoEncontrado)

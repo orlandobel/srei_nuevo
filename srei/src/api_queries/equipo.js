@@ -7,6 +7,22 @@ export async function listar(tipo, lab) {
     return response.data.eqps
 }
 
+export async function imagen(ruta) {
+    try {
+        const url = `equipo/${ruta}/imagen.png`;
+        const response = await axios.get(url);
+
+        if(response.status >= 400)
+            return null;
+
+        console.log(response);
+        return response.data
+    } catch(error) {
+        console.error(error);
+        return null;
+    }
+}
+
 export async function guardar(equipo, laboratorio, imagen, crear) {
     let guardado = true
     let errores

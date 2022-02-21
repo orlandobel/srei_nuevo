@@ -52,7 +52,7 @@ class CatalogosController {
                 res.status(respuesta.status).send(respuesta);
             }
             else {
-                res.sendFile(respuesta);
+                res.send(respuesta);
             }
         });
         this.crearEquipo = (req, res, next) => __awaiter(this, void 0, void 0, function* () {

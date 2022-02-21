@@ -68,7 +68,7 @@ class CatalogosController implements Controller {
         if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
             res.status(respuesta.status).send(respuesta);
         } else {
-            res.sendFile(respuesta);
+            res.send(respuesta);
         }
     }
 

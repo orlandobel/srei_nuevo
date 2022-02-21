@@ -29,7 +29,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { eliminar } from '@/api_queries/equipo'
+import { imagen, eliminar } from '@/api_queries/equipo'
 
 const actions = [
     'set_id',
@@ -69,7 +69,6 @@ export default {
 
             if(this.campos.includes('img_path')) {
                 console.info('Cambiando path')
-                console.log(this.equipo.img_path);
                 this.set_imagen_src(this.equipo.img_path)
             }
         },
@@ -90,8 +89,21 @@ export default {
                     console.log('error al eliminar')
                     this.$emit('error_eliminar')
                 })
+        },
+        async buscarImagen() {
+            if(this.equipo.path != null && this.equipo.path != undefined) {
+                const res = await imagen(this.equipo.path);
+                if(res === null || res === undefined || res === '')
+                    return;
 
+                this.equipo.img_path = `data:image/png;base64,${res}`;
+                console.log(this.equipo.img_path);
+                this.campos = Object.keys(this.equipo);
+            }
         }
+    },
+    mounted() {
+        this.buscarImagen();
     }
 }
 </script>

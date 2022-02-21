@@ -44,8 +44,13 @@
                     </div>
 
                     <img :src="this.imagen_src ?? sin_imagen" 
+                        id="imagen_equipo"
                         width="200" height="200" ref="imagen_equipo"
-                        class="img-thumbnail">
+                        class="img-thumbnail" hidden>
+
+                    <canvas id="img_canvas" 
+                        width="200" height="200"
+                        class="img-thumbnail"></canvas>
                 </div>
             </div>
 
@@ -119,6 +124,7 @@ export default {
                 const dataURL = reader.result
 
                 this.$refs.imagen_equipo.src = dataURL
+                this.set_canvas(dataURL)
             }
 
             reader.readAsDataURL(imagen)
@@ -140,7 +146,38 @@ export default {
             this.$refs.imagen_equipo.src = require('../../../assets/inventario/fondo_imagen_equipo.png')
 
             this.set_imagen(null)
+            this.set_imagen_src(null)
+            this.set_canvas(null)
         },
+        set_canvas(img) {
+            const canvas = document.getElementById('img_canvas')
+            const ctx = canvas.getContext('2d')
+
+            const base_img = new Image();
+            base_img.onload = function() {
+                console.log('rendering image')
+                ctx.clearRect(0, 0, 200, 200)
+                ctx.drawImage(base_img, 0, 0, 200, 200)
+            }
+
+            if(img === null ){
+                base_img.src = this.sin_imagen;
+            } else if(img.includes('data:image')) {
+                base_img.src = img
+            } else {
+                console.log('working in')
+                const blob = new Blob([img])
+                const url = URL.createObjectURL(blob)
+                base_img.src = url
+            }
+        }
     },
+    mounted() {
+        this.set_canvas(null)
+    },
+    updated() {
+        console.log(this.imagen_src)
+        this.set_canvas(this.imagen_src)
+    }
 }
 </script>
