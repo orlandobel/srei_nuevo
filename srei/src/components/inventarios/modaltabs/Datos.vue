@@ -43,14 +43,15 @@
                             class="form-control" accept="image/*" @input="update_imagen()">
                     </div>
 
-                    <img :src="this.imagen_src ?? sin_imagen" 
+                    <img v-bind:src="this.imagen_src ?? sin_imagen" 
                         id="imagen_equipo"
                         width="200" height="200" ref="imagen_equipo"
-                        class="img-thumbnail" hidden>
+                        class="img-thumbnail"
+                        alt="Error de lectura" >
 
                     <canvas id="img_canvas" 
                         width="200" height="200"
-                        class="img-thumbnail"></canvas>
+                        class="img-thumbnail" hidden></canvas>
                 </div>
             </div>
 
@@ -163,7 +164,7 @@ export default {
             if(img === null ){
                 base_img.src = this.sin_imagen;
             } else if(img.includes('data:image')) {
-                base_img.src = img
+                base_img.src = img;
             } else {
                 console.log('working in')
                 const blob = new Blob([img])

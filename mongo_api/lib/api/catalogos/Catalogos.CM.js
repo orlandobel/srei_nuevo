@@ -69,9 +69,9 @@ class CatalogoCM {
             if (ruta === null || ruta === undefined || ruta === '')
                 return new DataNotFoundException_1.default(codigos_1.codigos.indefinido);
             try {
-                const img = fs.realpathSync(`./storage/${ruta}`);
-                console.log(img);
-                return img;
+                const fsPromise = fs.promises;
+                const file = yield fsPromise.readFile(`./storage/${ruta}`, { encoding: 'base64' });
+                return file;
             }
             catch (error) {
                 console.log(`Error al buscar la imagen: ${error}`.red);

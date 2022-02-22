@@ -9,7 +9,7 @@ export async function listar(tipo, lab) {
 
 export async function imagen(ruta) {
     try {
-        const url = `equipo/${ruta}/imagen.png`;
+        const url = `equipo/${ruta}/qr.png`;
         const response = await axios.get(url);
 
         if(response.status >= 400)
