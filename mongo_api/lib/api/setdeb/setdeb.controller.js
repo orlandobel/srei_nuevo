@@ -11,6 +11,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const setdedb_CM_1 = require("./setdedb.CM");
+const InternalServerException_1 = require("../../exceptions/InternalServerException");
+const DataNotFoundException_1 = require("../../exceptions/DataNotFoundException");
 class SetdebController {
     constructor(basePath) {
         this.router = (0, express_1.Router)();
@@ -30,12 +32,32 @@ class SetdebController {
             yield this.setdebCM.removerCampos();
             res.send();
         });
+        this.setQR = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const respuesta = yield this.setdebCM.generateQRs();
+            if (respuesta instanceof DataNotFoundException_1.default || respuesta instanceof InternalServerException_1.default) {
+                res.status(respuesta.status).send(respuesta);
+            }
+            else {
+                res.send(Object.assign({ status: 200 }, respuesta));
+            }
+        });
+        this.updatePATH = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const respuesta = yield this.setdebCM.agregarPATH();
+            if (respuesta instanceof DataNotFoundException_1.default || respuesta instanceof InternalServerException_1.default) {
+                res.status(respuesta.status).send(respuesta);
+            }
+            else {
+                res.send({ status: 200, eqp: respuesta });
+            }
+        });
         this.path = basePath + this.path;
         this.initializeRoutes();
     }
     initializeRoutes() {
         this.router.get(this.path, this.initialgizeDB);
         this.router.get(this.path + '/remover', this.removerCampos);
+        this.router.get(this.path + '/qrG', this.setQR);
+        this.router.put(this.path + '/pathToDB', this.updatePATH);
     }
 }
 exports.default = SetdebController;

@@ -2,6 +2,8 @@ import { Request , Response, Router, NextFunction } from 'express';
 import Controller from '../../interfaces/controller.interface';
 
 import SetdebCM from './setdedb.CM';
+import InternalServerException from '../../exceptions/InternalServerException';
+import DataNotFoundException from '../../exceptions/DataNotFoundException';
 
 class SetdebController implements Controller {
     public router = Router();
@@ -17,6 +19,8 @@ class SetdebController implements Controller {
     private initializeRoutes() {
         this.router.get(this.path, this.initialgizeDB);
         this.router.get(this.path + '/remover',  this.removerCampos);
+        this.router.get(this.path + '/qrG', this.setQR);
+        this.router.put(this.path + '/pathToDB', this.updatePATH);
     }
 
     public initialgizeDB = async (req: Request, res: Response, next: NextFunction) => {
@@ -36,6 +40,25 @@ class SetdebController implements Controller {
     public removerCampos =async (req: Request, res: Response, next: NextFunction) => {
         await this.setdebCM.removerCampos();
         res.send();
+    }
+
+    public setQR =async(req: Request, res: Response, next: NextFunction)=> {
+        const respuesta = await this.setdebCM.generateQRs();
+        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, ...respuesta });
+        }
+    }
+    public updatePATH =async(req: Request, res: Response, next: NextFunction)=> {
+
+        const respuesta = await this.setdebCM.agregarPATH();
+
+        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, eqp: respuesta });
+        }
     }
 }
 
