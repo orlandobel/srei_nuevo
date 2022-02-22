@@ -104,13 +104,13 @@ export default {
                 caracteristicas: this.caracteristicas,
                 disponible: true,
                 estado: 0,
-                laboratorio: laboratorio.id,
+                laboratorio: laboratorio._id,
                 tipo: this.$route.params.tipo,
                 propietario: 'A4RaNBQ0L6OrDtGZuIc7',
             }
 
             if(!this.creacion)
-                equipo.id = this.id
+                equipo._id = this.id
 
             if(this.tiene_checklist) {
                 equipo.checklist = this.checklist
