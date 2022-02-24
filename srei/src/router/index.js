@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '@/views/Login.vue'
 import Inventario from '@/views/Inventarios.vue'
+import Catalogos from '@/views/Catalogos.vue'
 
 import isLogged from './middleware/auth';
 import store from '../store';
@@ -25,6 +26,17 @@ const routes = [
     path: '/inventario/:tipo',
     name: 'inventario',
     component: Inventario,
+    beforeRouteUpdate (to, from, next) {
+      console.log("Updating route")
+    },
+    meta: {
+      needLoggin: true,
+    },
+  },
+  {
+    path: '/catalogos',
+    name: 'catalogos',
+    component: Catalogos,
     beforeRouteUpdate (to, from, next) {
       console.log("Updating route")
     },

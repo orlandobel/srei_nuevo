@@ -70,6 +70,12 @@
                             </ul>
                         </div>
                     </li>
+                    <li class="mb-2 row list-element">
+                        <div class="col-12 text-start">
+                            <fa-icon :icon="['fas', 'book']" color="white" />
+                            <router-link :to="{name: 'catalogos'}" class="btn d-inline-flex text-white">Catalogo</router-link>
+                        </div>
+                    </li>
                 </ul>
             </div>
        </div>
@@ -88,7 +94,13 @@ export default {
         },
         usuario: function() {
             return this.$store.getters.usuario
-        }
+        },
+        catalogos: function() {
+            const route = this.$route.path
+
+            if (route.includes('catalogos')) return true
+            return false
+        },
     },
     methods: {
         logout() {
