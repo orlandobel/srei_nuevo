@@ -38,7 +38,7 @@ class UsuariosCM {
 
         try {
             const consulta = await USR.find({ usuario }) as Trabajador[];
-            console.log(consulta);
+            
             const filtro = consulta.find(async e => Encrypt.comparePassword(clave, e.clave));
             
             if(filtro === null || filtro === undefined) {

@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose';
 
 export interface Usuario {
-    id?: any;
+    _id?: any;
     tipo: number;
     usuario?: string;
     clave?: string;
@@ -10,14 +10,18 @@ export interface Usuario {
     laboratorio?: string;
 }
 
-export interface Trabajador extends Omit<Usuario, 'vetado'> {
-    id: any;
+export interface Trabajador extends Omit<Usuario, 'vetado' | 'boleta'> {
+    _id: any;
     usuario: string;
     clave: string;
     laboratorio: string;
 }
 
-const schema = new Schema<Usuario>({
+export interface Alumno extends Omit<Usuario, '_id' | 'clave' | 'laboratorio' > {
+    programa: string
+}
+
+const USRSchema = new Schema<Usuario>({
     tipo: { type: Number, required: true },
     usuario: { type: String, required: false },
     clave: { type: String, required: false },
@@ -33,6 +37,6 @@ const schema = new Schema<Usuario>({
     collection: 'USR'
 });
 
-const USR = model<Usuario>('USR', schema);
+const USR = model<Usuario>('USR', USRSchema);
 
 export default USR;

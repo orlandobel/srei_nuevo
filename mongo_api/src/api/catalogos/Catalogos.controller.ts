@@ -9,7 +9,8 @@ import CatalogoCM from './Catalogos.CM';
 import InternalServerException from '../../exceptions/InternalServerException';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
 
-const multer = require('multer');
+import * as multer from 'multer'
+//const multer = require('multer');
 
 const upload = multer({
     storage: multer.memoryStorage(),
