@@ -9,6 +9,7 @@ import fs = require('fs');
 import InternalServerException from '../../exceptions/InternalServerException';
 import { codigos } from '../../exceptions/codigos';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
+import MS from '../../interfaces/collections/MS.interface';
 
 const QRCode = require('qrcode');
 const Encrypt = {
@@ -30,8 +31,6 @@ class SetdebCM {
     private F2 = 'xhn0GmzvxKyVPKY0vBl7';
     private oldP1 = 'f6i9NOItTuV01gdqUgbe';
     private GP = '3nKoA7mPQXm5nIAB9CmT';
-
-
 
     public initLabs = async (): Promise<any> => {
         const electronicaI = await LAB.create({
@@ -98,7 +97,7 @@ class SetdebCM {
         return { adminLigerosI, adminLigerosII, adminPesadosI, adminPesadosII }
     }
 
-    public actualizarEquipos = async (el1: string, el2: string, p1: string, p2: string): Promise<any> => {
+    public actualizarEquipos = async (el1: string, el2: string, p1: string, p2: string): Promise<void> => {
         await EQP.updateMany({ laboratorio: this.oldEl1 }, { $set: { laboratorio: el1 } });
         await EQP.updateMany({ laboratorio: this.oldEl2 }, { $set: { laboratorio: el2 } });
         await EQP.updateMany({ laboratorio: this.oldP1 }, { $set: { laboratorio: p1 } });
@@ -115,7 +114,7 @@ class SetdebCM {
         //cambiar al obtener todos los miembros de la colecion equipos y crear filtro de objeto
         try {
             //llamada de todos los documentos con filtro de campos
-            const registro = await EQP.find({},'_id nombre laboratorio tipo').exec(); 
+            const registro = await EQP.find({}).exec(); 
             //validadcion de vacios
             if(registro === null || registro === undefined) 
                 return new DataNotFoundException(codigos.identificadorInvalido);
@@ -134,6 +133,9 @@ class SetdebCM {
                 const qrImage = {
                     '_id' : arr._id,
                     'nombre' : arr.nombre,
+                    'fabricante': arr.caracteristicas.fabricante,
+                    'modelo': arr.caracteristicas.modelo,
+                    'serie': arr.caracteristicas.serie,
                     'laboratorio' : lab
                 }
                 //correcion del formato tipo para usarlo en forma de path
@@ -205,6 +207,36 @@ class SetdebCM {
         } catch(error) {
             console.log(`Error al obtener equipo: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);
+        }
+    }
+
+    public initMesas = async (): Promise<any> => {
+        try {
+            const labs = await LAB.find({
+                $or: [
+                    { "nombre": "Electronica I" },
+                    { "nombre": "Electronica II"}
+                ]
+                }).exec() as Laboratorio[];
+
+            if(labs === null || labs === undefined || labs.length === 0)
+                return new DataNotFoundException(codigos.datoNoEncontrado, "Laboratorios no encontrados");
+
+            const mesa = {
+                nombre: '',
+                laboratorio: ''
+            };
+
+            for(const lab of labs) {
+                mesa.laboratorio = lab._id;
+
+                for(let i=1; i<17; i++){
+                    mesa.nombre = `Mesa ${i}`;
+                    await MS.create(mesa);
+                }
+            }
+        } catch(error) {
+            return new InternalServerException(error);
         }
     }
 }

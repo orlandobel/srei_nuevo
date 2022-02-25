@@ -8,6 +8,7 @@ import CatalogosController from './api/catalogos/Catalogos.controller';
 import UsuariosController from './api/usuarios/usuarios.controller';
 import SetdebController from './api/setdeb/setdeb.controller';
 import BitacoraController from './api/bitacora/bitacora.controller';
+import MesasController from './api/mesas/Mesas.controller';
 
 console.log('Mode: dev')
 
@@ -28,6 +29,7 @@ const app = new App(
         new CatalogosController(path),
         new UsuariosController(path),
         new BitacoraController(path),
+        new MesasController(path),
     ]
 );
 
