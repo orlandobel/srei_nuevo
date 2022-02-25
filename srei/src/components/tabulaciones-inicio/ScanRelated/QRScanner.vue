@@ -65,10 +65,10 @@
 
         data () {
             return {
-            isValid: undefined,
-            validMsg: "Camara desactivada",
-            camera: 'off',
-            results: [],
+                isValid: undefined,
+                validMsg: "Camara desactivada",
+                camera: 'off',
+                results: [],
             }
         },
         computed: {
@@ -94,32 +94,31 @@
             },
 
             async onDecode(result) {
-
                 this.camera = 'off'
                 this.validMsg = "Cargando..."
                 // pretend it's taking time
                 await this.timeout(200)
 
                 this.isValid = true
-                if (this.validateJSON(result)){
+                if (this.validateJSON(result)) {
                     let aux = JSON.parse(result)
-                    if (this.validateJSONdata(aux)){
+                    
+                    if (this.validateJSONdata(aux)) {
 
                         try {
-                            console.log(aux.id)
-
-                            const response = await this.axios.get('/prestamo/'+aux.id);
+                            const response = await this.axios.get('/prestamo/'+aux._id);
                             const data = response.data;
-                            if (data.status == 404){
+
+                            if (data.status == 404) {
                                 this.isValid = false
                                 this.validMsg = "Error en al encontrar Herramienta"
                             }
 
-                            if (data.disponible){
-                                this.results.push(aux)
-                                this.$emit('addPrestamo',aux)
+                            if (data.disponible) {
+                                //this.results.push(aux)
+                                this.$emit('addPrestamo', aux)
                                 this.validMsg = "Lectura QR exitosa"
-                            }else{
+                            } else {
                                 this.validMsg = "Herramienta no disponible"
                             }
    
@@ -128,11 +127,11 @@
                             this.validMsg = "QR no pudo conectar con base de datos"  
                         }
                     
-                    }else{
+                    } else {
                         this.isValid = false
                         this.validMsg = "QR obtenido no es una herramienta de laboratorio"
                     }
-                }else if (this.isValidHttpUrl(result)){
+                } else if (this.isValidHttpUrl(result)){
                         
                     let alumDatos = await this.axiosConsult(result).then( data =>{
                         let getNombre = data.split("<div class='nombre'>")[1].split("</div>")[0]
@@ -167,7 +166,7 @@
                 await this.timeout(300)
                 this.camera = 'auto'
             },
-            validateJSON(str){
+            validateJSON(str) {
                 try {
                     JSON.parse(str);
                 } catch (e) {
@@ -176,12 +175,12 @@
                 return true;
             },
 
-            validateJSONdata(aux){
-                try{
-                    if ("id" in aux && "nombre" in aux && "laboratorio" in aux){
+            validateJSONdata(aux) {
+                try {
+                    if ("_id" in aux && "nombre" in aux && "laboratorio" in aux){
                         return true;
                     }
-                }catch(e){
+                } catch(e) {
                     return false;
                 }
             },
