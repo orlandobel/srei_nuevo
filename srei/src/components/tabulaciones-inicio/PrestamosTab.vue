@@ -26,7 +26,7 @@
                 <div class="col-12 py-2 px-2 h-100 mh-100">
                     <ul class="list-group list-group-flush p-2 border border-dark rounded-3 h-100 mh-100 overflow-auto ">
                         <h5 class="text-start fw-bold ps-3 border-bottom border-secondary">Materiales</h5>
-                        <prestamos-list-element v-for="eq in equipo" :key="eq.key" :nombre="eq.nombre" :id="eq.id" />
+                        <prestamos-list-element v-for="eq in equipos" :key="eq._id" :elemento="eq" />
                     </ul>
                 </div>
             </div>
@@ -87,8 +87,9 @@ export default {
     },
 
     methods: {
-        addEquipo(equipo){
-            this.equipos.push(equipo)
+        addEquipo(equipo) {
+            if(!this.equipos.some(e => e._id === equipo._id))
+                this.equipos.push(equipo)
         },
         addAlumno(alumno){
             this.alumnos.push(alumno)
