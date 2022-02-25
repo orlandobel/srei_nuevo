@@ -73,7 +73,7 @@
                     <li class="mb-2 row list-element">
                         <div class="col-12 text-start">
                             <fa-icon :icon="['fas', 'book']" color="white" />
-                            <router-link :to="{name: 'catalogos'}" class="btn d-inline-flex text-white">Catalogo</router-link>
+                            <router-link :to="{name: 'catalogos'}" class="btn d-inline-flex text-white">Catálogos</router-link>
                         </div>
                     </li>
                 </ul>

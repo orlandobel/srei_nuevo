@@ -4,13 +4,16 @@ import InternalServerException from '../../exceptions/InternalServerException';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
 
 import EQP, { Equipo } from '../../interfaces/collections/EQP.interface';
+import LAB, { Laboratorio } from '../../interfaces/collections/LAB.interface';
+import autoTable, { CellInput, RowInput } from 'jspdf-autotable';
 
 import fs = require('fs');
+
 const QRCode = require('qrcode');
+const { jsPDF } = require("jspdf");
 
 
 class CatalogoCM {
-
     /*
      * Obtencion de un equipo en especifico
      * @param equipo: _id del equipo que se ésta buscando
@@ -254,6 +257,80 @@ class CatalogoCM {
             console.error(`error al eliminar los archivos: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);
         }
+    }
+
+    public obtenerCatalogoPDF= async (laboratorio: string, tipo: string):Promise<any> => {
+        if(tipo === undefined || tipo === null || tipo === '') 
+            return new DataNotFoundException(codigos.informacionNoEnviada);
+        if(laboratorio === undefined || laboratorio === null || laboratorio === '') 
+            return new DataNotFoundException(codigos.informacionNoEnviada);
+        
+        let busqueda: Equipo[] | DataNotFoundException | InternalServerException;
+        try {
+            const registros = await EQP.find({tipo, laboratorio}).exec()
+            
+            if(registros === null || registros === undefined)
+                busqueda = new DataNotFoundException(codigos.datosNoEncontrados);
+
+            busqueda = registros as Equipo[];
+
+        } catch(error) {
+            console.log(`Error al consultar por tipo: ${error}`.red);
+            busqueda = new InternalServerException(codigos.indefinido, error);
+        }
+
+        if(busqueda instanceof DataNotFoundException || busqueda instanceof InternalServerException)
+            return busqueda;
+
+        //estructura de tipo para path
+        const tipoPath = tipo.toLowerCase().replace(" ", "_");
+
+        //encontramos el nombre del laboratorio para path
+        const labres = await LAB.findById(laboratorio, 'nombre').exec() 
+        //añadimos formato
+        const labpick = labres as Laboratorio;
+        //corregimos formato para usarlo en forma de path
+        const lab_split = labpick.nombre.split(' ');        
+        const lab = lab_split[0].toLowerCase()+lab_split[1];
+
+        const ruta = `./storage/${lab}/${tipoPath}/doc.pdf`
+
+        //creacion de estructura de busqueda
+        const arrBody: RowInput[] = busqueda.map((obj) =>{
+            let path = ""
+            let descripcion = ""
+
+            if (typeof obj.path == 'string')
+                path = obj.path
+            if (typeof obj.caracteristicas.descripcion == 'string')
+                descripcion = obj.caracteristicas.descripcion
+            
+            const aux: CellInput[] = [path, obj.nombre, descripcion, path];
+            return aux;
+        });
+         //construccion de pdf
+        const doc = new jsPDF();
+        // agregado de tabla
+        autoTable(doc, {
+            head: [['path','nombre','descripción','qr']],
+            body: arrBody,
+        })
+        //salvar documento
+        doc.save(`${ruta}`)
+
+        //intento de retorno de documento
+        try {
+            const fsPromise = fs.promises;
+            const file = await fsPromise.readFile(`${ruta}`);
+            
+            return file;
+        } catch(error) {
+            console.log(`Error al buscar el pdf: ${error}`.red);
+            return new DataNotFoundException(codigos.datoNoEncontrado)
+        }
+
+
+        
     }
 }
 

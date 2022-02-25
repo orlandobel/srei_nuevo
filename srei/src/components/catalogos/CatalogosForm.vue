@@ -8,7 +8,7 @@
                         <div class="row mb-2">
                             <label for="labPick" class="form-label text-start">Laboratorio</label>
                             <select class="form-control form-select form-select-lg mb-3" name="labPick" id="labPick" v-model="labPick">
-                                <option v-for="rest in labs" :key="rest._id" :value="rest._id" >{{rest.nombre}}</option>
+                                <option v-for="rest in labOfUser" :key="rest.id" :value="rest.id" >{{rest.nombre}}</option>
                             </select>
                         </div>
                         <div class="row mb-3">
@@ -40,7 +40,7 @@ export default {
 
         data () {
             return {
-                labs: [],
+                labOfUser: [],
                 labPick: '',
                 typePick: '',
             }
@@ -48,9 +48,12 @@ export default {
         methods: {
 
             initData() {
-                listaSimple().then(res => {
-                    this.labs = res
-                })
+                // añadimos los laboratoirios existentes
+                this.labOfUser = [{
+                        nombre: this.$store.getters.laboratorio.nombre,
+                        id: this.$store.getters.laboratorio._id
+                }]
+                //en el caso de existir más cambiar a un labOfUser.foreach(eq=>{labOfUser.push(eq)})
             },
 
             async searchCatalogue() {
@@ -64,6 +67,7 @@ export default {
                     console.log("tipo obtenido: "+ params.tipo)
 
                     console.log("TODO: HACER CONSULTA QUE RETORNE PDF Y PODER VISUALIZARLO")
+
                 } catch(error) {
                     console.log("Algo raro pasó: "+ error)
                 }
