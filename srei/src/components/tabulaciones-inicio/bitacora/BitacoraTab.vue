@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import BitacoraItem from '@/components/tabulaciones-inicio/BitacoraItem.vue'
+import BitacoraItem from '@/components/tabulaciones-inicio/bitacora/BitacoraItem.vue'
 
 export default {
     name: 'BitacoraTab',

@@ -55,6 +55,7 @@
 
 <script>
     import { QrcodeStream } from "vue3-qrcode-reader";
+    import { consultaDisponibilidad } from "@/api_queries/prestamos";
     import axios from "axios";
 
     export default {
@@ -106,14 +107,8 @@
                     if (this.validateJSONdata(aux)) {
 
                         try {
-                            const response = await this.axios.get('/prestamo/'+aux._id);
-                            const data = response.data;
-
-                            if (data.status == 404) {
-                                this.isValid = false
-                                this.validMsg = "Error en al encontrar Herramienta"
-                            }
-
+                            const data = await consultaDisponibilidad(aux._id);
+                            
                             if (data.disponible) {
                                 //this.results.push(aux)
                                 this.$emit('addPrestamo', aux)
@@ -123,8 +118,13 @@
                             }
    
                         } catch (error) {
-                            this.isValid = false
-                            this.validMsg = "QR no pudo conectar con base de datos"  
+                            if (error == 404) {
+                                this.isValid = false
+                                this.validMsg = "Error en al encontrar Herramienta"
+                            } else {
+                                this.isValid = false
+                                this.validMsg = "QR no pudo conectar con base de datos"
+                            }
                         }
                     
                     } else {
@@ -222,20 +222,6 @@
                 return new Promise(resolve => {
                     window.setTimeout(resolve, ms)
                 })
-            },
-
-            axiosConsult(url){
-                
-                const promese = axios.get(url,{ 
-                        transformRequest: (data, headers) => {
-                            delete headers.common['Authorization'];
-                            return data;
-                        },
-                    })
-                const dataProm = promese.then(response =>  response.data)
-
-                return dataProm
-
             },
         },
     }

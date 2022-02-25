@@ -54,8 +54,8 @@
 </template>
 
 <script>
-import AlumnosLaboratorioListElement from '@/components/tabulaciones-inicio/AlumnosLaboratorioListElement.vue'
-import PrestamosListElement from '@/components/tabulaciones-inicio/PrestamosListElement.vue'
+import AlumnosLaboratorioListElement from '@/components/tabulaciones-inicio/alumnos_laboratorio/AlumnosLaboratorioListElement.vue'
+import PrestamosListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElement.vue'
 
 export default {
     name: 'AlumnosLaboratorioTab',

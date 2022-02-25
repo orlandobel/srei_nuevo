@@ -12,10 +12,8 @@
                 </div>
                 <div class="col-3">
                     <select class="form-select">
-                        <option value="" disabled selected>Seleccione una mesa</option>
-                        <option value="">Mesa 1</option>
-                        <option value="">Mesa 2</option>
-                        <option value="">Mesa 3</option>
+                        <option disabled selected>Seleccione una mesa</option>
+                        <option v-for="m in mesas" :key="m._id" :value="m.nombre">{{ m.nombre }}</option>
                     </select>
                 </div>
             </div>
@@ -69,9 +67,9 @@
 </template>
 
 <script>
-import PrestamosListElement from '@/components/tabulaciones-inicio/PrestamosListElement.vue'
+import PrestamosListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElement.vue'
 import QRScanner from '@/components/tabulaciones-inicio/ScanRelated/QRScanner.vue'
-
+import  { initView } from '@/api_queries/prestamos';
 
 export default {
     name: 'PrestamosTab',
@@ -83,6 +81,7 @@ export default {
         return {
             equipos: [],
             alumnos: [],
+            mesas: [],
         }
     },
 
@@ -94,6 +93,13 @@ export default {
         addAlumno(alumno){
             this.alumnos.push(alumno)
         }
+    },
+    mounted() {
+        const laboratorio = this.$store.getters.laboratorio
+        initView(laboratorio._id)
+            .then(data => {
+                this.mesas = data;
+            }).catch(error => console.error(error));
     }
 }
 </script>

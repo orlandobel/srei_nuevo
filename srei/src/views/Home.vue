@@ -53,9 +53,9 @@
 
 <script>
 import Sidebar from "@/components/Sidebar.vue";
-import PrestamosTab from '@/components/tabulaciones-inicio/PrestamosTab.vue';
-import AlumnosLaboratorioTab from '@/components/tabulaciones-inicio/AlumnosLaboratorioTab.vue';
-import BitacoraTab from '@/components/tabulaciones-inicio/BitacoraTab.vue';
+import PrestamosTab from '@/components/tabulaciones-inicio/prestamos/PrestamosTab.vue';
+import AlumnosLaboratorioTab from '@/components/tabulaciones-inicio/alumnos_laboratorio/AlumnosLaboratorioTab.vue';
+import BitacoraTab from '@/components/tabulaciones-inicio/bitacora/BitacoraTab.vue';
 
 export default {
     name: 'Home',
