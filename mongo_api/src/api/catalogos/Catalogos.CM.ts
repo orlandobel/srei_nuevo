@@ -5,7 +5,7 @@ import DataNotFoundException from '../../exceptions/DataNotFoundException';
 
 import EQP, { Equipo } from '../../interfaces/collections/EQP.interface';
 import LAB, { Laboratorio } from '../../interfaces/collections/LAB.interface';
-import autoTable, { CellInput, RowInput } from 'jspdf-autotable';
+import autoTable, { CellInput } from 'jspdf-autotable';
 
 import fs = require('fs');
 
@@ -264,24 +264,12 @@ class CatalogoCM {
             return new DataNotFoundException(codigos.informacionNoEnviada);
         if(laboratorio === undefined || laboratorio === null || laboratorio === '') 
             return new DataNotFoundException(codigos.informacionNoEnviada);
-        
-        let busqueda: Equipo[] | DataNotFoundException | InternalServerException;
-        try {
-            const registros = await EQP.find({tipo, laboratorio}).exec()
-            
-            if(registros === null || registros === undefined)
-                busqueda = new DataNotFoundException(codigos.datosNoEncontrados);
-
-            busqueda = registros as Equipo[];
-
-        } catch(error) {
-            console.log(`Error al consultar por tipo: ${error}`.red);
-            busqueda = new InternalServerException(codigos.indefinido, error);
-        }
+        //
+        const busqueda: Equipo[] | DataNotFoundException | InternalServerException = await this.obtenerEquipoTipo(tipo,laboratorio);
 
         if(busqueda instanceof DataNotFoundException || busqueda instanceof InternalServerException)
             return busqueda;
-
+        
         //estructura de tipo para path
         const tipoPath = tipo.toLowerCase().replace(" ", "_");
 
@@ -292,31 +280,50 @@ class CatalogoCM {
         //corregimos formato para usarlo en forma de path
         const lab_split = labpick.nombre.split(' ');        
         const lab = lab_split[0].toLowerCase()+lab_split[1];
-
-        const ruta = `./storage/${lab}/${tipoPath}/doc.pdf`
-
+        const rutaImg = `/${lab}/${tipoPath}/`;
+        const ruta = `./storage/${lab}/${tipoPath}/doc.pdf`;
         //creacion de estructura de busqueda
-        const arrBody: RowInput[] = busqueda.map((obj) =>{
-            let path = ""
-            let descripcion = ""
-
-            if (typeof obj.path == 'string')
-                path = obj.path
-            if (typeof obj.caracteristicas.descripcion == 'string')
-                descripcion = obj.caracteristicas.descripcion
+        let arrBody = await Promise.all (busqueda.map( async obj =>{
+            const imgformatqr = await this.obtenerImagen(rutaImg+`${obj._id}/qr.png`).then(str=>{
+                if (typeof str == "string")
+                    return `data:image/png;base64,${str}`
+                return "imagen no encontrada"
+            });
+            const imgformat = await this.obtenerImagen(rutaImg+`${obj._id}/imagen.png`).then(str=>{
+                if (typeof str == "string")
+                    return `data:image/png;base64,${str}`
+                return "imagen no encontrada"
+            });
             
-            const aux: CellInput[] = [path, obj.nombre, descripcion, path];
-            return aux;
-        });
+            let descripcion = obj.caracteristicas.descripcion;
+            if (typeof descripcion != "string")
+                descripcion = "No cuenta con descripcion"    
+            
+            const aux: CellInput[] = [imgformatqr, obj.nombre, descripcion, imgformat];
+            return aux
+        }))
          //construccion de pdf
         const doc = new jsPDF();
         // agregado de tabla
         autoTable(doc, {
-            head: [['path','nombre','descripción','qr']],
+            columnStyles: {0:{minCellHeight:50, cellWidth:50, overflow:'ellipsize'},3:{minCellHeight:50, cellWidth:50, overflow:'ellipsize'}},
+            head: [['QR','Nombre','Descripción','Foto muestra']],
             body: arrBody,
+            foot: [['QR','Nombre','Descripción','Foto muestra']],
+            didDrawCell: function(data) {
+                if ((data.column.index === 0 || data.column.index === 3)&& data.cell.section === 'body') {
+                    const image = data.cell.raw;
+                    //var img = td.getElementsByTagName('img')[0];
+                    if(data.cell.raw !=  "imagen no encontrada"){
+                        const dim = data.cell.height - data.cell.padding('vertical');
+                        const textPos = data.cell.getTextPos();
+                        doc.addImage(image, textPos.x,  textPos.y, dim, dim);
+                    }
+                }
+              }
         })
         //salvar documento
-        doc.save(`${ruta}`)
+        doc.save(`${ruta}`);
 
         //intento de retorno de documento
         try {
