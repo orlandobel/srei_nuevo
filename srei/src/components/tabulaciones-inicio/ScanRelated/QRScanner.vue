@@ -55,8 +55,8 @@
 
 <script>
     import { QrcodeStream } from "vue3-qrcode-reader";
-    import { consultaDisponibilidad } from "@/api_queries/prestamos";
-    import axios from "axios";
+    import { consultaDisponibilidad, consultaDae } from "@/api_queries/prestamos";
+    import axios  from 'axios';
 
     export default {
         name: "QRScanner",
@@ -131,8 +131,7 @@
                         this.isValid = false
                         this.validMsg = "QR obtenido no es una herramienta de laboratorio"
                     }
-                } else if (this.isValidHttpUrl(result)){
-                        
+                } else if (this.isValidHttpUrl(result)) {
                     let alumDatos = await this.axiosConsult(result).then( data =>{
                         let getNombre = data.split("<div class='nombre'>")[1].split("</div>")[0]
                         let getBoleta = data.split("<div class='boleta' style='font-size: 200%;' >")[1].split("</div>")[0]
@@ -222,6 +221,17 @@
                 return new Promise(resolve => {
                     window.setTimeout(resolve, ms)
                 })
+            },
+
+            axiosConsult(url) {
+                const promese = axios.get(url,{ 
+                        transformRequest: (data, headers) => {
+                            delete headers.common['Authorization'];
+                            return data;
+                        },
+                    })
+                const dataProm = promese.then(response =>  response.data)
+                return dataProm
             },
         },
     }
