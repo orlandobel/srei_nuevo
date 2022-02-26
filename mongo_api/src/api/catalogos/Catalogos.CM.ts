@@ -280,30 +280,27 @@ class CatalogoCM {
         //corregimos formato para usarlo en forma de path
         const lab_split = labpick.nombre.split(' ');        
         const lab = lab_split[0].toLowerCase()+lab_split[1];
-        const rutaImg = `/${lab}/${tipoPath}/`;
         const ruta = `./storage/${lab}/${tipoPath}/doc.pdf`;
+
         //creacion de estructura de busqueda
-        let arrBody = await Promise.all (busqueda.map( async obj =>{
-            const imgformatqr = await this.obtenerImagen(rutaImg+`${obj._id}/qr.png`).then(str=>{
-                if (typeof str == "string")
-                    return `data:image/png;base64,${str}`
-                return "imagen no encontrada"
-            });
-            const imgformat = await this.obtenerImagen(rutaImg+`${obj._id}/imagen.png`).then(str=>{
-                if (typeof str == "string")
-                    return `data:image/png;base64,${str}`
-                return "imagen no encontrada"
-            });
-            
+        let arrBody = busqueda.map( obj =>{
+            let imgformatqr = (typeof obj.path == "string") ? obj.path :"imagen no encontrada";
+            let imgformat = (typeof obj.path == "string") ? obj.path :"imagen no encontrada";
+            /*try {
+                imgformatqr = "data:image/png;base64," + await fsPromise.readFile(`./storage/${obj.path}/qr.png`, { encoding: 'base64' });
+                imgformat = "data:image/png;base64," + await fsPromise.readFile(`./storage/${obj.path}/imagen.png`, { encoding: 'base64' });
+            } catch(error) {}
+            */
             let descripcion = obj.caracteristicas.descripcion;
             if (typeof descripcion != "string")
                 descripcion = "No cuenta con descripcion"    
             
             const aux: CellInput[] = [imgformatqr, obj.nombre, descripcion, imgformat];
             return aux
-        }))
+        })
          //construccion de pdf
         const doc = new jsPDF();
+        this.setPortada(doc, tipo, labpick.nombre)
         // agregado de tabla
         autoTable(doc, {
             columnStyles: {0:{minCellHeight:50, cellWidth:50, overflow:'ellipsize'},3:{minCellHeight:50, cellWidth:50, overflow:'ellipsize'}},
@@ -312,12 +309,18 @@ class CatalogoCM {
             foot: [['QR','Nombre','Descripción','Foto muestra']],
             didDrawCell: function(data) {
                 if ((data.column.index === 0 || data.column.index === 3)&& data.cell.section === 'body') {
-                    const image = data.cell.raw;
+                    let image = data.cell.raw;
                     //var img = td.getElementsByTagName('img')[0];
-                    if(data.cell.raw !=  "imagen no encontrada"){
-                        const dim = data.cell.height - data.cell.padding('vertical');
-                        const textPos = data.cell.getTextPos();
-                        doc.addImage(image, textPos.x,  textPos.y, dim, dim);
+                    if(image !=  "imagen no encontrada"){
+                        try{
+                            if(data.column.index === 0 )
+                                image = "data:image/png;base64," + fs.readFileSync(`./storage/${image}/qr.png`, { encoding: 'base64' });
+                            else
+                                image = "data:image/png;base64," + fs.readFileSync(`./storage/${image}/imagen.png`, { encoding: 'base64' });
+                            const dim = data.cell.height - data.cell.padding('vertical');
+                            const textPos = data.cell.getTextPos();
+                            doc.addImage(image, textPos.x,  textPos.y, dim, dim);
+                        }catch(error) {}
                     }
                 }
               }
@@ -338,6 +341,46 @@ class CatalogoCM {
 
 
         
+    }
+    private setPortada(doc: any,  tipo: string, nombre: string) {
+        let ruta = `ipnlogos/`;
+        const maxW = doc.internal.pageSize.getWidth();
+        const maxH = doc.internal.pageSize.getHeight();
+        try {
+            const ipnImg = fs.readFileSync(`./storage/${ruta}ipn.jpg`, { encoding: 'base64' });
+            const upiizImg = fs.readFileSync(`./storage/${ruta}upiiz.jpg`, { encoding: 'base64' });
+            doc.addImage(`data:image/png;base64,${ipnImg}`, 'JPEG', 20, 10, 15.5, 25.3)
+            doc.addImage(`data:image/png;base64,${upiizImg}`, 'JPEG', maxW-45.3, 10, 25.3, 25.3)
+            
+        } catch(error) {
+            console.log(`Error al buscar la imagen: ${error}`.red);
+        }
+        doc.setFont("Times")
+        doc.text("Instituto Politecnico Nacional", 105, 20, {align: "center",maxWidth:100})
+        doc.text("Unidad Profesional Interdisciplinaria de Ingeniería campus Zacatecas", 105, 27, {align: "center",maxWidth:100})
+        doc.setFillColor(90, 0, 0);
+        for(let i = 1; i<6; i++){
+            const x = 20+((i-1)*i*0.45)
+            doc.rect(x,80,i*.5,50, 'F')
+        }
+        // Filled square
+        doc.rect(34, 80, 155, 50, 'F');
+        doc.setTextColor("#FFFFFF");
+        doc.setFontSize(36)
+        doc.setFont("Times")
+        doc.text("Catálogos SReI", 40, 95)
+        doc.setFontSize(24)
+        doc.setFont("Times","Italic")
+        doc.text(`Catálogo de ${tipo} del laboratorio: ${nombre}`, 180, 110, {align: "right",maxWidth:120})
+
+        doc.setFillColor(0, 0, 0);
+        doc.rect(12, 5, 1.5, maxH-10, 'F');
+        doc.roundedRect(maxW-110, maxH-25, 100, 15, 5, 5,'S');
+        doc.setTextColor("#000000");
+        doc.setFontSize(11)
+        doc.setFont("Times", "Normal")
+        doc.text(`Catálogos desarrollados por SReI para su apartado de prestamos, coautores: GBautista & OBelmont`,maxW-105, maxH-18, {maxWidth:90})
+        doc.addPage();
     }
 }
 
