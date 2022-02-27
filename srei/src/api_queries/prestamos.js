@@ -34,14 +34,12 @@ export async function consultaDisponibilidad(id) {
 
 export async function consultaDae(url) {
     try {
-        const respuesta = await axios.get(url, {
-            transformRequest: (data, headers) => {
-                delete headers.common['Authorization'];
-                return data;
-            }
-        });
-
-        return respuesta;
+        const respuesta = await axios.post('/usuarios/consulta/dae', { url });
+        
+        if(respuesta.status >= 400 || respuesta.data.status >= 400)
+            throw "Unexpected error";
+            
+        return respuesta.data.alumno;
     } catch(error) {
         throw error;
     }

@@ -2,7 +2,7 @@
     <li class="list-group-item d-flex justify-content-between align-items-start">
         {{elemento.nombre}} 
         <div v-if="elemento.boleta != null || elemento.boleta != undefined" >
-            <span class="me-4"> |&emsp; {{boleta}}</span>
+            <span class="me-4"> |&emsp; {{elemento.boleta}}</span>
             <fa-icon :icon="['fas', 'minus']" />
         </div>
         <div v-if="elemento.fabricante != null || elemento.fabricante != undefined">
@@ -22,9 +22,6 @@ export default {
     name: 'PrestamosListElement',
     props: {
         elemento: { type: Object, required: false },
-        nombre: { type: String, required: true },
-        boleta: { type: String, required: false },
-        id:     { type: String, required: false }
     },
     mounted() {
         console.log(this.elemento)

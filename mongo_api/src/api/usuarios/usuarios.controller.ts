@@ -5,6 +5,7 @@ import BadRequestException from '../../exceptions/BadRequestException';
 
 import Controller from '../../interfaces/controller.interface';
 import UsuariosCM from './usuarios.CM';
+import HttpException from '../../exceptions/HttpException';
 
 class UsuariosController implements Controller {
     public router = Router();
@@ -22,6 +23,7 @@ class UsuariosController implements Controller {
         this.router.post(this.path + '/login/test', this.ingresar);
         this.router.post(this.path + '/login/verify', this.checkLogin);
         this.router.post(this.path + '/crear/empleado', this.crearEmpleado);
+        this.router.post(this.path + '/consulta/dae', this.consultaDae);
     }
 
     private ingresar = async (req: Request, res: Response, next: NextFunction) => {
@@ -56,6 +58,17 @@ class UsuariosController implements Controller {
             res.status(respuesta.status).send(respuesta)
         } else {
             res.send({ status: 200, usuario: respuesta });
+        }
+    }
+
+    public consultaDae = async (req: Request, res: Response, next: NextFunction) => {
+        const { url } = req.body;
+        const respuesta = await this.usuariosCM.consultaDae(url);
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status:200, alumno: respuesta });
         }
     }
 }

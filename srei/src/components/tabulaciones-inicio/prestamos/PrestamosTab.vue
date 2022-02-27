@@ -47,7 +47,10 @@
             <div class="row alumnos-wrapper w-100 mw-100">
                 <ul class="list-group list-group-flush p-2 border border-dark rounded-3 h-100 mh-100 overflow-auto">
                     <h5 class="text-start ps-3 fw-bold border-bottom border-secondary">Alumnos en mesa</h5>
-                    <prestamos-list-element v-for="al in alumnos" :key="al.key" :nombre="al.nombre" :boleta="al.boleta" />
+                    <alumno-list-element 
+                        v-for="(al, index) in alumnos" :key="al._id" 
+                        :alumno="al" :index="index"
+                        @removerAlumno="removerAlumno($event)" />
                 </ul>
             </div>
             <!-- Fin de la lista de alumnos -->
@@ -68,6 +71,7 @@
 
 <script>
 import PrestamosListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElement.vue'
+import AlumnoListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElements/AlumnoListElement.vue';
 import QRScanner from '@/components/tabulaciones-inicio/ScanRelated/QRScanner.vue'
 import  { initView } from '@/api_queries/prestamos';
 
@@ -75,7 +79,8 @@ export default {
     name: 'PrestamosTab',
     components: { 
         PrestamosListElement,
-        QRScanner
+        QRScanner,
+        AlumnoListElement,
     },
      data () {
         return {
@@ -88,10 +93,14 @@ export default {
     methods: {
         addEquipo(equipo) {
             if(!this.equipos.some(e => e._id === equipo._id))
-                this.equipos.push(equipo)
+                this.equipos.push(equipo);
         },
-        addAlumno(alumno){
-            this.alumnos.push(alumno)
+        addAlumno(alumno) {
+            if(!this.alumnos.some(a => a._id === alumno._id))
+                this.alumnos.push(alumno);
+        },
+        removerAlumno(index) {
+            this.alumnos.splice(index, 1);
         }
     },
     mounted() {

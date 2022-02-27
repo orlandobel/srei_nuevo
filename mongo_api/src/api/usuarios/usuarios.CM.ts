@@ -1,7 +1,8 @@
 import { codigos } from "../../exceptions/codigos";
-//import axios from 'axios';
+import axios from 'axios';
 import 'colors';
 import * as bcrypt from 'bcrypt';
+const jsdom = require('jsdom');
 
 import DataNotFoundException from "../../exceptions/DataNotFoundException";
 import InternalServerException from "../../exceptions/InternalServerException";
@@ -117,6 +118,25 @@ class UsuariosCM {
         }
     }
     
+    public consultaDae = async(url: string): Promise<any> => {
+        if(url === null || url === undefined || url === '')
+            return new BadRequestException("Url de consulta no envíada");
+
+        try {
+            const data = await axios.get(url).then(res => res.data);
+            const dom = new jsdom.JSDOM(data);
+            const document = dom.window.document;
+            
+            const nombre = document.getElementsByClassName('nombre')[0].textContent;
+            const boleta = document.getElementsByClassName('boleta')[0].textContent;
+            const imagen = document.getElementsByClassName('pic')[1].querySelector('img').src;            
+
+            return { nombre, boleta, imagen };
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+    }
 }
 
 export default UsuariosCM;

@@ -132,7 +132,17 @@
                         this.validMsg = "QR obtenido no es una herramienta de laboratorio"
                     }
                 } else if (this.isValidHttpUrl(result)) {
-                    let alumDatos = await this.axiosConsult(result).then( data =>{
+                    try {
+                        const alumnoDatos = await consultaDae(result);
+                        
+                        this.$emit('addAlumnos', alumnoDatos) 
+                        this.validMsg = "Lectura URL alumno exitosa"
+                        
+                    } catch(error) {
+                        console.error(error);
+                        return error;
+                    }
+                    /*let alumDatos = await this.axiosConsult(result).then( data =>{
                         let getNombre = data.split("<div class='nombre'>")[1].split("</div>")[0]
                         let getBoleta = data.split("<div class='boleta' style='font-size: 200%;' >")[1].split("</div>")[0]
                         let getImagen = data.split("<div class='pic'>")[2].split("</div>")[0]
@@ -148,13 +158,9 @@
                     }).catch(err => {
                         console.log(err)
                         return "error"
-                    })
+                    })*/
 
-                    if (alumDatos != "error"){
-                        this.$emit('addAlumnos', alumDatos) 
-                        this.results.push(alumDatos)                    
-                        this.validMsg = "Lectura URL alumno exitosa"
-                    }
+                    
 
                 } else {
                     this.isValid = false
