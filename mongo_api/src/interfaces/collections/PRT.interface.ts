@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { EquipoPrestamo, caracteristicasSchema } from './EQP.interface';
+import { EquipoPrestamo } from './EQP.interface';
 import { Alumno } from './USR.interface';
 
 const USRSchema = new Schema<Alumno>({
@@ -11,7 +11,10 @@ const USRSchema = new Schema<Alumno>({
 
 const EquipoPrestamoSchema = new Schema<EquipoPrestamo>({
     nombre: { type: String, required: true },
-    caracteristicas: { type: caracteristicasSchema, required: true },
+    fabricante: { type: String, required: true },
+    modelo: { type: String, required: true },
+    serie: { type: String, required: true },
+    //caracteristicas: { type: caracteristicasSchema, required: true },
 });
 
 export interface Prestamo {

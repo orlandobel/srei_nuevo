@@ -110,7 +110,6 @@
                             const data = await consultaDisponibilidad(aux._id);
                             
                             if (data.disponible) {
-                                //this.results.push(aux)
                                 this.$emit('addPrestamo', aux)
                                 this.validMsg = "Lectura QR exitosa"
                             } else {
@@ -142,26 +141,6 @@
                         console.error(error);
                         return error;
                     }
-                    /*let alumDatos = await this.axiosConsult(result).then( data =>{
-                        let getNombre = data.split("<div class='nombre'>")[1].split("</div>")[0]
-                        let getBoleta = data.split("<div class='boleta' style='font-size: 200%;' >")[1].split("</div>")[0]
-                        let getImagen = data.split("<div class='pic'>")[2].split("</div>")[0]
-                        
-                        let jsonResp ={
-                            "nombre" : getNombre,
-                            "boleta" : getBoleta,
-                            "imagen" : getImagen
-                        }
-
-                        return jsonResp
-
-                    }).catch(err => {
-                        console.log(err)
-                        return "error"
-                    })*/
-
-                    
-
                 } else {
                     this.isValid = false
                     this.validMsg = "Error inesperado de lectura..."

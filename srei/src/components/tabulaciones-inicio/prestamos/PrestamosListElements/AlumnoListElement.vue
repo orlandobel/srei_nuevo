@@ -1,9 +1,9 @@
 <template>
-    <li class="list-group-item d-flex align-items-start">
+    <li class="list-group-item align-items-start me-2">
         <div class="row">
-            <div class="col-lg-5">{{ alumno.nombre }}</div>
-            <div class="col-lg-5 text-center">{{ alumno.boleta }} </div>
-            <div class="col-lg-2">
+            <div class="col-lg-7">{{ alumno.nombre }}</div>
+            <div class="col-lg-4 text-center">{{ alumno.usuario }} </div>
+            <div class="col-lg-1">
                 <button class="btn btn-danger" @click="eliminar()">
                     <fa-icon :icon="['fas', 'minus']" />
                 </button>
@@ -21,7 +21,7 @@ export default {
     },
     methods: {
         eliminar() {
-            this.$emit('removerAlumno', this.index)
+            this.$emit('remover', this.index)
         }
     }
 }

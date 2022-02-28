@@ -39,9 +39,6 @@ class BitacoraCM {
         if(laboratorio === null || laboratorio === undefined || laboratorio === '')
             return new BadRequestException('El laboratorio es requerido');
 
-        if(mesa === null || mesa === undefined)
-            return new BadRequestException('Seleccione una mesa para registrar')
-
         try {
             const prestamo: any = {
                 alumnos,
@@ -54,8 +51,20 @@ class BitacoraCM {
             if(lab === null || lab === undefined)
                 return new DataNotFoundException(codigos.datoNoEncontrado, "Laboratorio no encontrado")
 
-            if(lab.nombre.includes("Electronica"))
+            if(lab.nombre.includes("Electronica")) {
+                if(mesa === null || mesa === undefined || mesa === '') {
+                    return new BadRequestException('Seleccione una mesa para registrar')
+                }
+
                 prestamo.mesa = mesa
+            }
+
+            equipo.forEach(e => {
+                EQP.findByIdAndUpdate(e._id, { $set: { disponible: false } }).exec()
+                    .then(() => {
+                        console.log(`${e.nombre} ahora ocupado`. yellow);
+                    })
+            });
 
             const creado = await PRT.create(prestamo);
 

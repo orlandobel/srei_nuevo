@@ -44,3 +44,19 @@ export async function consultaDae(url) {
         throw error;
     }
 }
+
+export async function generarPrestamo(prestamo) {
+    const url = '/prestamo/generar';
+
+    try {
+        const respuesta = await axios.post(url, prestamo);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400)
+            throw respuesta;
+            
+        console.log(respuesta)
+    } catch(error) {
+        console.error(error);
+        throw error
+    }
+}

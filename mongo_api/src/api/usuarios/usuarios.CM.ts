@@ -128,10 +128,13 @@ class UsuariosCM {
             const document = dom.window.document;
             
             const nombre = document.getElementsByClassName('nombre')[0].textContent;
-            const boleta = document.getElementsByClassName('boleta')[0].textContent;
-            const imagen = document.getElementsByClassName('pic')[1].querySelector('img').src;            
+            const boleta: string = document.getElementsByClassName('boleta')[0].textContent;
+            const usuario = boleta.substring(0,10)
+            //const imagen = document.getElementsByClassName('pic')[1].querySelector('img').src;
+            const programa = document.getElementsByClassName('carrera')[0].textContent;
+            console.log(programa)
 
-            return { nombre, boleta, imagen };
+            return { nombre, usuario, programa,/* imagen */};
         } catch(error) {
             console.log(`${error}`.red);
             return new InternalServerException(error);

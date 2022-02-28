@@ -43,8 +43,13 @@ export interface Equipo {
 }
 
 export interface EquipoPrestamo extends Omit<Equipo, 
-    '_id' | 'tipo' | 'estado' | 'disponible' 
-    | 'laboratorio' | 'path' | 'checklist'> {}
+    'tipo' | 'estado' | 'disponible' | 'laboratorio' | 
+    'path' | 'checklist' | 'caracteristicas' | 'checklist'> {
+        _id: any;
+        fabricante: { type: String, required: true },
+        modelo: { type: String, required: true },
+        serie: { type: String, required: true },
+    }
 
 const EQPSchema = new Schema<Equipo>({
     tipo: { type: String, required: true },

@@ -17,7 +17,7 @@ export interface Trabajador extends Omit<Usuario, 'vetado' | 'boleta'> {
     laboratorio: string;
 }
 
-export interface Alumno extends Omit<Usuario, '_id' | 'clave' | 'laboratorio' > {
+export interface Alumno extends Omit<Usuario, 'clave' | 'laboratorio' > {
     programa: string
 }
 
