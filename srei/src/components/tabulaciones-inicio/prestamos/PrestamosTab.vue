@@ -1,6 +1,12 @@
 <template>
     <div class="row overflow-hidden">
         <!--TODO: Desplegar mensajes de erro o exito al obtener la respuesta de la api cuando se generan los prestamos -->
+        <div class="position-absolute z-index-2 w-auto">
+            <div class="alert alert-danger" role="alert" 
+                v-for="e in errors" :key="e">
+                {{ e }}
+            </div>
+        </div>
         <QRScanner ref="qrComponent" @addPrestamo="addEquipo($event)" @addAlumnos="addAlumno($event)"/>
         <div class="col-lg-7">
             <!-- Lado izquierdo de la cabezera de la sección -->
@@ -96,6 +102,7 @@
 import PrestamosListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElement.vue'
 import EquipoListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElements/EquipoListElement.vue';
 import AlumnoListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElements/AlumnoListElement.vue';
+import ApiMessage from '@/components/ApiMessage.vue';
 import QRScanner from '@/components/tabulaciones-inicio/ScanRelated/QRScanner.vue'
 import  { initView, generarPrestamo } from '@/api_queries/prestamos';
 
@@ -106,12 +113,16 @@ export default {
         QRScanner,
         EquipoListElement,
         AlumnoListElement,
+        ApiMessage,
     },
      data () {
         return {
             equipos: [],
             alumnos: [],
             mesas: [],
+            success: false,
+            error: false,
+            errors: [],
         }
     },
 
@@ -142,7 +153,7 @@ export default {
                 const alumnos = this.alumnos;
                 const equipo = this.equipos;
                 const laboratorio = this.$store.getters.laboratorio._id
-                const mesa = document.getElementById('mesas').value;
+                const mesa = document.getElementById('mesas').value || null;
                 
                 const prestamo = {
                     alumnos,
@@ -150,13 +161,15 @@ export default {
                     laboratorio,
                     mesa,
                 };
-
+                console.log(prestamo);
                 const res = await generarPrestamo(prestamo);
+
                 //TODO: Añadir el prestamo a la lista en la pestaña bitacora cuando esta este en funcionamiento
+                this.$emit('prestamoGenerado');
 
                 this.borrarPrestamo();
             } catch(error) {
-                console.error(error);
+                this.$emit('erroresPrestamo', error);;
             }
         }
     },
@@ -191,4 +204,5 @@ export default {
     height: 5%;
     max-height: 5%;
 }
+
 </style>

@@ -44,10 +44,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <!--div class="modal-footer">
                     <button class="btn btn-danger" data-bs-dismiss="modal" @click="reiniciar">Cancelar</button>
                     <button class="btn btn-success" @click="guardar">Enviar</button>
-                </div>
+                </div-->
             </div>
         </div>
     </div>

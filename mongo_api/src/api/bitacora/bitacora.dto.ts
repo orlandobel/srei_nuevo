@@ -1,21 +1,21 @@
-import { IsString, IsArray, IsNotEmpty, IsDefined, IsOptional } from 'class-validator';
+import { IsString, IsArray, IsNotEmpty, IsDefined, IsOptional, ArrayNotEmpty } from 'class-validator';
 
 export class CrearPrestamo {
+    @IsArray({
+        message: "Envie los alumnos com un arreglo",
+    })
     @IsDefined({
         message: "Debe de haber al menos un alumno registrado"
     })
-    @IsNotEmpty({
+    @ArrayNotEmpty({
         message: "Debe de haber al menos un alumno registrado"
     })
-    @IsArray({
-        message: "Envie los alumnos com un arreglo"
-    })
-    public alumnos!: Array<any>;
+    public alumnos!: [];
 
     @IsDefined({
         message: "Debe de haber al menos un equipo en el prestamo"
     })
-    @IsNotEmpty({
+    @ArrayNotEmpty({
         message: "Debe de haber al menos un equipo en el prestamo"
     })
     @IsArray({
@@ -34,15 +34,9 @@ export class CrearPrestamo {
     })
     public laboratorio!: string;
 
-    @IsDefined({
-        message: "La mesa es obligatoria"
-    })
-    @IsNotEmpty({
-        message: "La mesa es obligatoria"
-    })
+    @IsOptional()
     @IsString({
         message: "Envie solo el nombre de la mesa"
     })
-    @IsOptional()
-    public mesa!: string;
+    public mesa?: string;
 }

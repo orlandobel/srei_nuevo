@@ -30,8 +30,10 @@ class BitacoraCM {
 
     public crearPrestamo = async(alumnos: Array<Alumno>, equipo: Array<EquipoPrestamo>, laboratorio: string, mesa: any)
         : Promise<any | HttpException | void> => {
-        if(alumnos === null || alumnos === undefined || alumnos.length === 0)
+        if(alumnos === null || alumnos === undefined || alumnos.length === 0) {
+            console.log('Sin alumnos registrados'.red);
             return new BadRequestException('Debe de haber al menos un alumno en el registro');
+        }
 
         if(equipo === null || equipo === undefined || equipo.length === 0)
             return new BadRequestException('Debe de haber al menos un equipo en el registro');
@@ -52,6 +54,7 @@ class BitacoraCM {
                 return new DataNotFoundException(codigos.datoNoEncontrado, "Laboratorio no encontrado")
 
             if(lab.nombre.includes("Electronica")) {
+                console.log(mesa);
                 if(mesa === null || mesa === undefined || mesa === '') {
                     return new BadRequestException('Seleccione una mesa para registrar')
                 }

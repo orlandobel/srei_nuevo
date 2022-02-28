@@ -22,7 +22,7 @@ class BitacoraController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path + '/:uid', this.disponibilidadEquipo);
-        this.router.post(this.path + '/generar', validationMiddleware(CrearPrestamo, false),this.crearPrestamo);
+        this.router.post(this.path + '/generar', validationMiddleware(CrearPrestamo, true),this.crearPrestamo);
     }
 
     private disponibilidadEquipo = async (req: Request, res: Response, next: NextFunction) => {

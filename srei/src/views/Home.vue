@@ -1,7 +1,13 @@
 <template>
     <div class="row ">
         <sidebar />
-        <div class="col-lg-10">
+        <div class="col-lg-10 ">
+            <api-message class="mt-2" v-if="success"
+                :mensaje="mensaje" :success='true'/>
+
+            <api-message class="mt-2"
+                mensaje="" :success='false' ref="error_messages"/>
+
             <div class="row justify-content-center h-100 mh-100">
                 <div class="col-lg-12 h-100 mh-100 d-flex">
                     <div class="card h-95 mh-95 w-100 mw-100 align-self-center">
@@ -33,7 +39,7 @@
                             <!-- Secciones de tabulación -->
                             <div class="tab-content " id="tab-inicio-content">
                                 <div class="tab-pane fade px-2 h-100 mh-100 show active text-start" id="prestamos" role="tabpanel" aria-labelledby="prestamos-tab">
-                                    <prestamos-tab />
+                                    <prestamos-tab @prestamoGenerado="prestamoGenerado()" @erroresPrestamo="erroresPrestamo($event)"/>
                                 </div>
                                 <div class="tab-pane fade px-2 h-100 mh-100" id="usuarios" role="tabpanel" aria-labelledby="usuarios-tab">
                                     <alumnos-laboratorio-tab />
@@ -55,6 +61,7 @@
 import Sidebar from "@/components/Sidebar.vue";
 import PrestamosTab from '@/components/tabulaciones-inicio/prestamos/PrestamosTab.vue';
 import AlumnosLaboratorioTab from '@/components/tabulaciones-inicio/alumnos_laboratorio/AlumnosLaboratorioTab.vue';
+import ApiMessage from '@/components/ApiMessage.vue';
 import BitacoraTab from '@/components/tabulaciones-inicio/bitacora/BitacoraTab.vue';
 
 export default {
@@ -64,6 +71,28 @@ export default {
         PrestamosTab,
         AlumnosLaboratorioTab,
         BitacoraTab,
+        ApiMessage,
+    },
+    data() {
+        return {
+            success: false,
+            mensaje: '',
+        }
+    },
+    methods: {
+        prestamoGenerado() {
+            console.info("mostrando alerta")
+            this.success = true;
+            this.mensaje = "Prestamo agregado a la bitácora";
+
+            setTimeout(() => {
+                this.success = false;
+                this.mensaje = '';
+            }, 3000);
+        },
+        erroresPrestamo(errores) {
+            this.$refs.error_messages.displayErrors(errores);
+        }
     }
 }
 </script>

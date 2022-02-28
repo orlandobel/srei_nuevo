@@ -56,7 +56,11 @@ export async function generarPrestamo(prestamo) {
             
         console.log(respuesta)
     } catch(error) {
-        console.error(error);
-        throw error
+        if(error.response) {
+            throw [error.response.data.mensaje];
+        }
+
+        const mensajes = error.data.mensaje.split(',')
+        throw mensajes
     }
 }
