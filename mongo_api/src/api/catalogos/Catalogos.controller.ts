@@ -9,6 +9,8 @@ import CatalogoCM from './Catalogos.CM';
 import InternalServerException from '../../exceptions/InternalServerException';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
 
+//import fs = require('fs');
+import path = require('path');
 const multer = require('multer');
 
 const upload = multer({
@@ -130,7 +132,13 @@ class CatalogosController implements Controller {
         if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException)
             res.status(respuesta.status).send(respuesta);
         else
-            res.send(respuesta);
+  /*          fs.readFile(respuesta, (err, data) =>{
+                res.contentType("application/pdf")
+                res.send(data)
+            });*/
+            
+            res.sendFile(path.join(__dirname,"../../..",respuesta))
+            
     }
 }
 

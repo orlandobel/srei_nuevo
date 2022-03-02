@@ -14,10 +14,10 @@
                         <div class="row mb-3">
                             <label for="typePick" class="form-label text-start">Tipo</label>
                             <select class="form-control form-select form-select-lg mb-3" name="typePick" id="typePick" v-model="typePick">
-                                <option value="electronica">Electronica</option>
-                                <option value="maquinaria">Maquinaria</option>
-                                <option value="targetas_programables">Tarjetas programables</option>
-                                <option value="personal">Personal</option>
+                                <option value="Electronica">Electronica</option>
+                                <option value="Maquinaria">Maquinaria</option>
+                                <option value="Tarjeta Programable">Tarjetas Programables</option>
+                                <option value="Personal">Personal</option>
                             </select>
                         </div>
                         <div class="row justify-content-end pe-xl-2 pe-xxl-3">
@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import { listaSimple } from '@/api_queries/laboratorios'
 
 export default {
         name: "CatalgosForm",
@@ -61,13 +60,9 @@ export default {
                     laboratorio: this.labPick,
                     tipo: this.typePick
                 }
-
+                
                 try {
-                    console.log("Laboratorio obtenido: "+params.laboratorio)
-                    console.log("tipo obtenido: "+ params.tipo)
-
-                    console.log("TODO: HACER CONSULTA QUE RETORNE PDF Y PODER VISUALIZARLO")
-
+                    this.$router.push({name:"catalogosPDF", params})
                 } catch(error) {
                     console.log("Algo raro pasó: "+ error)
                 }

@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '@/views/Login.vue'
 import Inventario from '@/views/Inventarios.vue'
 import Catalogos from '@/views/Catalogos.vue'
+import CatalogosViewer from '@/components/catalogos/CatalogosViewer.vue'
 
 import isLogged from './middleware/auth';
 import store from '../store';
@@ -37,13 +38,19 @@ const routes = [
     path: '/catalogos',
     name: 'catalogos',
     component: Catalogos,
-    beforeRouteUpdate (to, from, next) {
-      console.log("Updating route")
-    },
     meta: {
       needLoggin: true,
     },
   },
+  {
+    path: '/catalogos/:laboratorio/:tipo',
+    name: 'catalogosPDF',
+    component: CatalogosViewer,
+    meta: {
+      needLoggin: true,
+    },
+  },
+
 
 ]
 

@@ -8,6 +8,8 @@ import LAB, { Laboratorio } from '../../interfaces/collections/LAB.interface';
 import autoTable, { CellInput } from 'jspdf-autotable';
 
 import fs = require('fs');
+import { copyFile } from 'fs';
+import path = require('path');
 
 const QRCode = require('qrcode');
 const { jsPDF } = require("jspdf");
@@ -323,17 +325,18 @@ class CatalogoCM {
                         }catch(error) {}
                     }
                 }
-              }
+            }
         })
         //salvar documento
         doc.save(`${ruta}`);
 
         //intento de retorno de documento
         try {
-            const fsPromise = fs.promises;
-            const file = await fsPromise.readFile(`${ruta}`);
-            
-            return file;
+            await copyFile(`${ruta}`, path.join(__dirname,"../../../..", `/srei/public/lib/web/pdfs/doc_${laboratorio}_${tipoPath}.pdf`), (err) =>{
+                if (err)
+                    console.log("Error al copiar documento: "+ err)
+            });
+            return ruta;
         } catch(error) {
             console.log(`Error al buscar el pdf: ${error}`.red);
             return new DataNotFoundException(codigos.datoNoEncontrado)
