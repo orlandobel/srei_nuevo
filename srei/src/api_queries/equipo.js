@@ -88,3 +88,21 @@ export async function eliminar(ruta) {
     }
 
 }
+
+export async function pdf(laboratorio, tipo){
+    try {
+
+        const url = `equipo/pdf/${laboratorio}/${tipo}`;
+        const response = await axios.get(url)
+
+        console.log(response);
+        if(response.status != 200) { 
+            return response.status;
+        }
+        return response
+    } catch (error) {
+        console.log("Fallas tecnicas");
+        console.warn(error);
+        return response.status;
+    }
+}

@@ -22,6 +22,6 @@ export default async function isLogged({to, next, store}) {
             }
             else logout(store, to.fullPath, next)
         } catch(error) {
-            logout(store, to.name, next)
+            logout(store, to.fullPath, next)
         }
 }

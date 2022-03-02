@@ -9,8 +9,11 @@ import CatalogoCM from './Catalogos.CM';
 import InternalServerException from '../../exceptions/InternalServerException';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
 
+
+//import fs = require('fs');
+import path = require('path');
 import * as multer from 'multer'
-//const multer = require('multer');
+
 
 const upload = multer({
     storage: multer.memoryStorage(),
@@ -35,6 +38,7 @@ class CatalogosController implements Controller {
         this.router.post(this.path + '/imagenes', upload.single('imagen'), this.generarImagen);
         this.router.put(this.path + '/editar', validationMiddleware(EditarEquipo, true), this.editarEquipo);
         this.router.delete(this.path + '/eliminar/:laboratorio/:tipo/:id', this.eliminarEquipo);
+        this.router.get(this.path + '/pdf/:lab/:tipo', this.getPDF);
     }
 
     private obtenerEquipo = async (req: Request, res: Response, next: NextFunction) => {
@@ -121,6 +125,22 @@ class CatalogosController implements Controller {
         } else {
             res.send({ status: 200 });
         }
+    }
+
+    private getPDF = async (req: Request, res: Response, next: NextFunction) => {
+        const {lab, tipo} = req.params;
+        const respuesta = await this.catalogosCM.obtenerCatalogoPDF(lab, tipo);
+
+        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException)
+            res.status(respuesta.status).send(respuesta);
+        else
+  /*          fs.readFile(respuesta, (err, data) =>{
+                res.contentType("application/pdf")
+                res.send(data)
+            });*/
+            
+            res.sendFile(path.join(__dirname,"../../..",respuesta))
+            
     }
 }
 
