@@ -8,7 +8,7 @@ interface caracteristicas {
     descripcion?: string;
 }
 
-const caracteristicasSchema = new Schema<caracteristicas>({
+export const caracteristicasSchema = new Schema<caracteristicas>({
     fabricante: { type: String, required: true },
     modelo: { type: String, required: true },
     serie: { type: String, required: true },
@@ -32,27 +32,30 @@ const checkSchema = new Schema<check>({
 // Interfáz y esquema para guardar el equipo en mongo
 export interface Equipo {
     _id?: any;
-    id?: string;
     tipo: string;
     nombre: string;
     estado: number;
     disponible: boolean;
-    propietario?: string;
     laboratorio: string;
     caracteristicas: caracteristicas;
     path?: string;
-    qr?: string;
-    img?: string;
     checklist?: check[];
 }
 
+export interface EquipoPrestamo extends Omit<Equipo, 
+    'tipo' | 'estado' | 'disponible' | 'laboratorio' | 
+    'path' | 'checklist' | 'caracteristicas' | 'checklist'> {
+        _id: any;
+        fabricante: { type: String, required: true },
+        modelo: { type: String, required: true },
+        serie: { type: String, required: true },
+    }
+
 const EQPSchema = new Schema<Equipo>({
-    id: { type: String, required: false },
     tipo: { type: String, required: true },
     nombre: { type: String, required: true },
     estado: { type: Number, required: true },
     disponible: { type: Boolean, required: true },
-    propietario: { type: String, required: false },
     laboratorio: { type: String, required: true },
     caracteristicas: { type: caracteristicasSchema, required: false },
     path: { type: String, required: false},

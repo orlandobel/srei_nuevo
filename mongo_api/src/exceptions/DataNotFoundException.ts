@@ -1,8 +1,8 @@
 import HttpException from "./HttpException";
  
 class DataNotFoundException extends HttpException {
-  constructor(codigo: string) {
-    super(404, 'El documento no fue encontrado', codigo);
+  constructor(codigo: string, mensaje = 'El documento no fue encontrado') {
+    super(404, mensaje, codigo);
   }
 }
  

@@ -106,8 +106,11 @@ class CatalogoCM {
             const ruta = this.generarRuta(laboratorio, equipo.tipo, id);
             
             const qr_data = {
-                id,
+                _id: id,
                 nombre: equipo.nombre,
+                fabricante: equipo.caracteristicas.fabricante,
+                modelo: equipo.caracteristicas.modelo,
+                serie: equipo.caracteristicas.serie,
                 laboratorio,
             }
 

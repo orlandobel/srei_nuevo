@@ -4,6 +4,7 @@ import Controller from '../../interfaces/controller.interface';
 import SetdebCM from './setdedb.CM';
 import InternalServerException from '../../exceptions/InternalServerException';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
+import HttpException from '../../exceptions/HttpException';
 
 class SetdebController implements Controller {
     public router = Router();
@@ -21,6 +22,7 @@ class SetdebController implements Controller {
         this.router.get(this.path + '/remover',  this.removerCampos);
         this.router.get(this.path + '/qrG', this.setQR);
         this.router.put(this.path + '/pathToDB', this.updatePATH);
+        this.router.get(this.path + '/mesas', this.initMesas);
     }
 
     public initialgizeDB = async (req: Request, res: Response, next: NextFunction) => {
@@ -50,6 +52,7 @@ class SetdebController implements Controller {
             res.send({ status: 200, ...respuesta });
         }
     }
+
     public updatePATH =async(req: Request, res: Response, next: NextFunction)=> {
 
         const respuesta = await this.setdebCM.agregarPATH();
@@ -59,6 +62,15 @@ class SetdebController implements Controller {
         } else {
             res.send({ status: 200, eqp: respuesta });
         }
+    }
+
+    public initMesas = async (req: Request, res: Response, next: NextFunction) => {
+        const response = await this.setdebCM.initMesas();
+
+        if(response instanceof HttpException)
+            res.status(response.status).send(response);
+        else 
+            res.send({status: 200, mensage: "mesas creadas"})
     }
 }
 
