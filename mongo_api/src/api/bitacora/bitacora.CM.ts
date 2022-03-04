@@ -9,6 +9,8 @@ import { Alumno } from '../../interfaces/collections/USR.interface';
 import BadRequestException from '../../exceptions/BadRequestException';
 import PRT, { Prestamo } from '../../interfaces/collections/PRT.interface';
 import LAB from '../../interfaces/collections/LAB.interface';
+import { startOfToday, startOfTomorrow } from 'date-fns';
+
 
 class BitacoraCM {
     public verDisponibilidadEQP = async (equipo: string): Promise<boolean | HttpException | void> => {
@@ -75,6 +77,31 @@ class BitacoraCM {
         } catch(error) {
             console.error(`Error al generar un prestamo: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);
+        }
+    }
+
+    public consultarBitacoraDia = async (laboratorio: string): Promise<void | Prestamo[] | HttpException> => {
+        if(laboratorio === null || laboratorio === undefined || laboratorio == '') 
+            return new BadRequestException("Laboratorio no enviado");
+            
+        try {
+                const start = startOfToday();
+                const end = startOfTomorrow();
+                
+                const creado = {
+                    $gte: start,
+                    $lt: end
+                }
+
+            const prestamos = await PRT.find({ laboratorio, creado }).exec() as Prestamo[];
+
+            if(prestamos === null || prestamos === undefined) 
+                return new DataNotFoundException("Erro inesperado al buscar prestamos");
+
+            return prestamos;
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
         }
     }
 }
