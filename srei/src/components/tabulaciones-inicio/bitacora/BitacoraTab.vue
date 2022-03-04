@@ -15,15 +15,15 @@
                     <ul class="list-group list-group-flush p-2 border border-dark rounded-3 h-100 mh-100 overflow-auto">
                         <li class="list-group-item d-flex align-items-start">
                             <ul class="list-group list-group-horizontal w-100 fw-bold">
-                                <li class="list-group-item w-100 border-0 border-end">Nombre</li>
-                                <li class="list-group-item w-50 border-0 border-end">Boleta</li>
                                 <li class="list-group-item w-25 border-0 border-end">Mesa</li>
+                                <li class="list-group-item w-100 border-0 border-end">Nombre</li>
+                                <li class="list-group-item w-25 border-0 border-end">Boleta</li>
                                 <li class="list-group-item w-50 border-0 border-end">Hora de prestamo</li>
                                 <li class="list-group-item w-50 border-0 border-end">Hora de devolución</li>
-                                <li class="list-group-item w-50 border-0">Acciones</li>
+                                <li class="list-group-item w-75 border-0">Equipo</li>
                             </ul>
                         </li>
-                        <bitacora-item nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" prestamo="13:15" devolucion="14:00" :entregado="true" />
+                        <bitacora-item :prestamo="prestamo" :index="0"/>
                     </ul>
                 </div>
             </div>
@@ -37,7 +37,45 @@ import BitacoraItem from '@/components/tabulaciones-inicio/bitacora/BitacoraItem
 
 export default {
     name: 'BitacoraTab',
-    components: {BitacoraItem},
+    components: {
+        BitacoraItem,
+    },
+    data() {
+        return {
+            prestamo: {
+                alumnos: [
+                    {
+                        usuario: "2018671281",
+                        nombre: "Orlando Odiseo Belmonte Flores",
+                        programa: "Intenieria en sistemas computacionales"
+                    }
+                ],
+                equipo: [
+                    {
+                        nombre: "Prueba 1",
+                        fabricante: "Odiseo",
+                        modelo: "O1",
+                        serie: "001"
+                    },
+                    {
+                        nombre: "Fuente de alimentacion",
+                        fabricante: "JasbroMan",
+                        modelo: "Upiiz",
+                        serie: "2015-2020"
+                    },
+                    {
+                        nombre: "Broca",
+                        fabricante: "JasbroMan",
+                        modelo: "Upiiz",
+                        serie: "2015-2020"
+                    }
+                ],
+                mesa: "Mesa 1",
+                activo: true,
+                creado: "19:25:25"
+            }
+        }
+    }
 }
 </script>
 
