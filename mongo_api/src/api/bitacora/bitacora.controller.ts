@@ -23,6 +23,7 @@ class BitacoraController implements Controller {
     private initializeRoutes() {
         this.router.get(this.path + '/:uid', this.disponibilidadEquipo);
         this.router.post(this.path + '/generar', validationMiddleware(CrearPrestamo, true),this.crearPrestamo);
+        this.router.get(this.path + "/bitacora/Semestral", this.bitacoraSemestral)
     }
 
     private disponibilidadEquipo = async (req: Request, res: Response, next: NextFunction) => {
@@ -44,6 +45,16 @@ class BitacoraController implements Controller {
             res.status(respuesta.status).send(respuesta);
         } else {
             res.send({ status: 200, prestamo: respuesta });
+        }
+    }
+
+    private bitacoraSemestral = async (req: Request, res: Response, next: NextFunction) =>{
+        const respuesta = await this.bitacoraCM.bitacoraList();
+        
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, bitacora: respuesta });
         }
     }
 }

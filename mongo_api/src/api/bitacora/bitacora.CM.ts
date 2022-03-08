@@ -62,6 +62,8 @@ class BitacoraCM {
                 prestamo.mesa = mesa
             }
 
+            const creado = await PRT.create(prestamo);
+            
             equipo.forEach(e => {
                 EQP.findByIdAndUpdate(e._id, { $set: { disponible: false } }).exec()
                     .then(() => {
@@ -69,11 +71,23 @@ class BitacoraCM {
                     })
             });
 
-            const creado = await PRT.create(prestamo);
 
             return creado as Prestamo;
         } catch(error) {
             console.error(`Error al generar un prestamo: ${error}`.red);
+            return new InternalServerException(codigos.indefinido, error);
+        }
+    }
+    public bitacoraList = async() =>{
+        try {
+            const registro = await PRT.find({}).exec();
+
+            if(registro === null || registro === undefined) 
+                return new DataNotFoundException(codigos.identificadorInvalido);
+            
+            return registro;
+        } catch(error) {
+            console.log(`Error al obtener equipo: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);
         }
     }

@@ -64,3 +64,23 @@ export async function generarPrestamo(prestamo) {
         throw mensajes
     }
 }
+
+export async function bitacoraGen(){
+    const url = '/prestamo/bitacora/Semestral';
+
+    try {
+        const respuesta = await axios.get(url);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400)
+            throw respuesta;
+        const arr = respuesta.data.bitacora
+
+        return arr
+    } catch(error) {
+        if(error.response) {
+            throw [error.response.data.mensaje];
+        }
+        const mensajes = error.data.mensaje.split(',')
+        throw mensajes
+    }
+}
