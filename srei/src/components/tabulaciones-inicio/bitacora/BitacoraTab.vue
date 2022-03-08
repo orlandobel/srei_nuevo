@@ -16,14 +16,15 @@
                         <li class="list-group-item d-flex align-items-start">
                             <ul class="list-group list-group-horizontal w-100 fw-bold">
                                 <li class="list-group-item w-25 border-0 border-end">Mesa</li>
-                                <li class="list-group-item w-100 border-0 border-end">Nombre</li>
-                                <li class="list-group-item w-25 border-0 border-end">Boleta</li>
-                                <li class="list-group-item w-50 border-0 border-end">Hora de prestamo</li>
-                                <li class="list-group-item w-50 border-0 border-end">Hora de devolución</li>
-                                <li class="list-group-item w-75 border-0">Equipo</li>
+                                <li class="list-group-item w-25 border-0 border-end">No. alumnos</li>
+                                <li class="list-group-item w-25 border-0 border-end">No. materiales</li>
+                                <li class="list-group-item w-25 border-0 border-end">Hora de prestamo</li>
+                                <li class="list-group-item w-25 border-0 border-end">Hora de devolución</li>
+                                <li class="list-group-item w-25 border-0">Equipo</li>
                             </ul>
                         </li>
-                        <bitacora-item :prestamo="prestamo" :index="0"/>
+                        <bitacora-item v-for="(prestamo, index) in prestamos" :key="prestamo._id" 
+                            :prestamo="prestamo" :index="index"/>
                     </ul>
                 </div>
             </div>
@@ -33,7 +34,8 @@
 </template>
 
 <script>
-import BitacoraItem from '@/components/tabulaciones-inicio/bitacora/BitacoraItem.vue'
+import BitacoraItem from '@/components/tabulaciones-inicio/bitacora/BitacoraItem.vue';
+import { prestamosDia } from '@/api_queries/prestamos.js';
 
 export default {
     name: 'BitacoraTab',
@@ -42,39 +44,14 @@ export default {
     },
     data() {
         return {
-            prestamo: {
-                alumnos: [
-                    {
-                        usuario: "2018671281",
-                        nombre: "Orlando Odiseo Belmonte Flores",
-                        programa: "Intenieria en sistemas computacionales"
-                    }
-                ],
-                equipo: [
-                    {
-                        nombre: "Prueba 1",
-                        fabricante: "Odiseo",
-                        modelo: "O1",
-                        serie: "001"
-                    },
-                    {
-                        nombre: "Fuente de alimentacion",
-                        fabricante: "JasbroMan",
-                        modelo: "Upiiz",
-                        serie: "2015-2020"
-                    },
-                    {
-                        nombre: "Broca",
-                        fabricante: "JasbroMan",
-                        modelo: "Upiiz",
-                        serie: "2015-2020"
-                    }
-                ],
-                mesa: "Mesa 1",
-                activo: true,
-                creado: "19:25:25"
-            }
+            prestamos: []
         }
+    },
+    mounted() {
+        const laboratorio = this.$store.getters.laboratorio._id;
+        prestamosDia(laboratorio).then(res => {
+            this.prestamos = res.prestamos;
+        });
     }
 }
 </script>

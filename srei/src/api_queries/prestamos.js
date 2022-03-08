@@ -4,12 +4,12 @@ export async function initView(laboratorio) {
     const url = `/mesas/prestamos/${laboratorio}`;
 
     try {
-        const response = await axios.get(url);
+        const respuesta = await axios.get(url);
 
-        if(response.status >= 400 || response.data.status >= 400)
+        if(respuesta.status >= 400 || respuesta.data.status >= 400)
             throw 'Unexpected error';
 
-        return response.data.mesas;
+        return respuesta.data.mesas;
     } catch(error) {
         console.error(error);
         throw error;
@@ -62,5 +62,23 @@ export async function generarPrestamo(prestamo) {
 
         const mensajes = error.data.mensaje.split(',')
         throw mensajes
+    }
+}
+
+export async function prestamosDia(laboratorio) {
+    const url = `/prestamo/consulta/dia/${laboratorio}`;
+
+    try {
+        const respuesta = await axios.get(url);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            console.error(resouesta.data);
+            throw "Unexpected error";
+        }
+        
+        return respuesta.data;
+    } catch(error) {
+        console.error(error);
+        throw error;
     }
 }
