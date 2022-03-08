@@ -3,9 +3,19 @@
         <div class="col-lg-12">
             <!-- Cabezera de la sección -->
             <div class="row header pd-1">
-                <div class="col-9 d-flex">
+                <div class="col-7 d-flex">
                     <b class="h3 align-self-center fw-bolder me-4">Bitácora de prestamos semestral</b>
                 </div>
+                <div class="col-5 d-flex">
+                    <label for="dateI">Fecha inicio: </label>
+                    <input id="dateI" type="date" />
+                    
+                    <label for="dateO">Fecha Final: </label>
+                    <input id="dateO" type="date"/>
+                    
+                    <button class="btn btn-primary">Buscar</button>
+                </div>
+
             </div>
             <!-- Fin de la cabezera -->
 
@@ -19,14 +29,13 @@
                                 <li class="list-group-item w-25 border-0 border-end">Mesa</li>
                                 <li class="list-group-item w-50 border-0 border-end">Fecha de prestamo</li>
                                 <li class="list-group-item w-50 border-0 border-end">Hora de prestamo</li>
-                                 <li class="list-group-item w-50 border-0 border-end">Fecha de devolucion</li>
                                 <li class="list-group-item w-50 border-0 border-end">Hora de devolución</li>
                                 <li class="list-group-item w-50 border-0">Acciones</li>
                             </ul>
                         </li>
                         <bitacora-general-item 
                             v-for="prestamo in consult" :key="prestamo._id" 
-                            :alumnos="prestamo.alumnos" :mesa="prestamo.mesa" :fecha="prestamo.creado" :prestamo="prestamo.actualizado" :equipos="prestamo.equipo"/>
+                            :alumnos="prestamo.alumnos" :mesa="prestamo.mesa" :fecha="prestamo.creado" :prestamo="prestamo.actualizado" :equipos="prestamo.equipo" :activo="prestamo.activo"/>
                     </ul>
                 </div>
             </div>
@@ -54,8 +63,6 @@ export default {
      },
     async mounted() {
         await this.onInit()
-        console.log(this.consult)
-        console.log(this.consult[0].alumnos[0])
     },
 }
 </script>
