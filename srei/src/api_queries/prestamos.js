@@ -82,3 +82,20 @@ export async function prestamosDia(laboratorio) {
         throw error;
     }
 }
+
+export async function regresarPrestamo(id) {
+    const url = `/prestamo/entregar`;
+
+    try {
+        const respuesta = await axios.put(url, { id });
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            console.error(respuesta);
+            throw "Unexpected error";
+        }
+
+        return respuesta.data.prestamo;
+    } catch(error) {
+
+    }
+}

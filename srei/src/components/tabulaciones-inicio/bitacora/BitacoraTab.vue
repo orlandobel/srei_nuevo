@@ -24,7 +24,7 @@
                             </ul>
                         </li>
                         <bitacora-item v-for="(prestamo, index) in prestamos" :key="prestamo._id" 
-                            :prestamo="prestamo" :index="index"/>
+                            :prestamo_prop="prestamo" :index="index"/>
                     </ul>
                 </div>
             </div>

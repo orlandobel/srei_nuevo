@@ -104,6 +104,30 @@ class BitacoraCM {
             return new InternalServerException(error);
         }
     }
+
+    public entregarPrestamo = async (id: string): Promise<void | HttpException | Prestamo> => {
+        if(id === null || id === undefined || id === '')
+            return new BadRequestException("Id del prestmo no envíado");
+
+        try {
+            const prestamo = await PRT.findByIdAndUpdate(id, { $set: { activo: false } }, { new: true }).exec() as Prestamo;
+
+            if(prestamo === null || prestamo === undefined)
+                return new DataNotFoundException(codigos.datoNoEncontrado, "Prestamo no encotnrado en la base de datos");
+
+            prestamo.equipo.forEach(e => {
+                EQP.findByIdAndUpdate(e._id, { $set: { disponible: true } }).exec()
+                    .then(eqp => {
+                        console.log(`${eqp?.nombre} ahora disponible`.yellow)
+                    });
+            });
+
+            return prestamo;
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+    }
 }
 
 export default BitacoraCM;

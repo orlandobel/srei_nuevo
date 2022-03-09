@@ -2,18 +2,39 @@
 <li class="list-group-item align-items-start p-0 border-bottom">
         <ul class="list-group w-100 list-group-flush">
             <li class="list-group-item border-0">
-                <a class="text-decoration-none w-100" data-bs-toggle="collapse" :href="'#collapse-'+index" role="button" aria-expanded="false" aria-controls="collapseExample">
-                    <ul class="list-group list-group-horizontal w-100">
-                        <li class="list-group-item w-25 border-0 border-end">{{ prestamo.mesa }}</li>
-                        <li class="list-group-item w-25 border-0 border-end">{{ prestamo.alumnos.length }}</li>
-                        <li class="list-group-item w-25 border-0 border-end">{{ prestamo.equipo.length }}</li>
-                        <li class="list-group-item w-25 border-0 border-end">{{ hora_prestamo  }}</li>
-                        <li class="list-group-item w-25 border-0 border-end">{{ hora_devolucion }}</li>
+                <ul class="list-group list-group-horizontal w-100">
+                    
+                        <li class="list-group-item w-25 border-0 border-end" role="button"
+                            data-bs-toggle="collapse" :data-bs-target="'#collapse-'+index"
+                            aria-expanded="false" :aria-controls="'#collapse-'+index">
+                                {{ prestamo.mesa }}
+                        </li>
+                        <li class="list-group-item w-25 border-0 border-end" role="button"
+                            data-bs-toggle="collapse" :data-bs-target="'#collapse-'+index"
+                            aria-expanded="false" :aria-controls="'#collapse-'+index">
+                                {{ prestamo.alumnos.length }}
+                        </li>
+                        <li class="list-group-item w-25 border-0 border-end" role="button"
+                            data-bs-toggle="collapse" :data-bs-target="'#collapse-'+index"
+                            aria-expanded="false" :aria-controls="'#collapse-'+index">
+                                {{ prestamo.equipo.length }}
+                        </li>
+                        <li class="list-group-item w-25 border-0 border-end" role="button"
+                            data-bs-toggle="collapse" :data-bs-target="'#collapse-'+index"
+                            aria-expanded="false" :aria-controls="'#collapse-'+index">
+                                {{ hora_prestamo  }}
+                        </li>
+                        <li class="list-group-item w-25 border-0 border-end" role="button"
+                            data-bs-toggle="collapse" :data-bs-target="'#collapse-'+index"
+                            aria-expanded="false" :aria-controls="'#collapse-'+index">
+                                {{ hora_devolucion }}
+                        </li>
+                    
                         <li class="list-group-item w-25 border-0">
-                            <button class="btn btn-primary" :class="!prestamo.activo ? 'disabled' : '' " >Entregar</button>
+                            <button class="btn btn-primary" :class="!prestamo.activo ? 'disabled' : '' "
+                                @click="regresar()">Entregar</button>
                         </li>
                     </ul>
-                </a>
             </li>
 
             <li class="collapse list-group-item w-100 align-items-start m-0 p-0" :id="'collapse-'+index">
@@ -45,32 +66,40 @@
 </template>
 
 <script>
+import { regresarPrestamo } from '@/api_queries/prestamos';
+
 export default {
     name: 'BitacoraItem',
     props: {
-        prestamo: { type: Object, required: true },
+        prestamo_prop: { type: Object, required: true },
         index: { type: Number, required: true }
+    },
+    data() {
+        return {
+            prestamo: this.prestamo_prop,
+        }
     },
     computed: {
         hora_prestamo() {
-            const timestamp = this.prestamo.creado;
-                 
-            const hora_mongo = timestamp.split('T')[1];
-            const hora = hora_mongo.split('.')[0];
+            const date = new Date(this.prestamo.creado)
 
-            return hora;
+            return date.toLocaleTimeString();
         },
         hora_devolucion() {
             if(this.prestamo.activo)
                 return '-';
 
-            const timestamp = this.prestamo.actualizado;
-                 
-            const hora_mongo = timestamp.split('T')[1];
-            const hora = hora_mongo.split('.')[0];
+            const date = new Date(this.prestamo.actualizado)
 
-            return hora;
+            return date.toLocaleTimeString();
+        },
+        regresar() {
+            regresarPrestamo(this.prestamo._id)
+                .then(res => {
+                    this.prestamo = res;
+                })
+                .catch(errtor => console.error(errtor));
         }
-    }
+    },
 }
 </script>
