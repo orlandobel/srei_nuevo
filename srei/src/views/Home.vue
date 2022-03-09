@@ -35,7 +35,7 @@
                                 <li class="nav-item" role="presentation">
                                     <a class="nav-link" id="bitacoraGlob-tab" href="#bitacoraGlob"
                                         data-bs-toggle="tab" role="tab" aria-controls="bitacoraGlob" aria-selected="false">
-                                            Bitácora semestral
+                                            Bitácora periodica
                                     </a>
                                 </li>
                             </ul>
