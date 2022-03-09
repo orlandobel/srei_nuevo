@@ -22,7 +22,7 @@ export default {
         mesa: { type: String, required: true },
         prestamo: { type: String, required: true },
         devolucion: { type: String, required: false, default: '' },
-        entregado: { type: String, required: false, default: false },
+        entregado: { type: Boolean, required: false, default: false },
     }
 }
 </script>

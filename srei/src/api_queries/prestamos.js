@@ -65,8 +65,8 @@ export async function generarPrestamo(prestamo) {
     }
 }
 
-export async function bitacoraGen(){
-    const url = '/prestamo/bitacora/Semestral';
+export async function bitacoraGen(fechaI, fechaO){
+    const url = `/prestamo/bitacora/Semestral/${fechaI}/${fechaO}`;
 
     try {
         const respuesta = await axios.get(url);

@@ -4,16 +4,18 @@
             <!-- Cabezera de la sección -->
             <div class="row header pd-1">
                 <div class="col-7 d-flex">
-                    <b class="h3 align-self-center fw-bolder me-4">Bitácora de prestamos semestral</b>
+                    <b class="h3 align-self-center fw-bolder me-4">Bitácora periodica de prestamos</b>
                 </div>
-                <div class="col-5 d-flex">
-                    <label for="dateI">Fecha inicio: </label>
-                    <input id="dateI" type="date" />
-                    
-                    <label for="dateO">Fecha Final: </label>
-                    <input id="dateO" type="date"/>
-                    
-                    <button class="btn btn-primary">Buscar</button>
+                <div class="col-2">
+                    <label for="dateI" >Fecha Inicial</label>
+                    <input id="dateI" type="date" class="border-0" v-model="this.fechaI"/>
+                </div>
+                <div class="col-2">    
+                    <label for="dateO">Fecha Final</label>
+                    <input id="dateO" type="date" class="border-0" v-model="this.fechaO"/>
+                </div>
+                <div v-if="this.fechaI != '' && this.fechaO != ''" class="col-1">   
+                    <button class="btn btn-primary" v-on:click="this.wop() ">Buscar</button>
                 </div>
 
             </div>
@@ -53,17 +55,21 @@ export default {
     components: {BitacoraGeneralItem},
     data () {
         return {
-            consult: []
+            consult: [],
+            fechaI:'',
+            fechaO:'',
         }
     },
     methods: {
-            async onInit() {
-                this.consult = await bitacoraGen();
-            },
+            async wop(){
+                console.log(this.fechaI)
+                console.log(this.fechaO)
+                this.consult = await bitacoraGen(this.fechaI, this.fechaO)
+             }
      },
-    async mounted() {
-        await this.onInit()
-    },
+   // async mounted() {
+   //     await this.onInit()
+   // },
 }
 </script>
 

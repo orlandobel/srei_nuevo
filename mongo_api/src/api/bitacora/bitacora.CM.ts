@@ -78,9 +78,9 @@ class BitacoraCM {
             return new InternalServerException(codigos.indefinido, error);
         }
     }
-    public bitacoraList = async() =>{
+    public bitacoraList = async( fechaInicial: string, fechaFinal: string) =>{
         try {
-            const registro = await PRT.find({}).exec();
+            const registro = await PRT.find({ creado: { $gt: new Date(fechaInicial), $lt: new Date(fechaFinal) } } ).exec();
 
             if(registro === null || registro === undefined) 
                 return new DataNotFoundException(codigos.identificadorInvalido);
