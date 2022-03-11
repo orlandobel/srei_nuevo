@@ -135,7 +135,8 @@ export default {
             this.equipos.splice(index, 1);
         },
         addAlumno(alumno) {
-            if(!this.alumnos.some(a => a._id === alumno._id))
+            console.log(alumno)
+            if(!this.alumnos.some(a => a.usuario === alumno.usuario))
                 this.alumnos.push(alumno);
         },
         removerAlumno(index) {
