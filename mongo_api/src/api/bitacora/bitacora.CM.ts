@@ -64,6 +64,8 @@ class BitacoraCM {
                 prestamo.mesa = mesa
             }
 
+            const creado = await PRT.create(prestamo);
+            
             equipo.forEach(e => {
                 EQP.findByIdAndUpdate(e._id, { $set: { disponible: false } }).exec()
                     .then(() => {
@@ -71,7 +73,6 @@ class BitacoraCM {
                     })
             });
 
-            const creado = await PRT.create(prestamo);
 
             return creado as Prestamo;
         } catch(error) {
@@ -79,6 +80,7 @@ class BitacoraCM {
             return new InternalServerException(codigos.indefinido, error);
         }
     }
+
 
     public consultarBitacoraDia = async (laboratorio: string): Promise<void | Prestamo[] | HttpException> => {
         if(laboratorio === null || laboratorio === undefined || laboratorio == '') 
@@ -126,6 +128,20 @@ class BitacoraCM {
         } catch(error) {
             console.log(`${error}`.red);
             return new InternalServerException(error);
+        }
+    }
+
+    public bitacoraList = async( fechaInicial: string, fechaFinal: string) =>{
+        try {
+            const registro = await PRT.find({ creado: { $gt: new Date(fechaInicial), $lt: new Date(fechaFinal) } } ).exec();
+
+            if(registro === null || registro === undefined) 
+                return new DataNotFoundException(codigos.identificadorInvalido);
+            
+            return registro;
+        } catch(error) {
+            console.log(`Error al obtener equipo: ${error}`.red);
+            return new InternalServerException(codigos.indefinido, error);
         }
     }
 }

@@ -67,10 +67,8 @@ export async function generarPrestamo(prestamo) {
 
 export async function prestamosDia(laboratorio) {
     const url = `/prestamo/consulta/dia/${laboratorio}`;
-
     try {
         const respuesta = await axios.get(url);
-
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
             console.error(resouesta.data);
             throw "Unexpected error";
@@ -96,6 +94,29 @@ export async function regresarPrestamo(id) {
 
         return respuesta.data.prestamo;
     } catch(error) {
+        if(error.response) {
+            throw [error.response.data.mensaje];
+        }
+        const mensajes = error.data.mensaje.split(',')
+        throw mensajes
+    }
+}
 
+export async function bitacoraGen(fechaI, fechaO){
+    const url = `/prestamo/bitacora/Semestral/${fechaI}/${fechaO}`;
+
+    try {
+        const respuesta = await axios.get(url);
+        if(respuesta.status >= 400 || respuesta.data.status >= 400)
+            throw respuesta;
+        const arr = respuesta.data.bitacora
+
+        return arr
+    } catch(error) {
+        if(error.response) {
+            throw [error.response.data.mensaje];
+        }
+        const mensajes = error.data.mensaje.split(',')
+        throw mensajes
     }
 }

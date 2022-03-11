@@ -32,6 +32,12 @@
                                             Bitácora del día
                                     </a>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link" id="bitacoraGlob-tab" href="#bitacoraGlob"
+                                        data-bs-toggle="tab" role="tab" aria-controls="bitacoraGlob" aria-selected="false">
+                                            Bitácora periodica
+                                    </a>
+                                </li>
                             </ul>
                             <!-- Fin de las pestañas de tabulación -->
                         </div>
@@ -46,6 +52,9 @@
                                 </div>
                                 <div class="tab-pane fade h-100 mh-100 show active" id="bitacora" role="tabpanel" aria-labelledby="bitacora-tab">
                                     <bitacora-tab />
+                                </div>
+                                <div class="tab-pane fade h-100 mh-100" id="bitacoraGlob" role="tabpanel" aria-labelledby="bitacoraGlob-tab">
+                                    <bitacora-general-tab />
                                 </div>
                             </div>
                             <!-- Fin de secciones de tabulación -->
@@ -63,6 +72,8 @@ import PrestamosTab from '@/components/tabulaciones-inicio/prestamos/PrestamosTa
 import AlumnosLaboratorioTab from '@/components/tabulaciones-inicio/alumnos_laboratorio/AlumnosLaboratorioTab.vue';
 import ApiMessage from '@/components/ApiMessage.vue';
 import BitacoraTab from '@/components/tabulaciones-inicio/bitacora/BitacoraTab.vue';
+import BitacoraGeneralTab from '@/components/tabulaciones-inicio/bitacoraGeneral/BitacoraGeneralTab.vue';
+
 
 export default {
     name: 'Home',
@@ -72,6 +83,7 @@ export default {
         AlumnosLaboratorioTab,
         BitacoraTab,
         ApiMessage,
+        BitacoraGeneralTab,
     },
     data() {
         return {
