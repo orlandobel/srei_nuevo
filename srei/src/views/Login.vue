@@ -17,8 +17,8 @@
                             <input type="password" name="password" id="password" class="form-control" v-model="password">
                         </div>
                         <div class="row justify-content-end pe-xl-2 pe-xxl-3">
-                            <div class="col-xl-6">
-                            <a href="#" target="_blank" rel="noopener noreferrer">Deseo registrarme</a>
+                            <div class="col-xl-7">
+                                <router-link :to="{name: 'signup'}" class="btn d-inline-flex text-primary">Deseo registrarme</router-link>
                             </div>
                             <div class="col-xl-3">
                                 <button class="btn btn-primary btn-rounded">Entrar</button>
