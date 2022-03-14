@@ -97,7 +97,6 @@ export default {
                     return;
 
                 this.equipo.img_path = `data:image/png;base64,${res}`;
-                console.log(this.equipo.img_path);
                 this.campos = Object.keys(this.equipo);
             }
         }

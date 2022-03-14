@@ -19,11 +19,13 @@ class UsuariosController implements Controller {
     }
 
     private initializeRoutes() {
+        this.router.get(this.path + '/alumnos/listar', this.listarAlumnos);
         this.router.post(this.path + '/login', this.ingresar);
         this.router.post(this.path + '/login/test', this.ingresar);
         this.router.post(this.path + '/login/verify', this.checkLogin);
         this.router.post(this.path + '/crear/empleado', this.crearEmpleado);
         this.router.post(this.path + '/consulta/dae', this.consultaDae);
+        this.router.post(this.path + '/vetado/consulta', this.verificarVetado);
     }
 
     private ingresar = async (req: Request, res: Response, next: NextFunction) => {
@@ -71,6 +73,28 @@ class UsuariosController implements Controller {
             res.send({ status:200, alumno: respuesta });
         }
     }
+
+    public verificarVetado = async (req: Request, res: Response, next: NextFunction) =>  {
+        const { alumno, laboratorio } = req.body;
+
+        const respuesta = await this.usuariosCM.checkVetado(alumno, laboratorio);
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta)
+        } else {
+            res.send({ status: 200, ...respuesta});
+        }
+    }
+
+    public listarAlumnos = async (req: Request, res: Response, next: NextFunction) => {
+        const respuesta = await this.usuariosCM.listarAlumnos();
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, alumnos: respuesta });
+        }
+    }    
 }
 
 export default UsuariosController;

@@ -15,7 +15,6 @@ export async function imagen(ruta) {
         if(response.status >= 400)
             return null;
 
-        console.log(response);
         return response.data
     } catch(error) {
         console.error(error);

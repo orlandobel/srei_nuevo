@@ -8,8 +8,9 @@ import DataNotFoundException from "../../exceptions/DataNotFoundException";
 import InternalServerException from "../../exceptions/InternalServerException";
 import BadRequestException from "../../exceptions/BadRequestException";
 
-import USR, { Usuario, Trabajador } from '../../interfaces/collections/USR.interface';
+import USR, { Usuario, Trabajador, Alumno } from '../../interfaces/collections/USR.interface';
 import LAB, { Laboratorio } from '../../interfaces/collections/LAB.interface';
+import HttpException from "src/exceptions/HttpException";
 
 const jwt = require('jsonwebtoken');
 const TOKEN = 'c8b0e9c6b16c2499435ce026d5188674a567bb75e00a271ff6010d8c975c2723cdc81fcc5dc69f79afa85c22f8cdf3bbf488952f2ba18c1cda89f097e0c3597c';
@@ -123,7 +124,7 @@ class UsuariosCM {
             return new BadRequestException("Url de consulta no envíada");
 
         try {
-            const data = await axios.get(url).then(res => res.data);
+            const data: string = await axios.get(url).then(res => res.data);
             const dom = new jsdom.JSDOM(data);
             const document = dom.window.document;
             
@@ -132,9 +133,57 @@ class UsuariosCM {
             const usuario = boleta.substring(0,10)
             //const imagen = document.getElementsByClassName('pic')[1].querySelector('img').src;
             const programa = document.getElementsByClassName('carrera')[0].textContent;
-            console.log(programa)
+
 
             return { nombre, usuario, programa,/* imagen */};
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+    }
+
+    public checkVetado = async (alumno: Alumno, laboratorio: string): Promise<void | HttpException | Object> => {
+        if(alumno === null || alumno === undefined) {
+            console.log('Alumno no envíado'.red);
+            return new BadRequestException('Alumno no envíado');
+        }
+
+        if(laboratorio === null || laboratorio === undefined || laboratorio === '') {
+            console.log('Laboratorio no envíado');
+            return new BadRequestException('Id del laboratorio no envíadp');
+        }
+
+        try {
+            let alm = await USR.findOne({ usuario: alumno.usuario }).exec();
+
+            if(alm === null || alm === undefined) {
+                alumno.tipo = 0;
+                alm = await USR.create(alumno);
+                console.log(alm);
+                return { alumno: alm, vetado: false };
+            }
+
+            if(alm.vetado === null || alm.vetado === undefined)
+                return { alumno: alm, vetado: false };
+            
+            console.log(true);
+            const vetado = alm.vetado[laboratorio] || false;
+            
+            return { alumno: alm, vetado }
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+    }
+
+    public listarAlumnos = async (): Promise<void | HttpException | Alumno[]> => {
+        try {
+            const alumnos = await USR.find({ tipo: 0 }).exec() as Alumno[];
+
+            if(alumnos === null || alumnos === undefined)
+                return [];
+
+            return alumnos;
         } catch(error) {
             console.log(`${error}`.red);
             return new InternalServerException(error);
