@@ -1,6 +1,5 @@
 <template>
     <div class="row overflow-hidden">
-        <!--TODO: Desplegar mensajes de erro o exito al obtener la respuesta de la api cuando se generan los prestamos -->
         <div class="position-absolute z-index-2 w-auto">
             <div class="alert alert-danger" role="alert" 
                 v-for="e in errors" :key="e">
@@ -55,10 +54,20 @@
             <!-- Lado derecho de la cabezera de la sección -->
             <div class="row mb-2 header">
                 <div class="input-group">
-                    <input type="text" name="boleta" id="boleta" placeholder="Boleta" class="form-control">
+                    <input type="text" name="boleta" id="boleta" placeholder="Boleta"
+                        class="form-control dropdown-toggle" autocomplete="off"
+                        data-bs-toggle="dropdown" aria-expanded="false"
+                        @input="filtrarAlumnos()"
+                        ref="alumnosSearchField">
                     <span class="input-group-text">
                         <fa-icon :icon="['fas','user-plus']" />
                     </span>
+
+                    <ul class="dropdown-menu">
+                        <li v-for="alumno in alumnos_filtrados" :key="alumno._id">
+                            <a class="dropdown-item" href="#">{{ alumno.nombre }} | {{ alumno.usuario }}</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
             <!-- Fin del lado derecho de la cabezera -->
@@ -99,7 +108,6 @@
 </template>
 
 <script>
-import PrestamosListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElement.vue'
 import EquipoListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElements/EquipoListElement.vue';
 import AlumnoListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElements/AlumnoListElement.vue';
 import ApiMessage from '@/components/ApiMessage.vue';
@@ -108,8 +116,7 @@ import  { initView, generarPrestamo } from '@/api_queries/prestamos';
 
 export default {
     name: 'PrestamosTab',
-    components: { 
-        PrestamosListElement,
+    components: {
         QRScanner,
         EquipoListElement,
         AlumnoListElement,
@@ -119,13 +126,14 @@ export default {
         return {
             equipos: [],
             alumnos: [],
+            alumnos_busqueda: [],
+            alumnos_filtrados: [],
             mesas: [],
             success: false,
             error: false,
             errors: [],
         }
     },
-
     methods: {
         addEquipo(equipo) {
             if(!this.equipos.some(e => e._id === equipo._id))
@@ -171,13 +179,21 @@ export default {
             } catch(error) {
                 this.$emit('erroresPrestamo', error);;
             }
+        },
+        filtrarAlumnos() {
+            const filtro = this.$refs.alumnosSearchField.value;
+            
+            this.alumnos_filtrados = this.alumnos_busqueda.filter(
+                a => a.usuario.includes(filtro));
         }
     },
     mounted() {
-        const laboratorio = this.$store.getters.laboratorio
+        const laboratorio = this.$store.getters.laboratorio;
         initView(laboratorio._id)
             .then(data => {
-                this.mesas = data;
+                this.mesas = data.mesas;
+                this.alumnos_busqueda = data.alumnos;
+                this.alumnos_filtrados = data.alumnos;
             }).catch(error => console.error(error));
     }
 }

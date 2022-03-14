@@ -132,10 +132,15 @@
                     }
                 } else if (this.isValidHttpUrl(result)) {
                     try {
-                        const alumnoDatos = await consultaDae(result);
+                        const laboratorio = this.$store.getters.laboratorio._id;
+                        const alumnoDatos = await consultaDae(result, laboratorio);
                         
-                        this.$emit('addAlumnos', alumnoDatos) 
-                        this.validMsg = "Lectura URL alumno exitosa"
+                        if(!alumnoDatos.vetado) {
+                            this.$emit('addAlumnos', alumnoDatos.alumno) 
+                            this.validMsg = "Lectura URL alumno exitosa"
+                        } else {
+                            this.validMsg = "Alumno vetado del laboratorio";
+                        }
                         
                     } catch(error) {
                         console.error(error);
@@ -199,24 +204,10 @@
                 this.results = []
             },
 
-            guardar() {
-            },
-
             timeout(ms) {
                 return new Promise(resolve => {
                     window.setTimeout(resolve, ms)
                 })
-            },
-
-            axiosConsult(url) {
-                const promese = axios.get(url,{ 
-                        transformRequest: (data, headers) => {
-                            delete headers.common['Authorization'];
-                            return data;
-                        },
-                    })
-                const dataProm = promese.then(response =>  response.data)
-                return dataProm
             },
         },
     }

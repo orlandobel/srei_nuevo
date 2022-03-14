@@ -22,7 +22,7 @@
                                 <li class="list-group-item w-100 border-0"></li>
                             </ul>
                         </li>
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="true" />
+                        <!---alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="true" />
                         <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
                         <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
                         <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
@@ -44,7 +44,7 @@
                         <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
                         <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
                         <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
+                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" /--->
                     </ul>
                 </div>
             </div>
@@ -55,13 +55,13 @@
 
 <script>
 import AlumnosLaboratorioListElement from '@/components/tabulaciones-inicio/alumnos_laboratorio/AlumnosLaboratorioListElement.vue'
-import PrestamosListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElement.vue'
+//import PrestamosListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElement.vue'
 
 export default {
     name: 'AlumnosLaboratorioTab',
     components: { 
         AlumnosLaboratorioListElement,
-        PrestamosListElement,
+        //PrestamosListElement,
     },
 }
 </script>
