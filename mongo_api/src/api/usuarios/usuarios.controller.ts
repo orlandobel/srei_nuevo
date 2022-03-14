@@ -6,6 +6,7 @@ import BadRequestException from '../../exceptions/BadRequestException';
 import Controller from '../../interfaces/controller.interface';
 import UsuariosCM from './usuarios.CM';
 import HttpException from '../../exceptions/HttpException';
+import { Usuario } from '../../interfaces/collections/USR.interface';
 
 class UsuariosController implements Controller {
     public router = Router();
@@ -50,9 +51,19 @@ class UsuariosController implements Controller {
     }
 
     private crearEmpleado = async (req: Request, res: Response, next: NextFunction) => {
-        const { usuario, clave } = req.body;
+        const { nombre, usuario, clave, laboratorio, passwordCheck} = req.body;
 
-        const respuesta = await this.usuariosCM.crearEmpleado(usuario, clave);
+        const usr = {
+            nombre,
+            usuario,
+            clave,
+            laboratorio,
+            tipo:0,
+            vetado: [],
+            enEspera: true
+        }as Usuario
+
+        const respuesta = await this.usuariosCM.crearEmpleado(usr, passwordCheck);
 
         if(respuesta instanceof BadRequestException || respuesta instanceof InternalServerException) {
             res.status(respuesta.status).send(respuesta)
