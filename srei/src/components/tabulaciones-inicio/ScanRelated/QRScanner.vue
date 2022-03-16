@@ -56,7 +56,6 @@
 <script>
     import { QrcodeStream } from "vue3-qrcode-reader";
     import { consultaDisponibilidad, consultaDae } from "@/api_queries/prestamos";
-    import axios  from 'axios';
 
     export default {
         name: "QRScanner",

@@ -44,21 +44,37 @@ export async function consultaDisponibilidad(id) {
 
 export async function consultaDae(url, laboratorio) {
     try {
-        const respuesta_dae = await axios.post('/usuarios/consulta/dae', { url });
+        const respuesta = await axios.post('/usuarios/consulta/dae', { url });
         
-        if(respuesta_dae.status >= 400 || respuesta_dae.data.status >= 400)
+        if(respuesta.status >= 400 || respuesta.data.status >= 400)
             throw "Unexpected error in 'consulta dae";
 
-        const alumno = respuesta_dae.data.alumno
-        const respuesta_vetado = await axios.post('/usuarios/vetado/consulta', { alumno, laboratorio });
-
-        if(respuesta_vetado.status >= 400 || respuesta_vetado.data.status >= 400)
-            throw "Unexpected error in 'vetado'"
-            
-        return respuesta_vetado.data;
+        const alumno = respuesta.data.alumno
+        const vetado = await verificarVetado(alumno, laboratorio);
+    
+        return { alumno, vetado };
     } catch(error) {
         throw error;
     }
+}
+
+export async function verificarVetado(alumno, laboratorio) {
+    const url = '/usuarios/vetado/consulta'
+
+    try {
+        const respuesta = await axios.post(url, { alumno, laboratorio });
+        
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            console.error(respuesta);
+            throw "Unexpected erro in 'consulta vetado'";
+        }
+
+        return respuesta.data.vetado;
+    } catch(error) {
+        console.error(error);
+        throw error;
+    }
+
 }
 
 export async function generarPrestamo(prestamo) {

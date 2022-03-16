@@ -1,19 +1,15 @@
 <template>
     <div class="row overflow-hidden">
-        <div class="position-absolute z-index-2 w-auto">
-            <div class="alert alert-danger" role="alert" 
-                v-for="e in errors" :key="e">
-                {{ e }}
-            </div>
-        </div>
         <QRScanner ref="qrComponent" @addPrestamo="addEquipo($event)" @addAlumnos="addAlumno($event)"/>
         <div class="col-lg-7">
             <!-- Lado izquierdo de la cabezera de la sección -->
             <div class="row header pd-1">
                 <div class="col-9 d-flex">
                     <b class="h3 align-self-center fw-bolder me-4">Prestamos</b>
-                    <button v-on:click="this.$refs.qrComponent.camera = 'auto' " type="button" class="btn btn-outline-secondary icon-button" data-bs-toggle="modal" data-bs-target="#scanModal">
-                        <fa-icon :icon="['fas','qrcode']" size="2x"/>
+                    <button v-on:click="this.$refs.qrComponent.camera = 'auto'"
+                        type="button" class="btn btn-outline-secondary icon-button"
+                        data-bs-toggle="modal" data-bs-target="#scanModal">
+                            <fa-icon :icon="['fas','qrcode']" size="2x"/>
                     </button>
                 </div>
                 <div class="col-3">
@@ -65,7 +61,8 @@
 
                     <ul class="dropdown-menu">
                         <li v-for="alumno in alumnos_filtrados" :key="alumno._id">
-                            <a class="dropdown-item" href="#">{{ alumno.nombre }} | {{ alumno.usuario }}</a>
+                            <a class="dropdown-item" href="#"
+                                @click="buscar(alumno)">{{ alumno.nombre }} | {{ alumno.usuario }}</a>
                         </li>
                     </ul>
                 </div>
@@ -112,7 +109,7 @@ import EquipoListElement from '@/components/tabulaciones-inicio/prestamos/Presta
 import AlumnoListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElements/AlumnoListElement.vue';
 import ApiMessage from '@/components/ApiMessage.vue';
 import QRScanner from '@/components/tabulaciones-inicio/ScanRelated/QRScanner.vue'
-import  { initView, generarPrestamo } from '@/api_queries/prestamos';
+import  { initView, generarPrestamo, verificarVetado } from '@/api_queries/prestamos';
 
 export default {
     name: 'PrestamosTab',
@@ -185,6 +182,15 @@ export default {
             
             this.alumnos_filtrados = this.alumnos_busqueda.filter(
                 a => a.usuario.includes(filtro));
+        },
+        async buscar(alumno) {
+            const laboratorio = this.$store.getters.laboratorio._id;
+            const vetado = await verificarVetado(alumno, laboratorio)
+            console.log(alumno);
+            if(vetado)
+                this.$emit("erroresPrestamo", ['Alumno vetado del laboratorio'])
+            else 
+                this.addAlumno(alumno);
         }
     },
     mounted() {
@@ -192,6 +198,7 @@ export default {
         initView(laboratorio._id)
             .then(data => {
                 this.mesas = data.mesas;
+                console.log(data)
                 this.alumnos_busqueda = data.alumnos;
                 this.alumnos_filtrados = data.alumnos;
             }).catch(error => console.error(error));

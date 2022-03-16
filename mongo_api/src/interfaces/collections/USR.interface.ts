@@ -29,6 +29,7 @@ const USRSchema = new Schema<Usuario>({
     nombre: { type: String, required: true },
     vetado: { type: {}, required: false },
     laboratorio: { type: String, required: false },
+    programa: { type: String, requires: false },
 },
 {
     timestamps: {
