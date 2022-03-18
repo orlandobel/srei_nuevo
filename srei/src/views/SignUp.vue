@@ -156,6 +156,7 @@ export default {
                 }
                 if (params.clave != params.passwordCheck){
                     this.errorMsg += "<p> Recuerde que la contraseña inscrita <strong> debe ser la misma en los 2 campos de contraseña. </strong></p>"
+                    errorFlag ++
                 }
 
                 if (errorFlag!= 0){
