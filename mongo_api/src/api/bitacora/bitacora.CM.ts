@@ -52,19 +52,18 @@ class BitacoraCM {
             }
 
             const lab = await LAB.findById(laboratorio).exec();
-            const mesa = await MS.findOne({ laboratorio, nombre: mesa_nombre }, { alumnos: 1 }) as Mesa;
-            
-            const alumnos_mesa = [...mesa.alumnos, ...alumnos];
+            let mesa;
             
             if(lab === null || lab === undefined)
-                return new DataNotFoundException(codigos.datoNoEncontrado, "Laboratorio no encontrado")
-
+            return new DataNotFoundException(codigos.datoNoEncontrado, "Laboratorio no encontrado")
+            
             if(lab.nombre.includes("Electronica")) {
                 console.log(mesa_nombre);
                 if(mesa_nombre === null || mesa_nombre === undefined || mesa_nombre === '') {
                     return new BadRequestException('Seleccione una mesa para registrar')
                 }
-
+                
+                mesa = await MS.findOneAndUpdate({ laboratorio, nombre: mesa_nombre }, { $set: { alumnos } }) as Mesa;
                 prestamo.mesa = mesa_nombre
             }
 
@@ -76,8 +75,6 @@ class BitacoraCM {
                         console.log(`${e.nombre} ahora ocupado`. yellow);
                     })
             });
-
-            MS.findByIdAndUpdate(mesa._id, { $set: { alumnos_mesa } }).exec();
 
             return creado as Prestamo;
         } catch(error) {
@@ -121,6 +118,11 @@ class BitacoraCM {
             if(prestamo === null || prestamo === undefined)
                 return new DataNotFoundException(codigos.datoNoEncontrado, "Prestamo no encotnrado en la base de datos");
 
+            const laboratorio = prestamo.laboratorio;
+            const nombre_mesa = prestamo.mesa;
+
+            MS.findOneAndUpdate({ laboratorio, nombre: nombre_mesa }, { $set: { alumnos: [] } }).exec();
+            
             prestamo.equipo.forEach(e => {
                 EQP.findByIdAndUpdate(e._id, { $set: { disponible: true } }).exec()
                     .then(eqp => {

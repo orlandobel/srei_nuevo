@@ -198,7 +198,7 @@ export default {
         initView(laboratorio._id)
             .then(data => {
                 this.mesas = data.mesas;
-                console.log(data)
+                
                 this.alumnos_busqueda = data.alumnos;
                 this.alumnos_filtrados = data.alumnos;
             }).catch(error => console.error(error));

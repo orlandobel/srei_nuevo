@@ -1,6 +1,6 @@
 import { createStore } from 'vuex';
 import equipo_inventario from './equipo_inventario';
-import laboratorio from './laboratorio';
+import laboratorio_store from './laboratorio';
 
 export default createStore({
   state: {
@@ -37,6 +37,6 @@ export default createStore({
   },
   modules: {
     equipo_inventario,
-    laboratorio,
+    laboratorio_store,
   }
 })

@@ -25,6 +25,23 @@ class MesasCM {
             return new InternalServerException(error)
         }
     }
+
+    public alumnosMesas = async (laboratorio: string): Promise<void | HttpException | Mesa[]> => {
+        if(laboratorio === null || laboratorio === undefined || laboratorio === '') {
+            console.log(`Laboratorio no envíado en modulo MesaCD.alumnosMesas`.red);
+            return new BadRequestException(`Laboratorio no envíado en modulo MesaCD.alumnosMesas`);
+        }
+
+        try {
+            const mesas = await MS.find({ laboratorio, 'alumnos.0': { $exists: true } }, 'nombre | alumnos') as Mesa[];
+
+            return mesas;
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+
+    }
 }
 
 export default MesasCM;

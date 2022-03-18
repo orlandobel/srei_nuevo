@@ -44,10 +44,10 @@ export default {
         BitacoraItem,
     },
     computed: {
-        ...mapGetters('laboratorio', ['prestamos']),
+        ...mapGetters('laboratorio_store', ['prestamos']),
     },
     methods: {
-        ...mapActions('laboratorio', ['initPrestamos']),
+        ...mapActions('laboratorio_store', ['initPrestamos']),
     },
     mounted() {
         const laboratorio = this.$store.getters.laboratorio._id;

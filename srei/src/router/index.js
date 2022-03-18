@@ -60,15 +60,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(to)
   if(to.matched.some(record => record.meta.needLoggin)) isLogged({to, next, store})
   else next()
-})
-
-/*router.beforeEach = async (to, from, next) => {
-  if(to.matched.some(record => record.meta.needLoggin)) {
-    await isLogged({to, next})
-  } else { next() }
-}*/
+});
 
 export default router

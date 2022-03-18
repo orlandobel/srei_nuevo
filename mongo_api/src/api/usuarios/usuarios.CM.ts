@@ -169,7 +169,7 @@ class UsuariosCM {
             console.log(true);
             const vetado = alm.vetado[laboratorio] || false;
             
-            return vetado
+            return { alumno: alm, vetado }
         } catch(error) {
             console.log(`${error}`.red);
             return new InternalServerException(error);
