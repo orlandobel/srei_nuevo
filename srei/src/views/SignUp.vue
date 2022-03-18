@@ -94,9 +94,20 @@ export default {
                 }
         },
 
+        ValidarPassword(){
+            const _pass_pattern = "^(?=.*[A-ZÑ])(?=.*[a-zñ])(?=.*[0-9]).{8,32}$";
+            if(this.password.match(_pass_pattern)){
+                console.log("contraseña fuerte")
+                return true
+            }
+            console.log("que es esto: "+ this.password)
+            return false
+        },
+
         async signIn() {
             this.errorMsg =''
             this.successMsg = ''
+            let errorFlag = 0;
             const params = {
                 nombre: this.nombre,
                 usuario: this.rfc.toUpperCase(),
@@ -104,11 +115,12 @@ export default {
                 laboratorio: this.labPick,
                 passwordCheck: this.passwordCheck
             }
+            
 
             try {
-
+                //validadcion de campos vacios
                 if (params.nombre == "" || params.usuario == "" || params.clave == "" || params.laboratorio == "" || params.passwordCheck == ""){
-                    this.errorMsg = "<p><strong>¡Error al registrarse!</strong></p>"
+                    this.errorMsg += "<p><strong>¡Error al llenar formulario!</strong></p>"
                     this.errorMsg += "<ul>"
                     if (params.nombre == "") this.errorMsg += "<li>Asegúrese de inscribir su nombre.</li>"
                     if (params.usuario == "") this.errorMsg += "<li>Asegúrese de inscribir su RFC.</li>"
@@ -116,12 +128,41 @@ export default {
                     if (params.clave == "" || params.passwordCheck == "") this.errorMsg += "<li>Asegúrese de validar la contraseña previamente inscrita.</li>"
                     if (params.laboratorio == "") this.errorMsg += "<li>Asegúrese de seleccionar un laboratorio.</li>"
                     this.errorMsg += "</ul>"
-                    throw new Error('oops');
-                } else if (!this.ValidaRFC()){
-                    this.errorMsg = "<p><strong>¡Error al registrarse!</strong></p>"
+                    errorFlag ++
+                }
+                //validar longitud minima de nombre
+                if (params.nombre.length < 3){
+                    this.errorMsg += "<p><strong>¡Error en nombre!</strong></p>"
+                    this.errorMsg += "<p>Se recomienda usar nombre completo</p>"
+                    errorFlag ++
+                }
+
+                //validadcion de rfc con regex del sat
+                if (!this.ValidaRFC()){
+                    this.errorMsg += "<p><strong>¡Error en RFC!</strong></p>"
                     this.errorMsg += "<p>Necesita un RFC valido</p>"
+                    errorFlag ++
+                }
+                //validacion de contraseña con campos destacados
+                if (!this.ValidarPassword()){
+                    this.errorMsg += "<p><strong>¡Error al registrar contraseña!</strong></p>"
+                    this.errorMsg += "<p>la contraseña debe tener entre 8 a 32 caracteres con al menos:</p>"
+                    this.errorMsg += "<ul>"
+                    this.errorMsg += "<li>Un numero</li>"
+                    this.errorMsg += "<li>Una mayuscula</li>"
+                    this.errorMsg += "<li>Una minuscula</li>"
+                    this.errorMsg += "</ul>"
+                    errorFlag ++
+                }
+                if (params.clave != params.passwordCheck){
+                    this.errorMsg += "<p> Recuerde que la contraseña inscrita <strong> debe ser la misma en los 2 campos de contraseña. </strong></p>"
+                }
+
+                if (errorFlag!= 0){
                     throw new Error('oops');
                 }
+
+
                 const response = await SignIn(params)
                 if(response.status == 200)
                     this.successMsg  = "<p><strong>¡Exito en el registro de datos!</strong></p>"
@@ -132,11 +173,8 @@ export default {
                     const response = error.response
                     const status = response.status 
                     if (status == 404) this.errorMsg = "<p><strong>¡Error de conexion!</strong> intente su registro en otro momento</p>"
-                    else this.errorMsg = "<p><strong>¡Error al registrarse!</strong></p>"
+                    else this.errorMsg = "<p><strong>¡Error desconocido al registrarse!</strong></p>"
                     
-                    if (params.clave != params.passwordCheck){
-                        this.errorMsg += "Recuerde que la contraseña inscrita debe ser la misma en los 2 campos de contraseña.</p>"
-                    }
                 }
             }
         },
