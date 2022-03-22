@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '@/views/Login.vue'
 import Inventario from '@/views/Inventarios.vue'
 import Catalogos from '@/views/Catalogos.vue'
+import Usuarios from '@/views/Usuarios.vue'
 import CatalogosViewer from '@/components/catalogos/CatalogosViewer.vue'
 
 import isLogged from './middleware/auth';
@@ -33,6 +34,14 @@ const routes = [
     meta: {
       needLoggin: true,
     },
+  },
+  {
+    path: '/usuarios',
+    name: 'usuarios',
+    component: Usuarios,
+    meta: {
+      needLoggin: true
+    }
   },
   {
     path: '/catalogos',

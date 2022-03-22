@@ -41,7 +41,9 @@ import { listar } from '@/api_queries/equipo'
 
 export default {
     name: 'Datatable',
-    components: {Elemento, },
+    components: {
+        Elemento, 
+    },
     data() {
         return {
             inventario: null,
