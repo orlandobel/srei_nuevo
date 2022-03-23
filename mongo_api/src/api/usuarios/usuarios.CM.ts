@@ -211,7 +211,6 @@ class UsuariosCM {
             let vetado = registro?.vetado;
 
             if(vetado === null || vetado === undefined) {
-                console.log("sin vetos".green);
                 vetado = {};
             }
 

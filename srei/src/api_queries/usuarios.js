@@ -17,3 +17,27 @@ export async function listarAlumnos() {
         throw error
     }
 }
+
+export async function cambiarVetado(alumno, laboratorio, vetado) {
+    const url = '/usuarios/vetado/actualizar';
+
+    const data = {
+        alumno,
+        laboratorio,
+        vetado
+    }
+
+    try {
+        const respuesta = await axios.put(url, data);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            console.error(respuesta);
+            throw "Error inesperado al actualizar el veto del alumno";
+        }
+
+        return respuesta.data.alumno;
+    } catch(error) {
+        console.error(error);
+        throw error
+    }
+}

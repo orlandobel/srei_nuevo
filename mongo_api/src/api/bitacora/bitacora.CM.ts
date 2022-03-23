@@ -96,7 +96,7 @@ class BitacoraCM {
                     $lt: end
                 }
 
-            const prestamos = await PRT.find({ laboratorio,  }).exec() as Prestamo[];
+            const prestamos = await PRT.find({ laboratorio, creado }).exec() as Prestamo[];
 
             if(prestamos === null || prestamos === undefined) 
                 return new DataNotFoundException("Erro inesperado al buscar prestamos");

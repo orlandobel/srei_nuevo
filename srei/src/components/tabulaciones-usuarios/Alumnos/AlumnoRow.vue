@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { cambiarVetado } from '@/api_queries/usuarios';
+
 export default {
     name: 'AlumnoRow',
     props: {
@@ -38,7 +40,13 @@ export default {
             // TODO: llamar a la api para cambiar el vetado cuando exista
             // Si la api responde con un error forzar el estado previo con:
             // this.$refs.vetado_btn.checked = <estado previo>;
-            
+            cambiarVetado(this.alumno._id, this.laboratorio._id, !this.vetado).then(res => {
+                console.log("Alumno actualizado");
+                this.alumno = res;
+            }).catch(error => {
+                console.log(error);
+                this.$refs.vetado_btn.checked = this.vetado;
+            })
         }
     },
 }
