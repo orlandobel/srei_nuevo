@@ -239,6 +239,14 @@ class SetdebCM {
             return new InternalServerException(error);
         }
     }
+
+    public resetEquipos = async() => {
+        try {
+            await EQP.updateMany({}, { $set: { disponible: true } }).exec()
+        } catch(error) {
+            console.log(`${error}`.red);
+        }
+    }
 }
 
 export default SetdebCM

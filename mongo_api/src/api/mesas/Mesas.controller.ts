@@ -17,11 +17,23 @@ class MesasController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path + '/prestamos/:laboratorio', this.mesasPrestamos);
+        this.router.get(this.path + '/alumnos/:laboratorio', this.alumnosMesas);
     }
 
     private mesasPrestamos = async (req: Request, res: Response, next: NextFunction) => {
         const { laboratorio } = req.params;
         const respuesta = await this.mesasCM.mesasPrestamos(laboratorio);
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, mesas: respuesta });
+        }
+    }
+
+    private alumnosMesas = async (req: Request, res: Response, next: NextFunction) => {
+        const { laboratorio } = req.params;
+        const respuesta = await this.mesasCM.alumnosMesas(laboratorio);
 
         if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta);

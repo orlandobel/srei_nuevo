@@ -15,7 +15,7 @@
                             <!-- Pestañas de tabulación -->
                             <ul class="nav nav-tabs" id="tab-inicio" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <a class="nav-link " id="prestamos-tab" href="#prestamos"
+                                    <a class="nav-link active" id="prestamos-tab" href="#prestamos"
                                         data-bs-toggle="tab" role="tab" aria-controls="prestmos" aria-selected="true" aria-current="prestamos">
                                             Nuevo prestamo
                                     </a>
@@ -26,7 +26,7 @@
                                             Usuarios del laboratorio
                                     </a>
                                 </li>
-                                <li class="nav-item active" role="presentation">
+                                <li class="nav-item" role="presentation">
                                     <a class="nav-link" id="bitacora-tab" href="#bitacora"
                                         data-bs-toggle="tab" role="tab" aria-controls="bitacora" aria-selected="false">
                                             Bitácora del día
@@ -44,13 +44,13 @@
                         <div class="card-body tab-wrapper overflow-auto">
                             <!-- Secciones de tabulación -->
                             <div class="tab-content " id="tab-inicio-content">
-                                <div class="tab-pane fade px-2 h-100 mh-100  text-start" id="prestamos" role="tabpanel" aria-labelledby="prestamos-tab">
+                                <div class="tab-pane fade px-2 h-100 mh-100 show active" id="prestamos" role="tabpanel" aria-labelledby="prestamos-tab">
                                     <prestamos-tab @prestamoGenerado="prestamoGenerado()" @erroresPrestamo="erroresPrestamo($event)"/>
                                 </div>
                                 <div class="tab-pane fade px-2 h-100 mh-100" id="usuarios" role="tabpanel" aria-labelledby="usuarios-tab">
                                     <alumnos-laboratorio-tab />
                                 </div>
-                                <div class="tab-pane fade h-100 mh-100 show active" id="bitacora" role="tabpanel" aria-labelledby="bitacora-tab">
+                                <div class="tab-pane fade h-100 mh-100 " id="bitacora" role="tabpanel" aria-labelledby="bitacora-tab">
                                     <bitacora-tab />
                                 </div>
                                 <div class="tab-pane fade h-100 mh-100" id="bitacoraGlob" role="tabpanel" aria-labelledby="bitacoraGlob-tab">

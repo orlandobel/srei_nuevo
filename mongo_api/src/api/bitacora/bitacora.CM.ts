@@ -9,6 +9,7 @@ import { Alumno } from '../../interfaces/collections/USR.interface';
 import BadRequestException from '../../exceptions/BadRequestException';
 import PRT, { Prestamo } from '../../interfaces/collections/PRT.interface';
 import LAB from '../../interfaces/collections/LAB.interface';
+import MS, { Mesa } from '../../interfaces/collections/MS.interface';
 import { startOfToday, startOfTomorrow } from 'date-fns';
 
 
@@ -30,7 +31,7 @@ class BitacoraCM {
         }
     }
 
-    public crearPrestamo = async(alumnos: Array<Alumno>, equipo: Array<EquipoPrestamo>, laboratorio: string, mesa: any)
+    public crearPrestamo = async(alumnos: Array<Alumno>, equipo: Array<EquipoPrestamo>, laboratorio: string, mesa_nombre: string)
         : Promise<any | HttpException | void> => {
         if(alumnos === null || alumnos === undefined || alumnos.length === 0) {
             console.log('Sin alumnos registrados'.red);
@@ -50,29 +51,29 @@ class BitacoraCM {
                 laboratorio,
             }
 
-            const lab = await LAB.findById(laboratorio).exec()
+            const lab = await LAB.findById(laboratorio).exec();
+            let mesa;
             
             if(lab === null || lab === undefined)
-                return new DataNotFoundException(codigos.datoNoEncontrado, "Laboratorio no encontrado")
-
+            return new DataNotFoundException(codigos.datoNoEncontrado, "Laboratorio no encontrado")
+            
             if(lab.nombre.includes("Electronica")) {
-                console.log(mesa);
-                if(mesa === null || mesa === undefined || mesa === '') {
+                console.log(mesa_nombre);
+                if(mesa_nombre === null || mesa_nombre === undefined || mesa_nombre === '') {
                     return new BadRequestException('Seleccione una mesa para registrar')
                 }
-
-                prestamo.mesa = mesa
+                
+                mesa = await MS.findOneAndUpdate({ laboratorio, nombre: mesa_nombre }, { $set: { alumnos } }) as Mesa;
+                prestamo.mesa = mesa_nombre
             }
 
             const creado = await PRT.create(prestamo);
-            
             equipo.forEach(e => {
                 EQP.findByIdAndUpdate(e._id, { $set: { disponible: false } }).exec()
                     .then(() => {
                         console.log(`${e.nombre} ahora ocupado`. yellow);
                     })
             });
-
 
             return creado as Prestamo;
         } catch(error) {
@@ -117,6 +118,11 @@ class BitacoraCM {
             if(prestamo === null || prestamo === undefined)
                 return new DataNotFoundException(codigos.datoNoEncontrado, "Prestamo no encotnrado en la base de datos");
 
+            const laboratorio = prestamo.laboratorio;
+            const nombre_mesa = prestamo.mesa;
+
+            MS.findOneAndUpdate({ laboratorio, nombre: nombre_mesa }, { $set: { alumnos: [] } }).exec();
+            
             prestamo.equipo.forEach(e => {
                 EQP.findByIdAndUpdate(e._id, { $set: { disponible: true } }).exec()
                     .then(eqp => {

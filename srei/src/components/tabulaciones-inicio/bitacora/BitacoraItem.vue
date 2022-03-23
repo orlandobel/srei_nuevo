@@ -93,13 +93,16 @@ export default {
 
             return date.toLocaleTimeString();
         },
+    },
+    methods: {
         regresar() {
+            const self = this;
             regresarPrestamo(this.prestamo._id)
                 .then(res => {
-                    this.prestamo = res;
+                    self.prestamo = res;
                 })
                 .catch(errtor => console.error(errtor));
         }
-    },
+    }
 }
 </script>

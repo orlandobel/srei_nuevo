@@ -12,40 +12,20 @@
             <!-- Lista de los alumnos que están haciendo uso de los laboratorios -->
             <div class="row list-wrapper">
                 <div class="col-12 py-2 px-2 h-100 mh-100">
-                    <ul class="list-group list-group-flush p-2 border border-dark rounded-3 h-100 mh-100 overflow-auto">
-                        <li class="list-group-item d-flex align-items-start fw-bold">
-                            <ul class="list-group list-group-horizontal w-100">
-                                <li class="list-group-item w-100 border-0 border-end">Nombre</li>
-                                <li class="list-group-item w-100 border-0 border-end">Boleta</li>
-                                <li class="list-group-item w-100 border-0 border-end">Mesa</li>
-                                <li class="list-group-item w-100 border-0">Hora de entrada</li>
-                                <li class="list-group-item w-100 border-0"></li>
-                            </ul>
-                        </li>
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="true" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                        <alumnos-laboratorio-list-element nombre="Orlando Odiseo Belmonte Flores" boleta="2018671281" mesa="Mesa 1" hora="13:15" :encargado="false" />
-                    </ul>
+                    <div class="px-3 border border-dark rounded-3 h-100 mh-100 overflow-auto">
+                        <div class="row px-3 pt-3" v-for="mesa in mesas_alumnos" :key="mesa._id">
+                            <div class="col-12">
+                                <div class="row px-3 border-bottom border-dark fs-5 fw-bold">
+                                    {{ mesa.nombre }}
+                                </div>
+                                <div class="row">
+                                    <ul class="list-group list-group-flush">
+                                        <alumnos-laboratorio-list-element v-for="alumno in mesa.alumnos" :key="alumno._id" :alumno="alumno"/>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <!-- Fin de la lista -->
@@ -55,14 +35,28 @@
 
 <script>
 import AlumnosLaboratorioListElement from '@/components/tabulaciones-inicio/alumnos_laboratorio/AlumnosLaboratorioListElement.vue'
-import PrestamosListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElement.vue'
+import { listarAlumnosMesa } from '@/api_queries/laboratorios';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
     name: 'AlumnosLaboratorioTab',
     components: { 
         AlumnosLaboratorioListElement,
-        PrestamosListElement,
     },
+    computed: {
+        ...mapGetters('laboratorio_store', ['mesas_alumnos']),
+    },
+    methods: {
+        ...mapActions('laboratorio_store', ['initAlumnos']),
+        async initView() {
+            const laboratorio = this.$store.getters.laboratorio._id;
+            const mesas = await listarAlumnosMesa(laboratorio);
+            this.initAlumnos(mesas);
+        }
+    },
+    mounted() {
+        this.initView();
+    }
 }
 </script>
 

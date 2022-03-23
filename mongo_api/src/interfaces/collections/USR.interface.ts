@@ -3,11 +3,12 @@ import { Schema, model } from 'mongoose';
 export interface Usuario {
     _id?: any;
     tipo: number;
-    usuario?: string;
+    usuario: string;
     clave?: string;
     nombre: string;
-    vetado?: Array<any>;
+    vetado?: any;
     laboratorio?: string;
+    programa?: string;
 }
 
 export interface Trabajador extends Omit<Usuario, 'vetado' | 'boleta'> {
@@ -26,8 +27,9 @@ const USRSchema = new Schema<Usuario>({
     usuario: { type: String, required: false },
     clave: { type: String, required: false },
     nombre: { type: String, required: true },
-    vetado: { type: Array, required: false },
+    vetado: { type: {}, required: false },
     laboratorio: { type: String, required: false },
+    programa: { type: String, requires: false },
 },
 {
     timestamps: {
