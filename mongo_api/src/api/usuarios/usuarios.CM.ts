@@ -142,6 +142,20 @@ class UsuariosCM {
         }
     }
 
+    public listarAlumnos = async (): Promise<void | HttpException | Alumno[]> => {
+        try {
+            const alumnos = await USR.find({ tipo: 0 }).exec() as Alumno[];
+
+            if(alumnos === null || alumnos === undefined)
+                return [];
+
+            return alumnos;
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+    }
+
     public checkVetado = async (alumno: Alumno, laboratorio: string): Promise<void | HttpException | Object> => {
         if(alumno === null || alumno === undefined) {
             console.log('Alumno no envíado'.red);
@@ -176,19 +190,42 @@ class UsuariosCM {
         }
     }
 
-    public listarAlumnos = async (): Promise<void | HttpException | Alumno[]> => {
+    public actualizarVetado = async (id_alumno: string, laboratorio: string, veto: boolean): Promise<void | HttpException | Alumno> => {
+        if(id_alumno === null || id_alumno === undefined || id_alumno === '') {
+            console.log('Alumno no enviado'. red);
+            return new BadRequestException("Alumno no enviado");
+        }
+
+        if(laboratorio === null || laboratorio === undefined || laboratorio === '') {
+            console.log('Laboratorio no enviado'. red);
+            return new BadRequestException("Laboratorio no enviado");
+        }
+
+        if(veto === null || veto === undefined) {
+            console.log('Estado de veto no enviado'. red);
+            return new BadRequestException("Estado de veto no enviado");
+        }
+
         try {
-            const alumnos = await USR.find({ tipo: 0 }).exec() as Alumno[];
+            const registro = await USR.findById(id_alumno, 'vetado').exec();
+            let vetado = registro?.vetado;
 
-            if(alumnos === null || alumnos === undefined)
-                return [];
+            if(vetado === null || vetado === undefined) {
+                console.log("sin vetos".green);
+                vetado = {};
+            }
 
-            return alumnos;
+            vetado[laboratorio] = veto;
+
+            const alumno = await USR.findByIdAndUpdate(id_alumno, { $set: { vetado } }, { new: true }).exec();
+
+            return alumno as Alumno;
         } catch(error) {
             console.log(`${error}`.red);
             return new InternalServerException(error);
         }
     }
+
 }
 
 export default UsuariosCM;

@@ -61,7 +61,9 @@ export default {
     },
     methods: {
         initTable() {
-            this.$nextTick(() => { this.inventario = $('#inventario').DataTable() })
+            this.$nextTick(() => { 
+                this.inventario = $('#inventario').DataTable() 
+            })
         },
         initData() {
             const tipo = this.$route.params.tipo
