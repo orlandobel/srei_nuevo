@@ -8,8 +8,8 @@
                         <div class="card-header border-0">
                             <!-- Pestañas de tabulación -->
                             <ul class="nav nav-tabs" id="tab-inicio" role="tablist">
-                                <li class="nav-item active" role="presentation">
-                                    <a class="nav-link " id="alumnos-tab" href="#alumnos"
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link active" id="alumnos-tab" href="#alumnos"
                                         data-bs-toggle="tab" role="tab" aria-controls="alumnos" aria-selected="true" aria-current="alumnos">
                                             Alumnos
                                     </a>
@@ -26,7 +26,7 @@
                         <div class="card-body tab-wrapper overflow-auto">
                             <!-- Secciones de tabulación -->
                             <div class="tab-content " id="tab-inicio-content">
-                                <div class="tab-pane fade px-2 h-100 mh-100 show active" id="alumnos" role="tabpanel" aria-labelledby="alumnos-tab">
+                                <div class="tab-pane fade px-2 h-100 mh-100 active show" id="alumnos" role="tabpanel" aria-labelledby="alumnos-tab">
                                     <tabla-alumnos />
                                 </div>
                                 <div class="tab-pane fade px-2 h-100 mh-100" id="trabajadores" role="tabpanel" aria-labelledby="trabajadores-tab">

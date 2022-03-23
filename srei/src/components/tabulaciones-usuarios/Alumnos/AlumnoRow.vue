@@ -1,15 +1,13 @@
 <template>
     <tr>
-        <td>ORLANDO ODISEO BELMONTE FLORES</td>
-        <td>2018671281</td>
-        <td>INGENIERIA EN SISTEMAS COMPUTACIONALES</td>
+        <td>{{ alumno.nombre }}</td>
+        <td>{{ alumno.usuario }}</td>
+        <td>{{ alumno.programa }}</td>
         <td >
             <div class="fomr-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" 
                     ref="vetado_btn"
-                    checked="vetado" @change="toggleVetado()" />
-
-                    {{ vetado }}
+                    :checked="vetado" @change="toggleVetado()" />
             </div>
         </td>
     </tr>
@@ -29,6 +27,9 @@ export default {
     },
     computed: {
         vetado() {
+            if(!Object.keys(this.alumno).includes('vetado'))
+                return false;
+
             return this.alumno.vetado[this.laboratorio._id] || false
         }
     },
@@ -37,7 +38,7 @@ export default {
             // TODO: llamar a la api para cambiar el vetado cuando exista
             // Si la api responde con un error forzar el estado previo con:
             // this.$refs.vetado_btn.checked = <estado previo>;
-            this.alumno.vetado['620fe80d035e632cff086e62'] = !this.vetado;
+            
         }
     },
 }

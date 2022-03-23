@@ -14,8 +14,8 @@
                         <div class="card-header border-0">
                             <!-- Pestañas de tabulación -->
                             <ul class="nav nav-tabs" id="tab-inicio" role="tablist">
-                                <li class="nav-item active" role="presentation">
-                                    <a class="nav-link " id="prestamos-tab" href="#prestamos"
+                                <li class="nav-item" role="presentation">
+                                    <a class="nav-link active" id="prestamos-tab" href="#prestamos"
                                         data-bs-toggle="tab" role="tab" aria-controls="prestmos" aria-selected="true" aria-current="prestamos">
                                             Nuevo prestamo
                                     </a>
