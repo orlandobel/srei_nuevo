@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 import Home from '../views/Home.vue'
 import Login from '@/views/Login.vue'
+import SingUp from '@/views/SignUp.vue'
 import Inventario from '@/views/Inventarios.vue'
 import Catalogos from '@/views/Catalogos.vue'
 import Usuarios from '@/views/Usuarios.vue'
@@ -23,6 +24,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: Login,
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: SingUp,
   },
   {
     path: '/inventario/:tipo',
