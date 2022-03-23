@@ -23,6 +23,7 @@ class SetdebController implements Controller {
         this.router.get(this.path + '/qrG', this.setQR);
         this.router.put(this.path + '/pathToDB', this.updatePATH);
         this.router.get(this.path + '/mesas', this.initMesas);
+        this.router.get(this.path + '/resetEquipos', this.resetEquipos)
     }
 
     public initialgizeDB = async (req: Request, res: Response, next: NextFunction) => {
@@ -71,6 +72,16 @@ class SetdebController implements Controller {
             res.status(response.status).send(response);
         else 
             res.send({status: 200, mensage: "mesas creadas"})
+    }
+
+    public resetEquipos = async (req: Request, res: Response, next: NextFunction) => {
+        const respuesta = this.setdebCM.resetEquipos();
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta)
+        } else {
+            res.send(respuesta)
+        }
     }
 }
 

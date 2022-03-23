@@ -5,6 +5,7 @@ import Login from '@/views/Login.vue'
 import SingUp from '@/views/SignUp.vue'
 import Inventario from '@/views/Inventarios.vue'
 import Catalogos from '@/views/Catalogos.vue'
+import Usuarios from '@/views/Usuarios.vue'
 import CatalogosViewer from '@/components/catalogos/CatalogosViewer.vue'
 
 import isLogged from './middleware/auth';
@@ -41,6 +42,14 @@ const routes = [
     },
   },
   {
+    path: '/usuarios',
+    name: 'usuarios',
+    component: Usuarios,
+    meta: {
+      needLoggin: true
+    }
+  },
+  {
     path: '/catalogos',
     name: 'catalogos',
     component: Catalogos,
@@ -66,15 +75,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  console.log(to)
   if(to.matched.some(record => record.meta.needLoggin)) isLogged({to, next, store})
   else next()
-})
-
-/*router.beforeEach = async (to, from, next) => {
-  if(to.matched.some(record => record.meta.needLoggin)) {
-    await isLogged({to, next})
-  } else { next() }
-}*/
+});
 
 export default router

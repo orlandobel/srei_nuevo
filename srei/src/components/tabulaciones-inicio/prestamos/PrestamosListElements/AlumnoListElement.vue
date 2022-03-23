@@ -1,7 +1,7 @@
 <template>
     <li class="list-group-item align-items-start me-2">
         <div class="row">
-            <div class="col-lg-7">{{ alumno.nombre }}</div>
+            <div class="col-lg-7 text-start">{{ alumno.nombre }}</div>
             <div class="col-lg-4 text-center">{{ alumno.usuario }} </div>
             <div class="col-lg-1">
                 <button class="btn btn-danger" @click="eliminar()">

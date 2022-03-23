@@ -156,7 +156,6 @@ export default {
 
             const base_img = new Image();
             base_img.onload = function() {
-                console.log('rendering image')
                 ctx.clearRect(0, 0, 200, 200)
                 ctx.drawImage(base_img, 0, 0, 200, 200)
             }

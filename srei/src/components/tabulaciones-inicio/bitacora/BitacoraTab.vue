@@ -36,21 +36,24 @@
 <script>
 import BitacoraItem from '@/components/tabulaciones-inicio/bitacora/BitacoraItem.vue';
 import { prestamosDia } from '@/api_queries/prestamos.js';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
     name: 'BitacoraTab',
     components: {
         BitacoraItem,
     },
-    data() {
-        return {
-            prestamos: []
-        }
+    computed: {
+        ...mapGetters('laboratorio_store', ['prestamos']),
+    },
+    methods: {
+        ...mapActions('laboratorio_store', ['initPrestamos']),
     },
     mounted() {
         const laboratorio = this.$store.getters.laboratorio._id;
         prestamosDia(laboratorio).then(res => {
-            this.prestamos = res.prestamos;
+            //this.prestamos = res.prestamos;
+            this.initPrestamos(res.prestamos)
         });
     }
 }
