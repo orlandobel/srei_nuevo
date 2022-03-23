@@ -44,8 +44,8 @@ export default {
                 console.log("Alumno actualizado");
                 this.alumno = res;
             }).catch(error => {
-                console.log(error);
                 this.$refs.vetado_btn.checked = this.vetado;
+                this.$emit('error', [error]);
             })
         }
     },
