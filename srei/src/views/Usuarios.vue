@@ -2,6 +2,9 @@
     <div class="row">
         <sidebar />
         <div class="col-lg-10">
+            <api-message class="mt-2"
+                mensaje="" :success='false' ref="error_messages"/>
+
             <div class="row justify-content-center h-100 mh-100">
                 <div class="col-lg-12 h-100 mh-100 d-flex">
                     <div class="card h-95 mh-95 w-100 mw-100 align-self-center">
@@ -27,7 +30,7 @@
                             <!-- Secciones de tabulación -->
                             <div class="tab-content " id="tab-inicio-content">
                                 <div class="tab-pane fade px-2 h-100 mh-100 active show" id="alumnos" role="tabpanel" aria-labelledby="alumnos-tab">
-                                    <tabla-alumnos />
+                                    <tabla-alumnos @error="alumnos_error($event)"/>
                                 </div>
                                 <div class="tab-pane fade px-2 h-100 mh-100" id="trabajadores" role="tabpanel" aria-labelledby="trabajadores-tab">
                                     Trabajadores
@@ -44,13 +47,20 @@
 
 <script>
 import Sidebar from '@/components/Sidebar.vue';
+import ApiMessage from '@/components/ApiMessage.vue';
 import TablaAlumnos from '@/components/tabulaciones-usuarios/Alumnos/TablaAlumnos.vue';
 
 export default {
     name: 'Usuarios',
     components: {
         Sidebar,
+        ApiMessage,
         TablaAlumnos,
+    },
+    methods: {
+        alumnos_error(error) {
+            this.$refs.error_messages.displayErrors(error);
+        }
     }
 }
 </script>

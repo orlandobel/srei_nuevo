@@ -10,7 +10,7 @@
                 </tr>
             </thead>
             <tbody>
-                <alumno-row v-for="alumno in alumnos" :key="alumno._id" :alumno_prop="alumno" />
+                <alumno-row v-for="alumno in alumnos" :key="alumno._id" :alumno_prop="alumno" @error="show_error($event)"/>
             </tbody>
             <tfoot>
                 <tr>
@@ -60,6 +60,9 @@ export default {
             }
 
         },
+        show_error(error) {
+            this.$emit('error', error);
+        }
     },
     mounted() {
         this.initData();
