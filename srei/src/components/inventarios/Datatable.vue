@@ -79,7 +79,6 @@ export default {
             this.initData()
         },
         remover(index) {
-            console.log(index)
             this.equipos.splice(index, 1)
 
             this.$emit('removido', true)

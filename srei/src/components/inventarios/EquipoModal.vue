@@ -70,6 +70,7 @@ export default {
     data() {
         return {
             errores: [],
+            laboratorio: this.$store.getters.laboratorio,
         }
     },
     computed: {
@@ -83,6 +84,7 @@ export default {
                 modelo: '',
                 serie: '',
                 descripcion: '',
+                laboratorio: this.laboratorio,
             }
 
             this.set_id('')
@@ -97,14 +99,13 @@ export default {
             this.errores = []
         },
         async guardar() {
-            const laboratorio = this.$store.getters.laboratorio
 
             const equipo = {
                 nombre: this.nombre,
                 caracteristicas: this.caracteristicas,
                 disponible: true,
                 estado: 0,
-                laboratorio: laboratorio._id,
+                laboratorio: this.laboratorio._id,
                 tipo: this.$route.params.tipo,
                 propietario: 'A4RaNBQ0L6OrDtGZuIc7',
             }
@@ -116,7 +117,7 @@ export default {
                 equipo.checklist = this.checklist
             }
 
-            const respuesta = await guardar(equipo, laboratorio.nombre, this.imagen, this.creacion)
+            const respuesta = await guardar(equipo, this.laboratorio.nombre, this.imagen, this.creacion)
             respuesta.crear = this.creacion
             
             if(!respuesta.guardado) {

@@ -12,7 +12,7 @@
                             <fa-icon :icon="['fas','qrcode']" size="2x"/>
                     </button>
                 </div>
-                <div class="col-3">
+                <div class="col-3" v-if="laboratorio.nombre.includes('Electronica')">
                     <select class="form-select" id="mesas">
                         <option disabled selected value="">Seleccione una mesa</option>
                         <option v-for="m in mesas" :key="m._id" :value="m.nombre">{{ m.nombre }}</option>
@@ -129,6 +129,7 @@ export default {
             success: false,
             error: false,
             errors: [],
+            laboratorio: this.$store.getters.laboratorio,
         }
     },
     methods: {
@@ -158,13 +159,12 @@ export default {
             try {
                 const alumnos = this.alumnos;
                 const equipo = this.equipos;
-                const laboratorio = this.$store.getters.laboratorio._id
                 const mesa = document.getElementById('mesas').value || null;
                 
                 const prestamo = {
                     alumnos,
                     equipo,
-                    laboratorio,
+                    laboratorio: this.laboratorio._id,
                     mesa,
                 };
                 console.log(prestamo);
@@ -185,8 +185,7 @@ export default {
                 a => a.usuario.includes(filtro));
         },
         async buscar(alumno) {
-            const laboratorio = this.$store.getters.laboratorio._id;
-            const vetado = await verificarVetado(alumno, laboratorio)
+            const vetado = await verificarVetado(alumno, this.laboratorio._id)
             console.log(alumno);
             if(vetado)
                 this.$emit("erroresPrestamo", ['Alumno vetado del laboratorio'])
@@ -195,8 +194,7 @@ export default {
         }
     },
     mounted() {
-        const laboratorio = this.$store.getters.laboratorio;
-        initView(laboratorio._id)
+        initView(this.laboratorio._id)
             .then(data => {
                 this.mesas = data.mesas;
                 
@@ -211,13 +209,31 @@ export default {
 @import '@/styles/_variables.scss';
 
 .list-wrapper {
-    height: 19.5cm;
-    max-height: 19.5cm;
+    --heigth: 19.5cm;
 }
 
 .alumnos-wrapper {
-    height: 19.1cm;
-    max-height: 19.1cm;
+    --height-alumnos: 19.1cm;
+}
+
+@media screen and ( max-height: 1080px ) {
+    .list-wrapper {
+        --heigth: 18.4cm;
+    }   
+
+    .alumnos-wrapper {
+        --height-alumnos: 18cm;
+    }
+}
+
+.list-wrapper {
+    height: var(--heigth);
+    max-height: var(--heigth);
+}
+
+.alumnos-wrapper {
+    height: var(--height-alumnos);
+    max-height: var(--height-alumnos);
 }
 
 .icon-button {

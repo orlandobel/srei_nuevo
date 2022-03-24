@@ -40,7 +40,7 @@
                         <div class=" py-2" id="catalogos-collapse"
                             :class="{collapse: !inventario}">
                             <ul class="list-unstyled text-start ps-3">
-                                <li class="mb-2 row list-element">
+                                <li class="mb-2 row list-element" v-if="laboratorio.nombre.includes('Electronica')">
                                     <div class="col text-start">
                                         <fa-icon :icon="['fas', 'bolt']" color="white" />
                                         <router-link 
@@ -49,7 +49,7 @@
                                             class="btn d-inline-flex text-white">Electónica</router-link>
                                     </div>
                                 </li>
-                                <li class="mb-2 row list-element">
+                                <li class="mb-2 row list-element" v-if="laboratorio.nombre.includes('Electronica')">
                                     <div class="col text-start">
                                         <fa-icon :icon="['fas', 'microchip']" color="white" />
                                         <router-link
@@ -58,7 +58,7 @@
                                             class="btn d-inline-flex text-white">Tarjetas Programables</router-link>
                                     </div>
                                 </li>
-                                <li class="mb-2 row list-element">
+                                <li class="mb-2 row list-element" v-if="!laboratorio.nombre.includes('Electronica')">
                                     <div class="col text-start">
                                         <fa-icon :icon="['fas', 'cogs']" color="white" />
                                         <router-link 
@@ -91,6 +91,11 @@
 <script>
 export default {
     name: 'Sidebar',
+    data() {
+        return {
+            laboratorio: this.$store.getters.laboratorio,
+        }
+    },
     computed: {
         inventario: function() {
             const route = this.$route.path

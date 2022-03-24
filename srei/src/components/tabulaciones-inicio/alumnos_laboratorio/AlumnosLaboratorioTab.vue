@@ -64,13 +64,18 @@ export default {
 @import '@/styles/_variables.scss';
 
 .list-wrapper {
-    height: 20.6cm;
-    max-height: 20.6cm;
+    --height: 20.6cm;
 }
 
-.alumnos-wrapper {
-    height: 19.1cm;
-    max-height: 19.1cm;
+@media screen and ( max-height: 1080px ) {
+    .list-wrapper {
+        --height: 19.8cm;
+    }
+}
+
+.list-wrapper {
+    height: var(--height);
+    max-height: var(--height);
 }
 
 .icon-button {

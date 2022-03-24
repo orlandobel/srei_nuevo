@@ -73,7 +73,6 @@ export default {
             }
         },
         consulta_eliminar() {
-            console.log(this.equipo)
             eliminar(this.equipo.path)
                 .then(result => {
                     console.log(result);

@@ -23,7 +23,7 @@
 
             <!-- Lista de de la bitácora -->
             <div class="row list-wrapper">
-                <div class="col-12 py-2 px-2 h-100 mh-100">
+                <div class="col-12 pt-2 px-2 h-100 mh-100">
                     <ul class="list-group list-group-flush p-2 border border-dark rounded-3 h-100 mh-100 overflow-auto">
                         <li class="list-group-item d-flex align-items-start">
                             <ul class="list-group list-group-horizontal w-100 fw-bold">
@@ -77,8 +77,18 @@ export default {
 @import '@/styles/_variables.scss';
 
 .list-wrapper {
-    height: 20.6cm;
-    max-height: 20.6cm;
+    --height: 20.6cm;
+}
+
+@media screen and ( max-height: 1080px) {
+    .list-wrapper {
+        --height: 19.6cm;
+    }
+}
+
+.list-wrapper {
+    height: var(--height);
+    max-height: var(--height);
 }
 
 .alumnos-wrapper {

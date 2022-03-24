@@ -90,8 +90,19 @@ export default {
 <style lang="scss" scoped>
 
 .card-body {
-    height: 21cm;
-    max-height: 21cm;
+    --height: 21cm;
+    --width: 21cm;
+}
+
+@media screen and ( max-height: 1080px ) {
+    .card-body {
+        --height: 20cm
+    }
+}
+
+.card-body {
+    height: var(--height);
+    max-height: var(--width);
 }
 
 .h-95 {

@@ -42,6 +42,7 @@ export default {
                 labOfUser: [],
                 labPick: '',
                 typePick: '',
+                laboratorio: this.$store.getters.laboratorio,
             }
         },
         methods: {
@@ -49,8 +50,8 @@ export default {
             initData() {
                 // añadimos los laboratoirios existentes
                 this.labOfUser = [{
-                        nombre: this.$store.getters.laboratorio.nombre,
-                        id: this.$store.getters.laboratorio._id
+                        nombre: this.laboratorio.nombre,
+                        id: this.laboratorio._id
                 }]
                 //en el caso de existir más cambiar a un labOfUser.foreach(eq=>{labOfUser.push(eq)})
             },

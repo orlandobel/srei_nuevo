@@ -9,15 +9,15 @@
 <script>
 export default {
     name: 'ApiMessage',
+    props: {
+        error_bind: { type: Boolean, required: true },
+        message_bind: { typea: String, required: true },
+    },
     data() {
         return {
             error: this.error_bind,
             message: this.message_bind,
         }
     },
-    props: {
-        error_bind: { type: Boolean, required: true },
-        message_bind: { typea: String, required: true },
-    }
 }
 </script>

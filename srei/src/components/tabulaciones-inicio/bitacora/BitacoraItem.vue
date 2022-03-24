@@ -6,7 +6,8 @@
                     
                         <li class="list-group-item w-25 border-0 border-end" role="button"
                             data-bs-toggle="collapse" :data-bs-target="'#collapse-'+index"
-                            aria-expanded="false" :aria-controls="'#collapse-'+index">
+                            aria-expanded="false" :aria-controls="'#collapse-'+index"
+                            v-if="prestamo.mesa != null && prestamo.mesa != undefined">
                                 {{ prestamo.mesa }}
                         </li>
                         <li class="list-group-item w-25 border-0 border-end" role="button"
