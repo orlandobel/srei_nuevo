@@ -22,7 +22,7 @@ const Encrypt = {
         .then(hash => hash),  
     comparePassword: (password: string, hashPassword: string) =>
         bcrypt.compare(password, hashPassword)
-        .then(resp => resp)
+        .then(resp => { console.log(resp); return resp})
 
 }
 
@@ -41,8 +41,8 @@ class UsuariosCM {
         try {
             const consulta = await USR.find({ usuario }) as Trabajador[];
             
-            const filtro = consulta.find(async e => Encrypt.comparePassword(clave, e.clave));
-            
+            const filtro = await this.findAsync(consulta, async e =>  await Encrypt.comparePassword(clave, e.clave));
+            console.log(filtro);
             if(filtro === null || filtro === undefined) {
                 console.log('Usuario no encontrado'.red);
                 return new DataNotFoundException(codigos.datoNoEncontrado);
@@ -225,6 +225,13 @@ class UsuariosCM {
         }
     }
 
+    private findAsync = async <T>(arr: T[], callback: (t: T) => Promise<boolean>): Promise<T | undefined> => {
+        for(const t of arr) {
+            if(await callback(t))
+                return t;
+        }
+        return undefined;
+    }
 }
 
 export default UsuariosCM;

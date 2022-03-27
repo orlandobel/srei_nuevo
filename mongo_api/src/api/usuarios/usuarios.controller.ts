@@ -22,7 +22,6 @@ class UsuariosController implements Controller {
     private initializeRoutes() {
         this.router.get(this.path + '/alumnos/listar', this.listarAlumnos);
         this.router.post(this.path + '/login', this.ingresar);
-        this.router.post(this.path + '/login/test', this.ingresar);
         this.router.post(this.path + '/login/verify', this.checkLogin);
         this.router.post(this.path + '/crear/empleado', this.crearEmpleado);
         this.router.post(this.path + '/consulta/dae', this.consultaDae);
