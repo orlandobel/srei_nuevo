@@ -37,9 +37,6 @@ export default {
     },
     methods: {
         toggleVetado() {
-            // TODO: llamar a la api para cambiar el vetado cuando exista
-            // Si la api responde con un error forzar el estado previo con:
-            // this.$refs.vetado_btn.checked = <estado previo>;
             cambiarVetado(this.alumno._id, this.laboratorio._id, !this.vetado).then(res => {
                 console.log("Alumno actualizado");
                 this.alumno = res;

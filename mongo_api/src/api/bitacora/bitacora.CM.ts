@@ -63,11 +63,11 @@ class BitacoraCM {
                     return new BadRequestException('Seleccione una mesa para registrar')
                 }
                 
-                mesa = await MS.findOneAndUpdate({ laboratorio, nombre: mesa_nombre }, { $set: { alumnos } }) as Mesa;
+                mesa = await MS.findOneAndUpdate({ laboratorio, nombre: mesa_nombre }, { $set: { alumnos } }, { new: true }) as Mesa;
                 prestamo.mesa = mesa_nombre
             }
 
-            const creado = await PRT.create(prestamo);
+            const creado = await PRT.create(prestamo) as Prestamo;
             equipo.forEach(e => {
                 EQP.findByIdAndUpdate(e._id, { $set: { disponible: false } }).exec()
                     .then(() => {
@@ -75,7 +75,7 @@ class BitacoraCM {
                     })
             });
 
-            return creado as Prestamo;
+            return { prestamo: creado, mesa};
         } catch(error) {
             console.error(`Error al generar un prestamo: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);

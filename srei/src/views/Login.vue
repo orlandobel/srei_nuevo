@@ -49,7 +49,7 @@ export default {
             }
 
             try {
-                const response = await this.axios.post('usuarios/login/test', params)
+                const response = await this.axios.post('usuarios/login', params)
 
                 this.$store.dispatch('usuario', response.data.usuario)
                 localStorage.setItem('usr_token', response.data.token)

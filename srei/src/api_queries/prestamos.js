@@ -83,11 +83,15 @@ export async function generarPrestamo(prestamo) {
     try {
         const respuesta = await axios.post(url, prestamo);
 
-        if(respuesta.status >= 400 || respuesta.data.status >= 400)
-            throw respuesta;
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            console.error(respuesta)
+            throw ["Error inesperado al generar prestamos"];
+        }
             
         console.log(respuesta)
+        return respuesta.data;
     } catch(error) {
+        console.error(error);
         if(error.response) {
             throw [error.response.data.mensaje];
         }

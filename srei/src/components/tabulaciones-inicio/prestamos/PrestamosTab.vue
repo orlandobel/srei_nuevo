@@ -109,6 +109,7 @@ import EquipoListElement from '@/components/tabulaciones-inicio/prestamos/Presta
 import AlumnoListElement from '@/components/tabulaciones-inicio/prestamos/PrestamosListElements/AlumnoListElement.vue';
 import ApiMessage from '@/components/ApiMessage.vue';
 import QRScanner from '@/components/tabulaciones-inicio/ScanRelated/QRScanner.vue'
+import { mapActions } from 'vuex';
 import  { initView, generarPrestamo, verificarVetado } from '@/api_queries/prestamos';
 
 export default {
@@ -133,6 +134,7 @@ export default {
         }
     },
     methods: {
+        ...mapActions('laboratorio_store', ['addPrestamo', 'addAlumnosMesa']),
         addEquipo(equipo) {
             if(!this.equipos.some(e => e._id === equipo._id))
                 this.equipos.push(equipo);
@@ -141,7 +143,6 @@ export default {
             this.equipos.splice(index, 1);
         },
         addAlumno(alumno) {
-            console.log(alumno)
             if(!this.alumnos.some(a => a.usuario === alumno.usuario))
                 this.alumnos.push(alumno);
         },
@@ -159,7 +160,7 @@ export default {
             try {
                 const alumnos = this.alumnos;
                 const equipo = this.equipos;
-                const mesa = document.getElementById('mesas').value || null;
+                const mesa = (this.laboratorio.nombre.includes('Electronica')) ? document.getElementById('mesas').value : null;
                 
                 const prestamo = {
                     alumnos,
@@ -167,14 +168,18 @@ export default {
                     laboratorio: this.laboratorio._id,
                     mesa,
                 };
-                console.log(prestamo);
+                
                 const res = await generarPrestamo(prestamo);
 
-                //TODO: Añadir el prestamo a la lista en la pestaña bitacora cuando esta este en funcionamiento
-                this.$emit('prestamoGenerado');
+                this.addPrestamo(res.prestamo);
+
+                if(this.laboratorio.nombre.includes("Electronica")) {
+                    this.addAlumnosMesa(res.mesa);
+                }
 
                 this.borrarPrestamo();
             } catch(error) {
+                console.log(error)
                 this.$emit('erroresPrestamo', error);;
             }
         },
@@ -186,7 +191,7 @@ export default {
         },
         async buscar(alumno) {
             const vetado = await verificarVetado(alumno, this.laboratorio._id)
-            console.log(alumno);
+
             if(vetado)
                 this.$emit("erroresPrestamo", ['Alumno vetado del laboratorio'])
             else 
