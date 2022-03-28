@@ -15,7 +15,8 @@
                     <ul class="list-group list-group-flush p-2 border border-dark rounded-3 h-100 mh-100 overflow-auto">
                         <li class="list-group-item d-flex align-items-start">
                             <ul class="list-group list-group-horizontal w-100 fw-bold">
-                                <li class="list-group-item w-25 border-0 border-end">Mesa</li>
+                                <li class="list-group-item w-25 border-0 border-end"
+                                    v-if="laboratorio.nombre.includes('Electronica')">Mesa</li>
                                 <li class="list-group-item w-25 border-0 border-end">No. alumnos</li>
                                 <li class="list-group-item w-25 border-0 border-end">No. materiales</li>
                                 <li class="list-group-item w-25 border-0 border-end">Hora de prestamo</li>
@@ -42,6 +43,11 @@ export default {
     name: 'BitacoraTab',
     components: {
         BitacoraItem,
+    },
+    data() {
+        return {
+            laboratorio: this.$store.getters.laboratorio,
+        }
     },
     computed: {
         ...mapGetters('laboratorio_store', ['prestamos']),

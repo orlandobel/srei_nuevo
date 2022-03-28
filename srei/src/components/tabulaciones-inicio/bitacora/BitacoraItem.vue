@@ -68,6 +68,7 @@
 
 <script>
 import { regresarPrestamo } from '@/api_queries/prestamos';
+import { mapActions } from 'vuex';
 
 export default {
     name: 'BitacoraItem',
@@ -78,6 +79,7 @@ export default {
     data() {
         return {
             prestamo: this.prestamo_prop,
+            laboratorio: this.$store.getters.laboratorio,
         }
     },
     computed: {
@@ -96,11 +98,15 @@ export default {
         },
     },
     methods: {
+        ...mapActions('laboratorio_store', ['removerAlumnosMesa']),
         regresar() {
             const self = this;
             regresarPrestamo(this.prestamo._id)
                 .then(res => {
                     self.prestamo = res;
+
+                    if(self.laboratorio.nombre.includes('Electronica'))
+                        self.removerAlumnosMesa(self.prestamo.mesa);
                 })
                 .catch(errtor => console.error(errtor));
         }
