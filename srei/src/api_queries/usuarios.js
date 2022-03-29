@@ -34,6 +34,24 @@ export async function listarAlumnos() {
     }
 }
 
+export async function listarEmpleados() {
+    const url = '/usuarios/empleados/listar';
+
+    try {
+        const respuesta = await axios.get(url);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            console.error(respuesta);
+            throw "Error inesperado en lista de empleados/trabajadores";
+        }
+
+        return respuesta.data.empleados;
+    } catch(error) {
+        console.error(error);
+        throw error
+    }
+}
+
 export async function cambiarVetado(alumno, laboratorio, vetado) {
     const url = '/usuarios/vetado/actualizar';
 

@@ -139,7 +139,7 @@ class BitacoraCM {
 
     public bitacoraList = async( fechaInicial: string, fechaFinal: string) =>{
         try {
-            const registro = await PRT.find({ creado: { $gt: new Date(fechaInicial), $lt: new Date(fechaFinal) } } ).exec();
+            const registro = await PRT.find({ creado: { $gte: new Date(fechaInicial), $lte: new Date(fechaFinal) } } ).exec();
 
             if(registro === null || registro === undefined) 
                 return new DataNotFoundException(codigos.identificadorInvalido);

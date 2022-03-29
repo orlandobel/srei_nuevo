@@ -21,6 +21,7 @@ class UsuariosController implements Controller {
 
     private initializeRoutes() {
         this.router.get(this.path + '/alumnos/listar', this.listarAlumnos);
+        this.router.get(this.path + '/empleados/listar', this.listarEmpleados);
         this.router.post(this.path + '/login', this.ingresar);
         this.router.post(this.path + '/login/verify', this.checkLogin);
         this.router.post(this.path + '/crear/empleado', this.crearEmpleado);
@@ -60,7 +61,7 @@ class UsuariosController implements Controller {
             usuario,
             clave,
             laboratorio,
-            tipo:0,
+            tipo:1,
             vetado: [],
             enEspera: true
         }as Usuario
@@ -93,7 +94,17 @@ class UsuariosController implements Controller {
         } else {
             res.send({ status: 200, alumnos: respuesta });
         }
-    }   
+    }  
+    
+    public listarEmpleados = async (req: Request, res: Response, next: NextFunction) => {
+        const respuesta = await this.usuariosCM.listarEmpleados();
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, empleados: respuesta });
+        }
+    }  
 
     public verificarVetado = async (req: Request, res: Response, next: NextFunction) =>  {
         const { alumno, laboratorio } = req.body;

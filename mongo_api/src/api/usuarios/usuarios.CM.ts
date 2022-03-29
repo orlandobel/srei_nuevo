@@ -156,6 +156,20 @@ class UsuariosCM {
         }
     }
 
+    public listarEmpleados = async (): Promise<void | HttpException | Trabajador[]> => {
+        try {
+            const empleados = await USR.find({ tipo: { $ne:0} }).exec() as Trabajador[];
+
+            if(empleados === null || empleados === undefined)
+                return [];
+
+            return empleados;
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+    }
+
     public checkVetado = async (alumno: Alumno, laboratorio: string): Promise<void | HttpException | Object> => {
         if(alumno === null || alumno === undefined) {
             console.log('Alumno no envíado'.red);

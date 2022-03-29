@@ -34,6 +34,7 @@
                                 </div>
                                 <div class="tab-pane fade px-2 h-100 mh-100" id="trabajadores" role="tabpanel" aria-labelledby="trabajadores-tab">
                                     Trabajadores
+                                    <tabla-emplados @error="alumnos_error($event)"/>
                                 </div>
                             </div>
                             <!-- Fin de secciones de tabulación -->
@@ -49,6 +50,7 @@
 import Sidebar from '@/components/Sidebar.vue';
 import ApiMessage from '@/components/ApiMessage.vue';
 import TablaAlumnos from '@/components/tabulaciones-usuarios/Alumnos/TablaAlumnos.vue';
+import TablaEmplados from '@/components/tabulaciones-usuarios/Empleados/TablaEmplados.vue';
 
 export default {
     name: 'Usuarios',
@@ -56,6 +58,7 @@ export default {
         Sidebar,
         ApiMessage,
         TablaAlumnos,
+        TablaEmplados,
     },
     methods: {
         alumnos_error(error) {
