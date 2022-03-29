@@ -9,13 +9,13 @@
         <td>{{ labPick }}</td>
         <td v-if="admin == 2"> 
             <button v-if="empleado.enEspera" class="btn btn-outline-primary">
-                Admitir  <fa-icon :icon="['fas', 'minus']" />
+                Admitir  <fa-icon :icon="['fas', 'plus']" />
             </button>
             <button class="btn btn-outline-danger" @click="eliminar()">
                 Eliminar <fa-icon :icon="['fas', 'minus']" />
             </button>
             <button class="btn btn-outline-info">
-                Cambiar tipo <fa-icon :icon="['fas', 'minus']" />
+                Cambiar tipo <fa-icon :icon="['fas', 'exchange-alt']" />
             </button>
         </td>
     </tr>
