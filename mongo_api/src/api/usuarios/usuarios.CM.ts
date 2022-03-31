@@ -204,6 +204,64 @@ class UsuariosCM {
         }
     }
 
+    public toggleEmpleado = async (id_empleado: string, tipo: number): Promise<void | HttpException | Trabajador>=>{
+        if(id_empleado === null || id_empleado === undefined || id_empleado === '') {
+            console.log('Empleado no enviado'. red);
+            return new BadRequestException("Empleado no enviado");
+        }
+        if(tipo === null || tipo === undefined) {
+            console.log('Permisos administrativos no enviado'. red);
+            return new BadRequestException("Permisos administrativos no enviado");
+        }
+        try {
+            const empleado = await USR.findByIdAndUpdate(id_empleado, { $set: { tipo } }, { new: true }).exec();
+            return empleado as Trabajador
+        } catch (error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+
+    }
+
+    public aceptarTrabajador = async (id_empleado: string): Promise<void | HttpException | Trabajador>=>{
+        if(id_empleado === null || id_empleado === undefined || id_empleado === '') {
+            console.log('Empleado no enviado'. red);
+            return new BadRequestException("Empleado no enviado");
+        }
+        
+        try {
+            const enEspera = false
+            const empleado = await USR.findByIdAndUpdate(id_empleado, { $set: { enEspera } }, { new: true }).exec();
+            return empleado as Trabajador
+        } catch (error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+
+    }
+
+    public eliminarTrabajador = async (_id:string): Promise<any> =>{
+        if(_id === null || _id === undefined)
+            return new DataNotFoundException(codigos.informacionNoEnviada);
+
+        try {
+            const eliminado = await USR.deleteOne({_id})
+
+            if(eliminado === null || eliminado === undefined)
+                return new InternalServerException(codigos.indefinido);
+
+            if(eliminado.deletedCount < 1)
+                return new DataNotFoundException(codigos.datoNoEncontrado)
+
+        } catch(error) {
+            console.log(typeof(error));
+            console.log(`Error al eliminar equipo: ${error}`.red);
+            return new InternalServerException(codigos.indefinido, error);
+        }
+    } 
+
+
+
     public actualizarVetado = async (id_alumno: string, laboratorio: string, veto: boolean): Promise<void | HttpException | Alumno> => {
         if(id_alumno === null || id_alumno === undefined || id_alumno === '') {
             console.log('Alumno no enviado'. red);

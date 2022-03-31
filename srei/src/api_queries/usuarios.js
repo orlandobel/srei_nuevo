@@ -75,3 +75,65 @@ export async function cambiarVetado(alumno, laboratorio, vetado) {
         throw error
     }
 }
+
+export async function toggleTipo( empleado, tipo){
+    const url = '/usuarios/empleados/actualizar';
+    const data = {
+        empleado,
+        tipo       
+    }
+    
+    try {
+        const respuesta = await axios.put(url, data);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            console.error(respuesta);
+            throw "Error inesperado al actualizar permisos de administracion";
+        }
+        console.log(respuesta.data.empleado)
+        return respuesta.data.empleado;
+    } catch(error) {
+        console.error(error);
+        throw error
+    }
+
+}
+
+export async function aceptar( empleado ){
+    const url = '/usuarios/empleados/enEspera';
+    const data = {
+        empleado     
+    }
+    
+    try {
+        const respuesta = await axios.put(url, data);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            console.error(respuesta);
+            throw "Error inesperado al actualizar estado de trabajador";
+        }
+        console.log(respuesta.data.empleado)
+        return respuesta.data.empleado;
+    } catch(error) {
+        console.error(error);
+        throw error
+    }
+
+}
+
+export async function eliminarEmpleado (id){
+    const url = `/usuarios/empleados/eliminar/${id}`;
+    try {
+        const response = await axios.delete(url)
+        console.log(response);
+    
+        if(response.status != 200 || response.data.status !=  200) { 
+            return false;
+        }
+    
+        return true;
+    } catch(error) {
+        console.warn(error);
+        return false;
+    }
+}

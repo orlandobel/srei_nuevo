@@ -8,14 +8,14 @@
         
         <td>{{ labPick }}</td>
         <td v-if="admin == 2"> 
-            <button v-if="empleado.enEspera" class="btn btn-outline-primary">
+            <button v-if="empleado.enEspera" class="btn btn-outline-primary" @click="agregar()">
                 Admitir  <fa-icon :icon="['fas', 'plus']" />
             </button>
             <button class="btn btn-outline-danger" @click="eliminar()">
                 Eliminar <fa-icon :icon="['fas', 'minus']" />
             </button>
-            <button class="btn btn-outline-info">
-                Cambiar tipo <fa-icon :icon="['fas', 'exchange-alt']" />
+            <button class="btn btn-outline-info" @click="toggleType()">
+                Cambiar tipo <fa-icon :icon="['fas', 'exchange-alt']"/>
             </button>
         </td>
     </tr>
@@ -23,6 +23,7 @@
 
 <script>
 import { listaSimple } from '@/api_queries/laboratorios'
+import { toggleTipo, aceptar, eliminarEmpleado } from '@/api_queries/usuarios'
 
 export default {
     name: 'EmpleadoRow',
@@ -48,7 +49,27 @@ export default {
             });
             
         },
-        eliminar(){
+        async agregar(){
+            //aqui se hara el toggle de en espera en false
+            const idEmpleado = this.empleado._id;
+            const wop = await aceptar(idEmpleado)
+            this.empleado = wop
+            this.initData() 
+
+        },
+        async eliminar(){
+            //aqui se eliminará el registro de usuario eliminarEmpleado
+            const idEmpleado = this.empleado._id;
+            const eliminado = await eliminarEmpleado(idEmpleado)
+            if (eliminado)
+                this.$emit('datoEliminado')
+            
+        },
+        async toggleType(){
+            const idEmpleado = this.empleado._id;
+            const wop = await toggleTipo(idEmpleado, this.empleado.tipo)
+            this.empleado = wop
+            this.initData() 
         }
     },
     mounted() {

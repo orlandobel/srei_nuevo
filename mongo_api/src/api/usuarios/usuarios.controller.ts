@@ -28,6 +28,9 @@ class UsuariosController implements Controller {
         this.router.post(this.path + '/consulta/dae', this.consultaDae);
         this.router.post(this.path + '/vetado/consulta', this.verificarVetado);
         this.router.put(this.path + '/vetado/actualizar', this.actualizarVetado);
+        this.router.put(this.path + '/empleados/actualizar', this.actualizarPermisosTrabajador);
+        this.router.put(this.path + '/empleados/enEspera', this.actualizarEsperaTrabajador);
+        this.router.delete(this.path + '/empleados/eliminar/:id', this.eliminarEmpleado);
     }
 
     private ingresar = async (req: Request, res: Response, next: NextFunction) => {
@@ -117,6 +120,29 @@ class UsuariosController implements Controller {
             res.send({ status: 200, ...respuesta });
         }
     } 
+    
+    private actualizarPermisosTrabajador = async (req: Request, res: Response, next: NextFunction) =>  {
+        let {empleado, tipo} = req.body;
+        tipo = (tipo % 2) + 1;
+        const respuesta = await this.usuariosCM.toggleEmpleado(empleado, tipo);
+        
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, empleado: respuesta });
+        }
+    }
+
+    private actualizarEsperaTrabajador = async (req: Request, res: Response, next: NextFunction) =>  {
+        let {empleado} = req.body;
+        const respuesta = await this.usuariosCM.aceptarTrabajador(empleado);
+        
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, empleado: respuesta });
+        }
+    }
 
     public actualizarVetado = async (req: Request, res: Response, next: NextFunction) => {
         const { alumno, laboratorio, vetado } = req.body;
@@ -128,6 +154,18 @@ class UsuariosController implements Controller {
         } else {
             res.send({ status: 200, alumno: respuesta });
         }
+    }
+
+    private eliminarEmpleado = async (req: Request, res: Response, next: NextFunction) =>  {
+        const {id} = req.params;
+        const respuesta = await this.usuariosCM.eliminarTrabajador(id);
+
+        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200 });
+        }
+
     }
 }
 
