@@ -13,6 +13,9 @@
                     </a>
 
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <li>
+                            <router-link :to="{name: 'perfil'}"
+                                class="btn d-inline-flex">Cambiar contraseña</router-link></li>
                         <li><a class="dropdown-item" href="#" @click="logout">Cerrar sesión</a></li>
                     </ul>
                 </div>

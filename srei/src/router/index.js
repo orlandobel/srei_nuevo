@@ -7,6 +7,7 @@ import Inventario from '@/views/Inventarios.vue'
 import Catalogos from '@/views/Catalogos.vue'
 import Usuarios from '@/views/Usuarios.vue'
 import CatalogosViewer from '@/components/catalogos/CatalogosViewer.vue'
+import Perfil from '@/views/Perfil.vue';
 
 import isLogged from './middleware/auth';
 import store from '../store';
@@ -29,6 +30,14 @@ const routes = [
     path: '/signup',
     name: 'signup',
     component: SingUp,
+  },
+  {
+    path: '/profile',
+    name: 'perfil',
+    component: Perfil,
+    meta: {
+      needLoggin: true,
+    }
   },
   {
     path: '/inventario/:tipo',

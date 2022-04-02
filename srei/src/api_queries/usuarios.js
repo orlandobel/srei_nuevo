@@ -137,3 +137,26 @@ export async function eliminarEmpleado (id){
         return false;
     }
 }
+
+export async function cambiarClave(data) {
+    const url = '/usuarios/clave/actualizar';
+
+    try {
+        const respuesta = await axios.put(url, data);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            throw ["Error inesperado al actualizar la clave"];
+        }
+
+        return;
+    } catch(error) {
+        if(error.response) {
+            if(error.response.status < 500)
+                throw [error.response.data.mensaje];
+            else
+                throw ["Error inesperado en el servidor"];
+        }
+
+        throw [error];
+    }
+}

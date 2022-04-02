@@ -31,6 +31,7 @@ class UsuariosController implements Controller {
         this.router.put(this.path + '/empleados/actualizar', this.actualizarPermisosTrabajador);
         this.router.put(this.path + '/empleados/enEspera', this.actualizarEsperaTrabajador);
         this.router.delete(this.path + '/empleados/eliminar/:id', this.eliminarEmpleado);
+        this.router.put(this.path + '/clave/actualizar', this.actualizarClave);
     }
 
     private ingresar = async (req: Request, res: Response, next: NextFunction) => {
@@ -165,7 +166,18 @@ class UsuariosController implements Controller {
         } else {
             res.send({ status: 200 });
         }
+    }
 
+    public actualizarClave = async (req: Request, res: Response, next: NextFunction) => {
+        const { id, clave_old, clave1, clave2 } =  req.body;
+
+        const respuesta = await this.usuariosCM.actualizarClave(id, clave_old, clave1, clave2);
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200 });
+        }
     }
 }
 
