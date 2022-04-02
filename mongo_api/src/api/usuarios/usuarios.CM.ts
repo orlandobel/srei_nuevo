@@ -22,7 +22,7 @@ const Encrypt = {
         .then(hash => hash),  
     comparePassword: (password: string, hashPassword: string) =>
         bcrypt.compare(password, hashPassword)
-        .then(resp => { console.log(resp); return resp})
+        .then(resp =>  resp)
 
 }
 
@@ -239,6 +239,56 @@ class UsuariosCM {
         }
     }
 
+    public actualizarClave = async (id: string, clave_old: string, clave1: string, clave2: string): Promise<void | HttpException> => {
+        if(id === null || id === undefined || id === '') {
+            console.log('No se envió el usuario en el cambio de contraseña'.red);
+            return new BadRequestException("Falta el usuario");
+        }
+
+        if(clave_old === null || clave_old === undefined || clave_old === '') {
+            console.log('Falta la antigua contraseña'.red);
+            return new BadRequestException("Escriva su contraseña actual");
+        }
+
+        if(clave1 === null || clave1 === undefined || clave1 === '') {
+            console.log('Falta la nueva contraseña'.red);
+            return new BadRequestException("Escriva su nueva contraseña");
+        }
+
+        if(clave2 === null || clave2 === undefined || clave2 === '') {
+            console.log('Falta repetir la nueva contraseña'.red);
+            return new BadRequestException("Repita su nueva contraseña");
+        }
+
+        try {
+            const u = await USR.findById({usuario: id}).exec() as Trabajador;
+            const comp_clave = await Encrypt.comparePassword(clave_old, u.clave);
+
+            if(!comp_clave) {
+                console.log("Contraseña incorrecta".red);
+                return new DataNotFoundException(codigos.datoNoEncontrado, "La contraseña no es correcta");
+            }
+
+            if(clave1 != clave2) {
+                console.log('Las contraseñas no coinciden'.red);
+                return new BadRequestException("Las contraseñas no coinciden");
+            }
+
+            if(clave_old === clave1){
+                console.log('La nueva contraseña no puede ser igual a ala anterior'.red);
+                return new BadRequestException("La nuva contraseña no puede ser igual a la anterior");
+            }
+
+            const clave = await Encrypt.cryptPassword(clave1);
+            await USR.findByIdAndUpdate(id, { $set: { clave } }, { new: true } ) as Trabajador;
+
+            //return usuario;
+        } catch(error) {
+            console.log(`${error}`.red);
+            return new InternalServerException(error);
+        }
+    }
+
     private findAsync = async <T>(arr: T[], callback: (t: T) => Promise<boolean>): Promise<T | undefined> => {
         for(const t of arr) {
             if(await callback(t))
@@ -246,6 +296,7 @@ class UsuariosCM {
         }
         return undefined;
     }
+
 }
 
 export default UsuariosCM;
