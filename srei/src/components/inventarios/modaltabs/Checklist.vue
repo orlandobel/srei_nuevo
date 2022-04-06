@@ -6,7 +6,16 @@
         </div>
 
         <div class="modal-body text-start h-25 mh-25">
-            <input type="text" class="form-control mb-2" v-for="(_, index) in checklist" :key="index" v-model="checklist[index].nombre">
+            <div class="row" v-for="(_, index) in checklist" :key="index">
+                <div class="col-6 col-lg-10">
+                    <input type="text" class="form-control mb-2"  
+                    v-model="checklist[index].nombre">
+                </div>
+                <div class="col-6 col-lg-2 fomr-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch"
+                        v-model="checklist[index].estatus" />
+                </div>
+            </div>
         </div>
     </div>   
 </template>
