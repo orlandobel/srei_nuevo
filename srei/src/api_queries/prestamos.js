@@ -1,31 +1,5 @@
 import axios from 'axios';
 
-export async function initView(laboratorio) {
-    const url_mesas = `/mesas/prestamos/${laboratorio}`;
-    const url_alumnos = '/usuarios/alumnos/listar';
-
-    try {
-        const res_mesas = await axios.get(url_mesas);
-        const res_alumnos = await axios.get(url_alumnos);
-        
-        if(res_mesas.status >= 400 || res_mesas.data.status >= 400)
-            throw 'Unexpected error while obtaining "Mesas"';
-        
-        if(res_alumnos.status >= 400 || res_alumnos.data.status >= 400)
-            throw 'Unexpected error in while obtaining "Alumnos"'
-        
-        const res = {
-            mesas: res_mesas.data.mesas,
-            alumnos: res_alumnos.data.alumnos,
-        };
-        
-        return res;
-    } catch(error) {
-        console.error(error);
-        throw error;
-    }
-}
-
 export async function consultaDisponibilidad(id) {
     const url = `/prestamo/${id}`;
 
@@ -37,8 +11,7 @@ export async function consultaDisponibilidad(id) {
 
         return respuesta.data
     } catch(error) {
-        console.error(error);
-        throw error;
+        throw manageErrors(error);
     }
 }
 
@@ -47,14 +20,14 @@ export async function consultaDae(url, laboratorio) {
         const respuesta = await axios.post('/usuarios/consulta/dae', { url });
         
         if(respuesta.status >= 400 || respuesta.data.status >= 400)
-            throw "Unexpected error in 'consulta dae";
+            throw ["Error inesperado al consultar al DAE"];
 
         const alumno = respuesta.data.alumno
         const vetado = await verificarVetado(alumno, laboratorio);
     
         return { alumno, vetado };
     } catch(error) {
-        throw error;
+        throw manageErrors(error);
     }
 }
 
@@ -65,14 +38,12 @@ export async function verificarVetado(alumno, laboratorio) {
         const respuesta = await axios.post(url, { alumno, laboratorio });
         
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
-            console.error(respuesta);
-            throw "Unexpected erro in 'consulta vetado'";
+            throw ["Error inesperado al consultar el estado de veto del alumno"];
         }
 
         return respuesta.data.vetado;
     } catch(error) {
-        console.error(error);
-        throw error;
+        throw manageErrors(error);
     }
 
 }
@@ -87,17 +58,10 @@ export async function generarPrestamo(prestamo) {
             console.error(respuesta)
             throw ["Error inesperado al generar prestamos"];
         }
-            
-        console.log(respuesta)
+
         return respuesta.data;
     } catch(error) {
-        console.error(error);
-        if(error.response) {
-            throw [error.response.data.mensaje];
-        }
-
-        const mensajes = error.data.mensaje.split(',')
-        throw mensajes
+        throw manageErrors(error)
     }
 }
 
@@ -107,13 +71,12 @@ export async function prestamosDia(laboratorio) {
         const respuesta = await axios.get(url);
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
             console.error(resouesta.data);
-            throw "Unexpected error";
+            throw ["Error inesperado al consultar la vitacora del día"];
         }
         
         return respuesta.data;
     } catch(error) {
-        console.error(error);
-        throw error;
+        throw manageErrors(error);
     }
 }
 
@@ -124,17 +87,12 @@ export async function regresarPrestamo(id) {
         const respuesta = await axios.put(url, { id });
 
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
-            console.error(respuesta);
-            throw "Unexpected error";
+            throw ["Error al regresar el equipo prestado"];
         }
 
         return respuesta.data.prestamo;
     } catch(error) {
-        if(error.response) {
-            throw [error.response.data.mensaje];
-        }
-        const mensajes = error.data.mensaje.split(',')
-        throw mensajes
+        throw manageErrors(error);
     }
 }
 
@@ -144,15 +102,21 @@ export async function bitacoraGen(fechaI, fechaO){
     try {
         const respuesta = await axios.get(url);
         if(respuesta.status >= 400 || respuesta.data.status >= 400)
-            throw respuesta;
+            throw ["Error inesperado al generar la bitácora solicitada"];
+        
         const arr = respuesta.data.bitacora
-
         return arr
     } catch(error) {
-        if(error.response) {
-            throw [error.response.data.mensaje];
-        }
-        const mensajes = error.data.mensaje.split(',')
-        throw mensajes
+        throw manageErrors(error);
     }
+}
+
+function manageErrors(error) {
+    if(error.response) {
+        if(error.response.status < 500) return [error.response.data.mensaje];
+        else return ["Error inesperado en el servidor"];
+    }
+
+    const mensajes = error.split(",");
+    return mensajes;
 }

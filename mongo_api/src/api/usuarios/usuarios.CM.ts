@@ -42,7 +42,7 @@ class UsuariosCM {
             const consulta = await USR.find({ usuario }) as Trabajador[];
             
             const filtro = await this.findAsync(consulta, async e =>  await Encrypt.comparePassword(clave, e.clave));
-            console.log(filtro);
+            
             if(filtro === null || filtro === undefined) {
                 console.log('Usuario no encontrado'.red);
                 return new DataNotFoundException(codigos.datoNoEncontrado);
@@ -264,7 +264,7 @@ class UsuariosCM {
 
     public actualizarVetado = async (id_alumno: string, laboratorio: string, veto: boolean): Promise<void | HttpException | Alumno> => {
         if(id_alumno === null || id_alumno === undefined || id_alumno === '') {
-            console.log('Alumno no enviado'. red);
+            console.log('Alumno no enviado'.red);
             return new BadRequestException("Alumno no enviado");
         }
 

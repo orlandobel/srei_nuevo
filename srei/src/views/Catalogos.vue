@@ -2,6 +2,8 @@
     <div class="row ">
         <sidebar />
         <div class="col-lg-10">
+            <!-- TODO: Añadir mensajes de error en caso de que falle la descarga de los catalogos --> 
+
             <div class="row justify-content-center h-100 mh-100">
                 <div class="col-lg-12 h-100 mh-100 d-flex">
                     <div class="card h-95 mh-95 w-100 mw-100 align-self-center">

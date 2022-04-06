@@ -108,7 +108,7 @@ export default {
                     if(self.laboratorio.nombre.includes('Electronica'))
                         self.removerAlumnosMesa(self.prestamo.mesa);
                 })
-                .catch(errtor => console.error(errtor));
+                .catch(error => this.$emit('error', error));
         }
     }
 }

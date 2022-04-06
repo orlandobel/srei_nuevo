@@ -30,11 +30,11 @@
                             <!-- Secciones de tabulación -->
                             <div class="tab-content " id="tab-inicio-content">
                                 <div class="tab-pane fade px-2 h-100 mh-100 active show" id="alumnos" role="tabpanel" aria-labelledby="alumnos-tab">
-                                    <tabla-alumnos @error="alumnos_error($event)"/>
+                                    <tabla-alumnos @error="errores($event)"/>
                                 </div>
                                 <div class="tab-pane fade px-2 h-100 mh-100" id="trabajadores" role="tabpanel" aria-labelledby="trabajadores-tab">
                                     Trabajadores
-                                    <tabla-emplados @error="alumnos_error($event)"/>
+                                    <tabla-emplados @error="errores($event)"/>
                                 </div>
                             </div>
                             <!-- Fin de secciones de tabulación -->
@@ -61,7 +61,7 @@ export default {
         TablaEmplados,
     },
     methods: {
-        alumnos_error(error) {
+        errores(error) {
             this.$refs.error_messages.displayErrors(error);
         }
     }

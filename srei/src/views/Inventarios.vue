@@ -3,6 +3,15 @@
         <sidebar />
         <equipo-modal v-on:guardado="equipo_guardado($event)" />
         <div class="col-lg-10">
+            <api-message class="mt-2" v-if="success"
+                :mensaje="mensaje" :success='true'/>
+
+            <api-message class="mt-2"
+                mensaje="" :success='false' ref="error_messages"/>
+
+            <!--api-message v-if="error_imagen"
+                    :error_bind="true" message_bind="Error al guardar la imagen, intentelo de nuevo más tarde" /-->
+
             <div class="row justify-content-center h-100 mh-100">
                 <div class="col-lg-12 d-flex flex-column">
                     <div class="row justify-content-end my-3">
@@ -11,19 +20,12 @@
                         </div>
                     </div>
 
-                    <api-message v-if="msg != null"
-                        :error_bind="false" :message_bind="msg" />
-                    <api-message v-if="error_imagen"
-                        :error_bind="true" message_bind="Error al guardar la imagen, intentelo de nuevo más tarde" />
-                    <api-message v-if="eliminado != null"
-                        :error_bind="!eliminado" :message_bind="msg_eliminado" />
-
                     <div class="row flex-grow-1">
                         <div class="col-lg-12 pb-3">
                             <div class="card align-self-center h-100 mh-100 w-100 mh-100">
                                 <h3 class="card-header text-start fw-bold py-3 ps-4">Inventario de eléctronica</h3>
                                 <div class="card-body p-2 overflow-auto">
-                                    <datatable v-on:removido="elm_msg($event)" ref="lista" />
+                                    <datatable @removido="elm_msg()" @error="errors($event)" ref="lista" />
                                 </div>
                             </div>
                         </div>
@@ -39,7 +41,8 @@ import Sidebar from '@/components/Sidebar.vue'
 import Datatable from '@/components/inventarios/Datatable.vue'
 import EquipoModal from '@/components/inventarios/EquipoModal.vue'
 import { mapActions } from 'vuex'
-import ApiMessage from '@/components/inventarios/ApiMessage.vue'
+//import ApiMessage from '@/components/inventarios/ApiMessage.vue'
+import ApiMessage from '@/components/ApiMessage.vue'
 
 export default {
     name: "Inventario",
@@ -51,20 +54,19 @@ export default {
     },
     data() {
         return {
-            msg: null,
-            error_imagen: false,
-            eliminado: null,
-            msg_eliminado: ''
+            mensaje: '',
+            success: false,
         }
     },
     methods: {
         ...mapActions('equipo_inventario', ['set_creacion']),
         equipo_guardado(event) {
-            this.msg = event.msg;
-            this.error_imagen = event.error_imagen;
+            this.mensaje = event.msg;
+            this.succes = true;
 
-            setTimeout(() => this.msg = null, 3000)
-            setTimeout(() => this.error_imagen = false, 5000)
+            setTimeout(() => this.success = false, 3000)
+            if(event.error_imagen)
+                this.$refs.error_messages.displayErrors(["Error al guardar la imagen, intentelo de nuevo más tarde"]);
 
             if(event.crear) {
                 this.$refs.lista.agregar(event.eqp)
@@ -72,16 +74,14 @@ export default {
                 this.$refs.lista.actualizar_equipo(event.eqp)
             }
         },
-        reset_msg() {
-            console.log('reiniciando mensaje');
-            this.msg = null
-        },
-        elm_msg(elm) {
-            this.eliminado = elm
-            this.msg_eliminado = elm? "Equipo eliminado exitosamente" 
-                                    : "Error al eliminar, intentelo de nuevo más tarde"
+        elm_msg() {
+            this.mensaje = "Equipo eliminado exitosamente";
+            this.success = true;
 
-            setTimeout(() => this.eliminado = null, 5000)
+            setTimeout(() => this.success = false, 3000);
+        },
+        errors(error) {
+            this.$refs.error_messages.displayErrors(error);
         }
     }
 }

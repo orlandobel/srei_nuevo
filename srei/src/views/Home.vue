@@ -45,16 +45,16 @@
                             <!-- Secciones de tabulación -->
                             <div class="tab-content " id="tab-inicio-content">
                                 <div class="tab-pane fade px-2 h-100 mh-100 show active" id="prestamos" role="tabpanel" aria-labelledby="prestamos-tab">
-                                    <prestamos-tab @prestamoGenerado="prestamoGenerado()" @erroresPrestamo="erroresPrestamo($event)"/>
+                                    <prestamos-tab @prestamoGenerado="prestamoGenerado()" @erroresPrestamo="errores($event)"/>
                                 </div>
                                 <div class="tab-pane fade px-2 h-100 mh-100" id="usuarios" role="tabpanel" aria-labelledby="usuarios-tab">
-                                    <alumnos-laboratorio-tab />
+                                    <alumnos-laboratorio-tab @error="errores($event)" />
                                 </div>
                                 <div class="tab-pane fade h-100 mh-100 " id="bitacora" role="tabpanel" aria-labelledby="bitacora-tab">
-                                    <bitacora-tab />
+                                    <bitacora-tab @error="errores($event)" />
                                 </div>
                                 <div class="tab-pane fade h-100 mh-100" id="bitacoraGlob" role="tabpanel" aria-labelledby="bitacoraGlob-tab">
-                                    <bitacora-general-tab />
+                                    <bitacora-general-tab @error="errores($event)" />
                                 </div>
                             </div>
                             <!-- Fin de secciones de tabulación -->
@@ -102,7 +102,7 @@ export default {
                 this.mensaje = '';
             }, 3000);
         },
-        erroresPrestamo(errores) {
+        errores(errores) {
             this.$refs.error_messages.displayErrors(errores);
         }
     }

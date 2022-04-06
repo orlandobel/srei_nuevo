@@ -48,10 +48,13 @@ export default {
     },
     methods: {
         ...mapActions('laboratorio_store', ['initAlumnos']),
-        async initView() {
+        initView() {
             const laboratorio = this.$store.getters.laboratorio._id;
-            const mesas = await listarAlumnosMesa(laboratorio);
-            this.initAlumnos(mesas);
+            listarAlumnosMesa(laboratorio).then(mesas => {
+                this.initAlumnos(mesas);
+            }).catch(error => {
+                this.$emit("error", error);
+            });
         }
     },
     mounted() {

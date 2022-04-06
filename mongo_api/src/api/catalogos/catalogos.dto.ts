@@ -112,7 +112,7 @@ class Editar {
     @IsNotEmpty({
         message: "El id del Equipo no puede ser una cadena vacía."
     })
-    public id!: string;
+    public _id!: string;
 
     @IsOptional()
     @IsDefined({

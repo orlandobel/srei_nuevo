@@ -25,7 +25,7 @@
                             </ul>
                         </li>
                         <bitacora-item v-for="(prestamo, index) in prestamos" :key="prestamo._id" 
-                            :prestamo_prop="prestamo" :index="index"/>
+                            :prestamo_prop="prestamo" :index="index" @error="errorPrestamo($event)"/>
                     </ul>
                 </div>
             </div>
@@ -54,13 +54,14 @@ export default {
     },
     methods: {
         ...mapActions('laboratorio_store', ['initPrestamos']),
+        errorPrestamo(error) {
+            this.$emit('error', error);
+        }
     },
     mounted() {
-        const laboratorio = this.$store.getters.laboratorio._id;
-        prestamosDia(laboratorio).then(res => {
-            //this.prestamos = res.prestamos;
+        prestamosDia(this.laboratorio._id).then(res => {
             this.initPrestamos(res.prestamos)
-        });
+        }).catch(error => this.$emit('error', error));
     }
 }
 </script>

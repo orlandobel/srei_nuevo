@@ -1,36 +1,39 @@
 import axios from 'axios';
 
-export async function SignIn(params) {
+export async function SignUp(params) {
     const url = `/usuarios/crear/empleado`;
 
     try {
         const respuesta = await axios.post(url, params);
 
         if(respuesta.status >= 400 || respuesta.data.status >= 400)
-            throw 'Unexpected error';
+            throw 'Error inesperado';
 
         return respuesta.data;
     } catch(error) {
-        console.error(error);
+        if(error.response) {
+            if(error.response.status < 500) throw error.response.data.mensaje;
+            else throw "Error inesperado en el servidor";
+        }
+
         throw error;
     }
 }
 
 export async function listarAlumnos() {
     const url = '/usuarios/alumnos/listar';
-
+    
     try {
         const respuesta = await axios.get(url);
 
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
             console.error(respuesta);
-            throw "Error inesperado en lista de alumnos";
+            throw ["Error inesperado en lista de alumnos"];
         }
 
         return respuesta.data.alumnos;
     } catch(error) {
-        console.error(error);
-        throw error
+        throw manageErrors(error);
     }
 }
 
@@ -42,13 +45,12 @@ export async function listarEmpleados() {
 
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
             console.error(respuesta);
-            throw "Error inesperado en lista de empleados/trabajadores";
+            throw ["Error inesperado en lista de empleados/trabajadores"];
         }
 
         return respuesta.data.empleados;
     } catch(error) {
-        console.error(error);
-        throw error
+        throw manageErrors(error);
     }
 }
 
@@ -65,14 +67,12 @@ export async function cambiarVetado(alumno, laboratorio, vetado) {
         const respuesta = await axios.put(url, data);
 
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
-            console.error(respuesta);
-            throw "Error inesperado al actualizar el veto del alumno";
+            throw ["Error inesperado al actualizar el veto del alumno"];
         }
 
         return respuesta.data.alumno;
     } catch(error) {
-        console.error(error);
-        throw error
+        throw manageErrors(error)
     }
 }
 
@@ -88,13 +88,12 @@ export async function toggleTipo( empleado, tipo){
 
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
             console.error(respuesta);
-            throw "Error inesperado al actualizar permisos de administracion";
+            throw ["Error inesperado al actualizar permisos de administracion"];
         }
-        console.log(respuesta.data.empleado)
+        
         return respuesta.data.empleado;
     } catch(error) {
-        console.error(error);
-        throw error
+        throw manageErrors(error);
     }
 
 }
@@ -109,14 +108,12 @@ export async function aceptar( empleado ){
         const respuesta = await axios.put(url, data);
 
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
-            console.error(respuesta);
-            throw "Error inesperado al actualizar estado de trabajador";
+            throw ["Error inesperado al actualizar estado de trabajador"];
         }
-        console.log(respuesta.data.empleado)
+        
         return respuesta.data.empleado;
     } catch(error) {
-        console.error(error);
-        throw error
+        throw manageErrors(error)
     }
 
 }
@@ -128,13 +125,12 @@ export async function eliminarEmpleado (id){
         console.log(response);
     
         if(response.status != 200 || response.data.status !=  200) { 
-            return false;
+            throw ["Error inesperado al eliminar el empleado"];
         }
     
         return true;
     } catch(error) {
-        console.warn(error);
-        return false;
+        throw manageErrors(error);
     }
 }
 
@@ -150,13 +146,16 @@ export async function cambiarClave(data) {
 
         return;
     } catch(error) {
-        if(error.response) {
-            if(error.response.status < 500)
-                throw [error.response.data.mensaje];
-            else
-                throw ["Error inesperado en el servidor"];
-        }
-
-        throw [error];
+        throw manageErrors(error);
     }
+}
+
+function manageErrors(error) {
+    if(error.response) {
+        if(error.response.status < 500) return [error.response.data.mensaje];
+        else return ["Error inesperado en el servidor"];
+    }
+
+    const mensajes = error.split(",");
+    return mensajes;
 }

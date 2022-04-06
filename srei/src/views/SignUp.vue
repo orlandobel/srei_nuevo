@@ -10,7 +10,7 @@
                 </div>
                 <h5 class="card-header">Registro</h5>
                 <div class="card-body px-4">
-                    <form action @submit.prevent="signIn()">
+                    <form action @submit.prevent="signUp()">
                         <div class="row mb-3">
                             <label for="rfc" class="form-label text-start">Nombre</label>
                             <input type="text" name="nombre" id="nombre" class="form-control" v-model="nombre">
@@ -50,7 +50,7 @@
 
 <script>
 import { listaSimple } from '@/api_queries/laboratorios'
-import { SignIn } from '@/api_queries/usuarios'
+import { SignUp } from '@/api_queries/usuarios'
 
 export default {
     name: 'SignUp',
@@ -104,7 +104,7 @@ export default {
             return false
         },
 
-        async signIn() {
+        async signUp() {
             this.errorMsg =''
             this.successMsg = ''
             let errorFlag = 0;
@@ -164,7 +164,7 @@ export default {
                 }
 
 
-                const response = await SignIn(params)
+                const response = await SignUp(params)
                 if(response.status == 200)
                     this.successMsg  = "<p><strong>¡Exito en el registro de datos!</strong></p>"
                     this.successMsg += "<p>Recuerde que este registro al sistema esta en espera, comuniquese con alguno de los laboratoristas registrados para confirmar y terminar su registro</p>"

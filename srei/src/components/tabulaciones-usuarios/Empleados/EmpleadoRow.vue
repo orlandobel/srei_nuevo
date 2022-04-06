@@ -40,36 +40,50 @@ export default {
         }
     },
     methods: {
-        async initData(){
-            const listLabs = await listaSimple();
-            listLabs.forEach(lab => {
-                if(lab._id == this.empleado.laboratorio){
-                    this.labPick = lab.nombre
-                } 
-            });
-            
+        async initData() {
+            try {
+                const listLabs = await listaSimple();
+                listLabs.forEach(lab => {
+                    if(lab._id == this.empleado.laboratorio){
+                        this.labPick = lab.nombre
+                    } 
+                });
+            } catch(error) {
+                this.$emit('error', error);
+            }
         },
-        async agregar(){
+        async agregar() {
             //aqui se hara el toggle de en espera en false
-            const idEmpleado = this.empleado._id;
-            const wop = await aceptar(idEmpleado)
-            this.empleado = wop
-            this.initData() 
-
+            try {
+                const idEmpleado = this.empleado._id;
+                const wop = await aceptar(idEmpleado)
+                this.empleado = wop
+                this.initData() 
+            } catch(error) {
+                this.$emit('error', error);
+            }
         },
-        async eliminar(){
+        async eliminar() {
             //aqui se eliminará el registro de usuario eliminarEmpleado
-            const idEmpleado = this.empleado._id;
-            const eliminado = await eliminarEmpleado(idEmpleado)
-            if (eliminado)
-                this.$emit('datoEliminado')
+            try {
+                const idEmpleado = this.empleado._id;
+                const eliminado = await eliminarEmpleado(idEmpleado)
+                if (eliminado)
+                    this.$emit('datoEliminado')
+            } catch(error) {
+                this.$emit('error', error);
+            }
             
         },
-        async toggleType(){
-            const idEmpleado = this.empleado._id;
-            const wop = await toggleTipo(idEmpleado, this.empleado.tipo)
-            this.empleado = wop
-            this.initData() 
+        async toggleType() {
+            try {
+                const idEmpleado = this.empleado._id;
+                const wop = await toggleTipo(idEmpleado, this.empleado.tipo);
+                this.empleado = wop;
+                this.initData();
+            } catch(error) {
+                this.$emit('error', error);
+            }
         }
     },
     mounted() {

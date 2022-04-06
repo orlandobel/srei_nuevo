@@ -117,6 +117,9 @@ export default {
                 equipo.checklist = this.checklist
             }
 
+            console.log(equipo);
+            console.log()
+
             const respuesta = await guardar(equipo, this.laboratorio.nombre, this.imagen, this.creacion)
             respuesta.crear = this.creacion
             

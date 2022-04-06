@@ -11,7 +11,9 @@
                 </tr>
             </thead>
             <tbody>
-                <empleado-row v-for="empleado in empleados" :key="empleado._id" :empleado_prop="empleado" :admin_prop="admin" @datoEliminado="initData()" @error="show_error($event)" />
+                <empleado-row v-for="empleado in empleados" :key="empleado._id" 
+                    :empleado_prop="empleado" :admin_prop="admin" 
+                    @datoEliminado="initData()" @error="show_error($event)" />
             </tbody>
             <tfoot>
                 <tr>
@@ -57,10 +59,9 @@ export default {
         async initData() {
             try {
                 this.empleados = await listarEmpleados();
-                console.log(this.empleados)
                 this.initTable();
             } catch(error) {
-                console.error(error);
+                this.$emit('error', error);
             }
 
         },

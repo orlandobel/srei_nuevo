@@ -13,7 +13,7 @@
             </thead>
             <tbody>
                 <elemento v-for="(e, index) in equipos" :key="e._id" :equipo_bind="e" :index="index" 
-                    v-on:eliminado="remover($event)" v-on:error_eliminar="error_eliminar()"/>
+                    v-on:eliminado="remover($event)" v-on:error_eliminar="error_eliminar($event)"/>
             </tbody>
             <tfoot>
                 <tr>
@@ -81,10 +81,10 @@ export default {
         remover(index) {
             this.equipos.splice(index, 1)
 
-            this.$emit('removido', true)
+            this.$emit('removido')
         },
-        error_eliminar() {
-            this.$emit('removido', false)
+        error_eliminar(error) {
+            this.$emit('error', error)
         },
         agregar(eqp) {
             this.equipos.push(eqp)

@@ -15,7 +15,7 @@
                     <input id="dateO" type="date" class="border-0" v-model="this.fechaO"/>
                 </div>
                 <div v-if="this.fechaI != '' && this.fechaO != ''" class="col-1">   
-                    <button class="btn btn-primary" v-on:click="this.wop() ">Buscar</button>
+                    <button class="btn btn-primary" v-on:click="this.consultar() ">Buscar</button>
                 </div>
 
             </div>
@@ -52,7 +52,9 @@ import { bitacoraGen } from '@/api_queries/prestamos'
 
 export default {
     name: 'BitacoraGeneralTab',
-    components: {BitacoraGeneralItem},
+    components: {
+        BitacoraGeneralItem,
+    },
     data () {
         return {
             consult: [],
@@ -61,15 +63,12 @@ export default {
         }
     },
     methods: {
-            async wop(){
-                console.log(this.fechaI)
-                console.log(this.fechaO)
-                this.consult = await bitacoraGen(this.fechaI, this.fechaO)
-             }
+        consultar(){
+            bitacoraGen(this.fechaI, this.fechaO)
+                .then(res => this.consult = res)
+                .catch(error => this.$emit('error', error))
+        }
      },
-   // async mounted() {
-   //     await this.onInit()
-   // },
 }
 </script>
 

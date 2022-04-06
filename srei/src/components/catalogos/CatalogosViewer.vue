@@ -33,23 +33,23 @@ export default {
         }
     },
     methods: {
+        async initData() {
+            // añadimos consulta
+            const lab = this.$route.params.laboratorio
+            const tipo = this.$route.params.tipo
 
-            async initData() {
-                // añadimos consulta
-                const lab = this.$route.params.laboratorio
-                const tipo = this.$route.params.tipo
-                try {
-                    await pdf(lab,tipo);
-                    this.name= "pdfs/doc_"+lab+"_"+tipo.toLowerCase().replace(" ", "_")+".pdf"
-                } catch (error) {
-                    console.warn(error)
-                }
-                //en el caso de existir más cambiar a un labOfUser.foreach(eq=>{labOfUser.push(eq)})
-            },
+            try {
+                await pdf(lab,tipo);
+                this.name = "pdfs/doc_"+lab+"_"+tipo.toLowerCase().replace(" ", "_")+".pdf"
+            } catch (error) {
+                console.error(error)
+            }
+            //en el caso de existir más cambiar a un labOfUser.foreach(eq=>{labOfUser.push(eq)})
         },
-        mounted() {
-            this.initData()
-        },
+    },
+    mounted() {
+        this.initData()
+    },
 
 }
 </script>

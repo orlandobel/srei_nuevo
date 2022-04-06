@@ -110,7 +110,9 @@ import AlumnoListElement from '@/components/tabulaciones-inicio/prestamos/Presta
 import ApiMessage from '@/components/ApiMessage.vue';
 import QRScanner from '@/components/tabulaciones-inicio/ScanRelated/QRScanner.vue'
 import { mapActions } from 'vuex';
-import  { initView, generarPrestamo, verificarVetado } from '@/api_queries/prestamos';
+import  { generarPrestamo, verificarVetado } from '@/api_queries/prestamos';
+import { listarMesas } from '@/api_queries/laboratorios.js';
+import { listarAlumnos } from '@/api_queries/usuarios.js';
 
 export default {
     name: 'PrestamosTab',
@@ -199,13 +201,14 @@ export default {
         }
     },
     mounted() {
-        initView(this.laboratorio._id)
-            .then(data => {
-                this.mesas = data.mesas;
-                
-                this.alumnos_busqueda = data.alumnos;
-                this.alumnos_filtrados = data.alumnos;
-            }).catch(error => console.error(error));
+        listarAlumnos().then(res => {
+            this.alumnos_busqueda = res;
+            this.alumnos_filtrados = res;
+        }).catch(error => this.$emit('erroresPrestamo', error));
+
+        listarMesas(this.laboratorio._id).then(res => {
+            this.mesas = res;
+        }).catch(error => this.$emit('erroresPrestamo', error));
     }
 }
 </script>

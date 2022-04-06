@@ -165,7 +165,6 @@ export default {
             } else if(img.includes('data:image')) {
                 base_img.src = img;
             } else {
-                console.log('working in')
                 const blob = new Blob([img])
                 const url = URL.createObjectURL(blob)
                 base_img.src = url
@@ -176,7 +175,6 @@ export default {
         this.set_canvas(null)
     },
     updated() {
-        console.log(this.imagen_src)
         this.set_canvas(this.imagen_src)
     }
 }

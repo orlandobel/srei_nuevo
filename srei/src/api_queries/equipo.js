@@ -13,12 +13,11 @@ export async function imagen(ruta) {
         const response = await axios.get(url);
 
         if(response.status >= 400)
-            return null;
+            throw null;
 
         return response.data
     } catch(error) {
-        console.error(error);
-        return null;
+        throw null;
     }
 }
 
@@ -27,7 +26,7 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
     let errores
     let error_imagen = false
 
-    const url = crear? `equipo/crear` : `equipo/editar`
+    const url = crear? `/equipo/crear` : `/equipo/editar`
 
     const eqp_data = {
         eqp: equipo,
@@ -71,37 +70,44 @@ export async function guardar(equipo, laboratorio, imagen, crear) {
 export async function eliminar(ruta) {
     const url = `equipo/eliminar/${ruta}`
     
-
     try {
         const response = await axios.delete(url)
-        console.log(response);
-    
-        if(response.status != 200 || response.data.status !=  200) { 
-            return false;
+        
+        if(response.status >= 400 || response.data.status >= 400) { 
+            throw ["Error al intentar eliminar el equipo"];
         }
     
         return true;
     } catch(error) {
-        console.warn(error);
-        return false;
+        throw manageErrors(error);
     }
-
 }
 
 export async function pdf(laboratorio, tipo){
     try {
-
         const url = `equipo/pdf/${laboratorio}/${tipo}`;
         const response = await axios.get(url)
 
         console.log(response);
-        if(response.status != 200) { 
-            return response.status;
+        if(response.status >= 400) { 
+            throw response.status;
         }
+
         return response
     } catch (error) {
-        console.log("Fallas tecnicas");
-        console.warn(error);
-        return response.status;
+        console.error(error);
+        throw response.status;
     }
 }
+
+function manageErrors(error) {
+    if(error.response) {
+        if(error.response.status < 500) return [error.response.data.mensaje];
+        else return ["Error inesperado en el servidor"];
+    }
+
+    const mensajes = error.split(",");
+    return mensajes;
+}
+
+// TODO: escuchar el podcast leyendas legendarias de "el zodiaco";

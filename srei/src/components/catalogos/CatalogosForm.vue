@@ -35,45 +35,43 @@
 <script>
 
 export default {
-        name: "CatalgosForm",
+    name: "CatalgosForm",
 
-        data () {
-            return {
-                labOfUser: [],
-                labPick: '',
-                typePick: '',
-                laboratorio: this.$store.getters.laboratorio,
+    data () {
+        return {
+            labOfUser: [],
+            labPick: '',
+            typePick: '',
+            laboratorio: this.$store.getters.laboratorio,
+        }
+    },
+    methods: {
+
+        initData() {
+            // añadimos los laboratoirios existentes
+            this.labOfUser = [{
+                    nombre: this.laboratorio.nombre,
+                    id: this.laboratorio._id
+            }]
+            //en el caso de existir más cambiar a un labOfUser.foreach(eq=>{labOfUser.push(eq)})
+        },
+
+        async searchCatalogue() {
+            const params = {
+                laboratorio: this.labPick,
+                tipo: this.typePick
+            }
+            
+            try {
+                this.$router.push({name:"catalogosPDF", params})
+            } catch(error) {
+                console.log("Algo raro pasó: "+ error)
             }
         },
-        methods: {
-
-            initData() {
-                // añadimos los laboratoirios existentes
-                this.labOfUser = [{
-                        nombre: this.laboratorio.nombre,
-                        id: this.laboratorio._id
-                }]
-                //en el caso de existir más cambiar a un labOfUser.foreach(eq=>{labOfUser.push(eq)})
-            },
-
-            async searchCatalogue() {
-                const params = {
-                    laboratorio: this.labPick,
-                    tipo: this.typePick
-                }
-                
-                try {
-                    this.$router.push({name:"catalogosPDF", params})
-                } catch(error) {
-                    console.log("Algo raro pasó: "+ error)
-                }
-            },
-        },
-        mounted() {
-            this.initData()
-        },
-        
-
+    },
+    mounted() {
+        this.initData()
+    },
 }
 </script>
 

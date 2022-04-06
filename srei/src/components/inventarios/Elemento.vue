@@ -62,41 +62,29 @@ export default {
             this.set_creacion(false)
 
             if(this.campos.includes('checklist')) {
-                console.log(Object.values(this.equipo.checklist))
                 this.set_checklist(Object.values(this.equipo.checklist))
                 this.toggle_checklist(true)
             }
 
             if(this.campos.includes('img_path')) {
-                console.info('Cambiando path')
                 this.set_imagen_src(this.equipo.img_path)
             }
         },
         consulta_eliminar() {
             eliminar(this.equipo.path)
-                .then(result => {
-                    console.log(result);
-
-                    if(result) {
-                        this.$emit('eliminado', this.index)
-                    } else {
-                        console.log('error al eliminar')
-                        this.$emit('error_eliminar')
-                    }
+                .then(() => {
+                    this.$emit('eliminado', this.index)
                 })
-                .catch(() => {
-                    console.log('error al eliminar')
-                    this.$emit('error_eliminar')
+                .catch((error) => {
+                    this.$emit('error_eliminar', error)
                 })
         },
         async buscarImagen() {
             if(this.equipo.path != null && this.equipo.path != undefined) {
-                const res = await imagen(this.equipo.path);
-                if(res === null || res === undefined || res === '')
-                    return;
-
-                this.equipo.img_path = `data:image/png;base64,${res}`;
-                this.campos = Object.keys(this.equipo);
+                imagen(this.equipo.path).then(res => {
+                    this.equipo.img_path = `data:image/png;base64,${res}`;
+                    this.campos = Object.keys(this.equipo);
+                });
             }
         }
     },
