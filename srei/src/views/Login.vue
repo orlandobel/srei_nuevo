@@ -66,15 +66,18 @@ export default {
             } catch(error) {
                 const response = error.response
                 const status = response.status 
-                if (status == 404) this.errorMsg = "<p><strong>¡Error de inicio de sesión!</strong></p>"
-                if (params.usuario == "" || params.clave == ""){
+                //if (status == 404) this.errorMsg = "<p><strong>¡Error de inicio de sesión!</strong></p>"
+                if (params.usuario == "" || params.clave == "") {
                     this.errorMsg += "<ul>"
                     if (params.usuario == "") this.errorMsg += "<li>Asegúrese de escribir su nombre de usuario.</li>"
                     if (params.clave == "") this.errorMsg += "<li>Asegúrese de escribir su clave o contraseña única.</li>"
                     this.errorMsg += "</ul>"
-                }else{
-                    this.errorMsg += "<p>Las credenciales son incorrectas, favor de comprobar que su usuario y/o contraseña sean correctos.</p>"
+                 } else {
+                    console.error(error.response.data);
+                    this.errorMsg += `<p>${error.response.data.mensaje}.</p>`
                 }
+
+                setTimeout(() => this.errorMsg = '', 3000);
             }
         },
     },

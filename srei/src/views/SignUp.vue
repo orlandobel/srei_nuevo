@@ -159,7 +159,7 @@ export default {
                     errorFlag ++
                 }
 
-                if (errorFlag!= 0){
+                if (errorFlag!= 0) {
                     throw new Error('oops');
                 }
 
@@ -169,7 +169,6 @@ export default {
                     this.successMsg  = "<p><strong>¡Exito en el registro de datos!</strong></p>"
                     this.successMsg += "<p>Recuerde que este registro al sistema esta en espera, comuniquese con alguno de los laboratoristas registrados para confirmar y terminar su registro</p>"
             } catch(error) {
-                console.log(error.message)
                 if (error.message != 'oops'){
                     const response = error.response
                     const status = response.status 

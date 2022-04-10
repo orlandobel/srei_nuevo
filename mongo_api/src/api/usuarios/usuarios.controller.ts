@@ -1,7 +1,4 @@
 import { Request , Response, Router, NextFunction } from 'express';
-import InternalServerException from '../../exceptions/InternalServerException';
-import DataNotFoundException from '../../exceptions/DataNotFoundException';
-import BadRequestException from '../../exceptions/BadRequestException';
 
 import Controller from '../../interfaces/controller.interface';
 import UsuariosCM from './usuarios.CM';
@@ -34,30 +31,30 @@ class UsuariosController implements Controller {
         this.router.put(this.path + '/clave/actualizar', this.actualizarClave);
     }
 
-    private ingresar = async (req: Request, res: Response, next: NextFunction) => {
+    private ingresar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { usuario, clave } = req.body;
         const respuesta = await this.usuariosCM.ingresar(usuario, clave);
 
-        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
+        if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta)
         } else {
             res.send({status: 200, ...respuesta})
         }
     }
 
-    private checkLogin = async (req: Request, res: Response, next: NextFunction) => {
+    private checkLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const token = req.headers['authorization'];
 
         const respuesta = await this.usuariosCM.checkToken(token);
 
-        if(respuesta instanceof BadRequestException || respuesta instanceof InternalServerException) {
+        if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta)
         } else {
             res.send({ status: 200, ...respuesta });
         }
     }
 
-    private crearEmpleado = async (req: Request, res: Response, next: NextFunction) => {
+    private crearEmpleado = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { nombre, usuario, clave, laboratorio, passwordCheck} = req.body;
 
         const usr = {
@@ -72,14 +69,14 @@ class UsuariosController implements Controller {
 
         const respuesta = await this.usuariosCM.crearEmpleado(usr, passwordCheck);
 
-        if(respuesta instanceof BadRequestException || respuesta instanceof InternalServerException) {
+        if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta)
         } else {
             res.send({ status: 200, usuario: respuesta });
         }
     }
 
-    public consultaDae = async (req: Request, res: Response, next: NextFunction) => {
+    public consultaDae = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { url } = req.body;
         const respuesta = await this.usuariosCM.consultaDae(url);
 
@@ -90,7 +87,7 @@ class UsuariosController implements Controller {
         }
     }
 
-    public listarAlumnos = async (req: Request, res: Response, next: NextFunction) => {
+    public listarAlumnos = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const respuesta = await this.usuariosCM.listarAlumnos();
 
         if(respuesta instanceof HttpException) {
@@ -100,7 +97,7 @@ class UsuariosController implements Controller {
         }
     }  
     
-    public listarEmpleados = async (req: Request, res: Response, next: NextFunction) => {
+    public listarEmpleados = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const respuesta = await this.usuariosCM.listarEmpleados();
 
         if(respuesta instanceof HttpException) {
@@ -110,7 +107,7 @@ class UsuariosController implements Controller {
         }
     }  
 
-    public verificarVetado = async (req: Request, res: Response, next: NextFunction) =>  {
+    public verificarVetado = async (req: Request, res: Response, next: NextFunction): Promise<void> =>  {
         const { alumno, laboratorio } = req.body;
 
         const respuesta = await this.usuariosCM.checkVetado(alumno, laboratorio);
@@ -122,7 +119,7 @@ class UsuariosController implements Controller {
         }
     } 
     
-    private actualizarPermisosTrabajador = async (req: Request, res: Response, next: NextFunction) =>  {
+    private actualizarPermisosTrabajador = async (req: Request, res: Response, next: NextFunction): Promise<void> =>  {
         let {empleado, tipo} = req.body;
         tipo = (tipo % 2) + 1;
         const respuesta = await this.usuariosCM.toggleEmpleado(empleado, tipo);
@@ -134,7 +131,7 @@ class UsuariosController implements Controller {
         }
     }
 
-    private actualizarEsperaTrabajador = async (req: Request, res: Response, next: NextFunction) =>  {
+    private actualizarEsperaTrabajador = async (req: Request, res: Response, next: NextFunction): Promise<void> =>  {
         let {empleado} = req.body;
         const respuesta = await this.usuariosCM.aceptarTrabajador(empleado);
         
@@ -145,7 +142,7 @@ class UsuariosController implements Controller {
         }
     }
 
-    public actualizarVetado = async (req: Request, res: Response, next: NextFunction) => {
+    public actualizarVetado = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { alumno, laboratorio, vetado } = req.body;
 
         const respuesta = await this.usuariosCM.actualizarVetado(alumno, laboratorio, vetado);
@@ -157,18 +154,18 @@ class UsuariosController implements Controller {
         }
     }
 
-    private eliminarEmpleado = async (req: Request, res: Response, next: NextFunction) =>  {
+    private eliminarEmpleado = async (req: Request, res: Response, next: NextFunction): Promise<void> =>  {
         const {id} = req.params;
         const respuesta = await this.usuariosCM.eliminarTrabajador(id);
 
-        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
+        if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta);
         } else {
             res.send({ status: 200 });
         }
     }
 
-    public actualizarClave = async (req: Request, res: Response, next: NextFunction) => {
+    public actualizarClave = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { id, clave_old, clave1, clave2 } =  req.body;
 
         const respuesta = await this.usuariosCM.actualizarClave(id, clave_old, clave1, clave2);

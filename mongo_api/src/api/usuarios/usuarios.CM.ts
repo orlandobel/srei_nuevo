@@ -10,7 +10,8 @@ import BadRequestException from "../../exceptions/BadRequestException";
 
 import USR, { Usuario, Trabajador, Alumno } from '../../interfaces/collections/USR.interface';
 import LAB, { Laboratorio } from '../../interfaces/collections/LAB.interface';
-import HttpException from "src/exceptions/HttpException";
+import HttpException from '../../exceptions/HttpException';
+import DataNotSaveException from "../../exceptions/DataNotSaveException";
 
 const jwt = require('jsonwebtoken');
 const TOKEN = 'c8b0e9c6b16c2499435ce026d5188674a567bb75e00a271ff6010d8c975c2723cdc81fcc5dc69f79afa85c22f8cdf3bbf488952f2ba18c1cda89f097e0c3597c';
@@ -27,28 +28,32 @@ const Encrypt = {
 }
 
 class UsuariosCM {
-    public ingresar = async (usuario: string, clave: string): Promise<any> => {
+    public ingresar = async (usuario: string, clave: string): Promise<Object | HttpException> => {
         if(usuario === null || usuario === undefined || usuario === '') {
             console.log(`Usuario no envíado`.red)
-            return new DataNotFoundException(codigos.informacionNoEnviada);
+            return new BadRequestException("RFC no envíado");
         }
 
         if(clave === null || clave === undefined || clave === '') {
             console.log('Clave no envíada'.red);
-            return new DataNotFoundException(codigos.informacionNoEnviada)
+            return new BadRequestException("Clave no envíada")
         }
 
         try {
-            const consulta = await USR.find({ usuario }) as Trabajador[];
+            const consulta = await USR.find({ usuario, $not: { tipo: 0} }) as Trabajador[];
+            console.log(consulta);
+            const usr = await this.findAsync(consulta, async e =>  await Encrypt.comparePassword(clave, e.clave));
             
-            const filtro = await this.findAsync(consulta, async e =>  await Encrypt.comparePassword(clave, e.clave));
-            
-            if(filtro === null || filtro === undefined) {
+            if(usr === null || usr === undefined) {
                 console.log('Usuario no encontrado'.red);
-                return new DataNotFoundException(codigos.datoNoEncontrado);
+                return new DataNotFoundException(codigos.noEncontradoUsuario ,"El usuario o la contraseña no son correctos");
             }
             
-            const usr = filtro;
+            if(usr.enEspera) {
+                console.log("El usuario aun no esta aprovado");
+                return new BadRequestException("Su usuario aun no ha sido aprovado por un adminestrador");
+            }
+
             const usr_string = JSON.stringify(usr);
             const usr_obj = JSON.parse(usr_string);
 
@@ -61,11 +66,11 @@ class UsuariosCM {
             return { token: tkn, usuario: usr, laboratorio: lab };
         } catch(error) {
             console.log(`Error al buscar el usuario: ${error}`.red);
-            return new InternalServerException(codigos.indefinido);
+            return new InternalServerException(error);
         }
     }
 
-    public checkToken = async (tkn: any): Promise<any> => {
+    public checkToken = async (tkn: any): Promise<Object | HttpException> => {
         if(tkn === null || tkn === undefined || tkn === '' )
             return new BadRequestException('Token de usuario no envíado');
 
@@ -84,13 +89,13 @@ class UsuariosCM {
             return { login: true, usuario: res as Trabajador, laboratorio: lab as Laboratorio };
         } catch(error) {
             console.log(`Error al comprobar el token: ${error}`.red);
-            return new InternalServerException(codigos.indefinido, error);
+            return new InternalServerException(error);
         }
     }
 
-    public crearEmpleado = async(usr: Usuario, clave: string): Promise<any> => {
+    public crearEmpleado = async(usr: Usuario, clave: string): Promise<Usuario | HttpException> => {
         if(usr === null || usr === undefined) 
-            return new DataNotFoundException(codigos.informacionNoEnviada);
+            return new BadRequestException("Por favor llene todos los campos requeridos");
 
         if(clave === null || clave === undefined || clave === '')
             return new BadRequestException('Las 2 claves son necesarias');
@@ -106,20 +111,21 @@ class UsuariosCM {
                 return new BadRequestException('Las claves no coinciden');
 
             usr.clave = clave;
+            usr.enEspera = true;
 
             const creado = await USR.create(usr);
 
             if(creado === null || creado === undefined)
-                return new InternalServerException(codigos.indefinido, 'No se pudo crear el usuario, intentelo de nuevo más tarde');
+                return new DataNotSaveException('No se pudo crear el usuario, intentelo de nuevo más tarde');
 
             return creado as Usuario;
         } catch(error) {
             console.log(`Error al crear el ususario: ${error}`.red);
-            return new InternalServerException(codigos.indefinido, error);
+            return new InternalServerException(error);
         }
     }
     
-    public consultaDae = async(url: string): Promise<any> => {
+    public consultaDae = async(url: string): Promise<Object | HttpException> => {
         if(url === null || url === undefined || url === '')
             return new BadRequestException("Url de consulta no envíada");
 
@@ -142,7 +148,7 @@ class UsuariosCM {
         }
     }
 
-    public listarAlumnos = async (): Promise<void | HttpException | Alumno[]> => {
+    public listarAlumnos = async (): Promise<Alumno[] | HttpException> => {
         try {
             const alumnos = await USR.find({ tipo: 0 }).exec() as Alumno[];
 
@@ -156,7 +162,7 @@ class UsuariosCM {
         }
     }
 
-    public listarEmpleados = async (): Promise<void | HttpException | Trabajador[]> => {
+    public listarEmpleados = async (): Promise<Trabajador[] | HttpException> => {
         try {
             const empleados = await USR.find({ tipo: { $ne:0} }).exec() as Trabajador[];
 
@@ -170,7 +176,7 @@ class UsuariosCM {
         }
     }
 
-    public checkVetado = async (alumno: Alumno, laboratorio: string): Promise<void | HttpException | Object> => {
+    public checkVetado = async (alumno: Alumno, laboratorio: string): Promise<Object | HttpException> => {
         if(alumno === null || alumno === undefined) {
             console.log('Alumno no envíado'.red);
             return new BadRequestException('Alumno no envíado');
@@ -204,7 +210,7 @@ class UsuariosCM {
         }
     }
 
-    public toggleEmpleado = async (id_empleado: string, tipo: number): Promise<void | HttpException | Trabajador>=>{
+    public toggleEmpleado = async (id_empleado: string, tipo: number): Promise<Trabajador | HttpException>=>{
         if(id_empleado === null || id_empleado === undefined || id_empleado === '') {
             console.log('Empleado no enviado'. red);
             return new BadRequestException("Empleado no enviado");
@@ -223,7 +229,7 @@ class UsuariosCM {
 
     }
 
-    public aceptarTrabajador = async (id_empleado: string): Promise<void | HttpException | Trabajador>=>{
+    public aceptarTrabajador = async (id_empleado: string): Promise<Trabajador | HttpException>=>{
         if(id_empleado === null || id_empleado === undefined || id_empleado === '') {
             console.log('Empleado no enviado'. red);
             return new BadRequestException("Empleado no enviado");
@@ -240,7 +246,7 @@ class UsuariosCM {
 
     }
 
-    public eliminarTrabajador = async (_id:string): Promise<any> =>{
+    public eliminarTrabajador = async (_id:string): Promise<HttpException | void> =>{
         if(_id === null || _id === undefined)
             return new DataNotFoundException(codigos.informacionNoEnviada);
 
@@ -254,7 +260,6 @@ class UsuariosCM {
                 return new DataNotFoundException(codigos.datoNoEncontrado)
 
         } catch(error) {
-            console.log(typeof(error));
             console.log(`Error al eliminar equipo: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);
         }
@@ -262,7 +267,7 @@ class UsuariosCM {
 
 
 
-    public actualizarVetado = async (id_alumno: string, laboratorio: string, veto: boolean): Promise<void | HttpException | Alumno> => {
+    public actualizarVetado = async (id_alumno: string, laboratorio: string, veto: boolean): Promise<Alumno | HttpException> => {
         if(id_alumno === null || id_alumno === undefined || id_alumno === '') {
             console.log('Alumno no enviado'.red);
             return new BadRequestException("Alumno no enviado");
@@ -297,7 +302,7 @@ class UsuariosCM {
         }
     }
 
-    public actualizarClave = async (id: string, clave_old: string, clave1: string, clave2: string): Promise<void | HttpException> => {
+    public actualizarClave = async (id: string, clave_old: string, clave1: string, clave2: string): Promise<HttpException | void> => {
         if(id === null || id === undefined || id === '') {
             console.log('No se envió el usuario en el cambio de contraseña'.red);
             return new BadRequestException("Falta el usuario");

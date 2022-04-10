@@ -7,9 +7,12 @@ import EQP, { Equipo } from '../../interfaces/collections/EQP.interface';
 import LAB, { Laboratorio } from '../../interfaces/collections/LAB.interface';
 import autoTable, { CellInput } from 'jspdf-autotable';
 
+import 'colors';
 import fs = require('fs');
 import { copyFile } from 'fs';
 import path = require('path');
+import HttpException from '../../exceptions/HttpException';
+import BadRequestException from '../../exceptions/BadRequestException';
 
 const QRCode = require('qrcode');
 const { jsPDF } = require("jspdf");
@@ -23,21 +26,24 @@ class CatalogoCM {
      * @returns InternalServerException si ocurre algún error inesérado en la ejecución de la consulta
      * @returns Equipo si el registro fue encontrado en la base de datos
     */
-    public obtenerEquipo = async (equipo: string): Promise<any> => {
+    public obtenerEquipo = async (equipo: string): Promise<Equipo | HttpException> => {
         if(equipo === undefined || equipo === null || equipo === '') {
-            return new DataNotFoundException(codigos.datoNoEncontrado);
+            console.log('Id no envíado en la busqueda'.red);
+            return new BadRequestException("No se envió en identificador del equipo");
         }
 
         try {
             const registro = await EQP.findById(equipo).exec();
 
-            if(registro === null || registro === undefined) 
-                return new DataNotFoundException(codigos.identificadorInvalido);
+            if(registro === null || registro === undefined) {
+                console.log('Equipo no encontrado'.red);
+                return new DataNotFoundException("No se encontró el equipo");
+            }
 
             return registro as Equipo;
         } catch(error) {
             console.log(`Error al obtener equipo: ${error}`.red);
-            return new InternalServerException(codigos.indefinido, error);
+            return new InternalServerException(error);
         }
     }
 
@@ -49,32 +55,37 @@ class CatalogoCM {
      * @returns InternalServerException si ocurre algún error inesérado en la ejecución de la consulta
      * @returns Equipo[] si se encontraron registros en la base de datos
     */
-    public obtenerEquipoTipo = async (tipo: string, laboratorio: string): Promise<any> => {
-        if(tipo === undefined || tipo === null || tipo === '') 
-            return new DataNotFoundException(codigos.informacionNoEnviada);
-        
-        if(laboratorio === undefined || laboratorio === null || laboratorio === '') 
-            return new DataNotFoundException(codigos.informacionNoEnviada);
+    public obtenerEquipoTipo = async (tipo: string, laboratorio: string): Promise<Equipo[] | HttpException> => {
+        if(tipo === undefined || tipo === null || tipo === '') {
+            console.log('Tipo de equipo no envíado'.red);
+            return new BadRequestException('Por favor envíe el tipo del equipo a buscar');
+        }
+
+        if(laboratorio === undefined || laboratorio === null || laboratorio === '') {
+            return new BadRequestException('Por favot envíe el laboratorio al que el equipo pertenece');
+        }
 
         try {
             console.log({tipo, laboratorio});
             const registros = await EQP.find({tipo, laboratorio}).exec()
             
-            if(registros === null || registros === undefined)
-                return new DataNotFoundException(codigos.datosNoEncontrados);
+            if(registros === null || registros === undefined) {
+                console.log("Error en la busqueda del equipo")
+                return new DataNotFoundException("Error en la busqueda del equipo, es posible que no haya ningún equipo registrado");
+            }
 
-            const elements = registros as Equipo[];
-
-            return elements;
+            return registros as Equipo[];;
         } catch(error) {
             console.log(`Error al consultar por tipo: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);
         }
     }
 
-    public obtenerImagen = async(ruta: string): Promise<any> => {
-        if(ruta === null || ruta === undefined || ruta === '')
-            return new DataNotFoundException(codigos.indefinido)
+    public obtenerImagen = async(ruta: string): Promise<string | HttpException> => {
+        if(ruta === null || ruta === undefined || ruta === '') {
+            console.log('Ruta de imágen no envíada'.red);
+            return new BadRequestException('Ruta de imágen no envíada')
+        }
 
         try {
             const fsPromise = fs.promises;
@@ -83,7 +94,7 @@ class CatalogoCM {
             return file;
         } catch(error) {
             console.log(`Error al buscar la imagen: ${error}`.red);
-            return new DataNotFoundException(codigos.datoNoEncontrado)
+            return new DataNotFoundException('No se pudo encontrar la imágen del equipo');
         }
     }
 
@@ -95,9 +106,11 @@ class CatalogoCM {
      * @returns InternalServerException si ocurre algún error al crear el QR o guardar el registro en base de datos
      * @returns { eqp: Equipo, ruta: String } si la creacion resulto con exito
     */
-    public crearEquipo = async (equipo: Equipo, laboratorio: string): Promise<any> => {
-        if(equipo === null || equipo === undefined)
-            return new DataNotFoundException(codigos.informacionNoEnviada)
+    public crearEquipo = async (equipo: Equipo, laboratorio: string): Promise<Object | HttpException> => {
+        if(equipo === null || equipo === undefined) {
+            console.log('Equipo vácio al intentar crear'.red);
+            return new BadRequestException("Envíe la información del equipo que se va a registrar");
+        }
 
         try {
             const eqp = await EQP.create(equipo);
@@ -126,7 +139,7 @@ class CatalogoCM {
             return { eqp, ruta };
         } catch(error) {
             console.log(`Error al crear equipo: ${error}`.red);
-            return new InternalServerException(codigos.indefinido, error);
+            return new InternalServerException(error);
         }
     }
 
@@ -137,14 +150,17 @@ class CatalogoCM {
      * @returns InternalServerException si lo parametros no son proporcionados o si ocurre algun erro al guarda la imágen
      * @returns void si la imágen se gaurda correctamente
     */
-    public subirImagen = async (img: any, ruta: string): Promise<any> => {
+    public subirImagen = async (img: any, ruta: string): Promise<HttpException | void> => {
         // Verificación de datos nulos
         if(img === undefined || img === null) {
-            return new InternalServerException(codigos.indefinido);
+            console.log('Imágen no envíada para subir'.red);
+            return new BadRequestException("No se envío la imágen");
         }
 
-        if(ruta === undefined || ruta === null || ruta === '') 
-            return new InternalServerException(codigos.indefinido);
+        if(ruta === undefined || ruta === null || ruta === '') { 
+            console.log('Ruta de la imagen no envíada'.red);
+            return new BadRequestException("Ruta de almacenamiento de la imágen no evníada. Esto posiblemente es un error del servidor");
+        }
 
         const extension = img.mimetype.split('/')[1]
         try {
@@ -152,19 +168,18 @@ class CatalogoCM {
             ruta = `./storage/${ruta}`
 
             if(!fs.existsSync(ruta)) {
-                console.log('creando');
                 fs.mkdirSync(ruta, { recursive: true });
             }
 
             await fsPromise.writeFile(`${ruta}/imagen.${extension}`, img.buffer, 'binary')
         } catch(error) {
             console.log(`error al guardar la imagen: ${error}`.red);
-            return new InternalServerException(codigos.indefinido, error);
+            return new InternalServerException(error);
         }
     }
 
     /* Generación del código QR para el equpo */
-    private generarQr = async (qr_data: Object, ruta: string): Promise<any> => {
+    private generarQr = async (qr_data: Object, ruta: string): Promise<HttpException | void> => {
         const data = JSON.stringify(qr_data);
 
         try { 
@@ -177,9 +192,9 @@ class CatalogoCM {
             
             // Crea el código QR y lo almacena en una imagen en el directorio desiggando
             await QRCode.toFile(`${ruta}/qr.png`, data, { color: {dark: "#000",light: "#FFF"} });
-        } catch(err){
-            console.error(err);
-            return new InternalServerException(codigos.indefinido, err);
+        } catch(err) {
+            console.error(`${err}`.red);
+            return new InternalServerException(err);
         }
     }
 
@@ -204,9 +219,11 @@ class CatalogoCM {
      * @returns InternalServerException si ocurre algun error en la acutalización
      * @returns Equipo si se el equipo se actualizó con exito
     */
-    public editarEquipo = async (equipo: Equipo): Promise<any> => {
-        if(equipo === null || equipo === undefined) 
-            return new DataNotFoundException(codigos.informacionNoEnviada);
+    public editarEquipo = async (equipo: Equipo): Promise<Equipo | HttpException> => {
+        if(equipo === null || equipo === undefined) {
+            console.log('No se envío el equipo para editar'.red)
+            return new BadRequestException("Envíe el equipo que se va a editar");
+        }
 
         const _id = equipo._id;
 
@@ -216,10 +233,10 @@ class CatalogoCM {
             if(edited === null || edited === undefined)
                 return new DataNotFoundException(codigos.datoNoEncontrado);
 
-            return edited
+            return edited as Equipo;
         } catch(error) {
             console.log(`Error al editar equipo: ${error}`.red);
-            return new InternalServerException(codigos.indefinido, error);
+            return new InternalServerException(error);
         }        
     }
 
@@ -231,30 +248,34 @@ class CatalogoCM {
      * @returns InternalServerException si ocurrio algun error al eliminar el equipo o sus archivos
      * @returns void si se elimino con exito
     */
-    public eliminarEquipo = async (_id: string, ruta: string): Promise<any> => {
-        if(_id === null || _id === undefined)
-            return new DataNotFoundException(codigos.informacionNoEnviada);
+    public eliminarEquipo = async (_id: string, ruta: string): Promise<HttpException | void> => {
+        if(_id === null || _id === undefined) {
+            console.log('Id del equipo a eliminar no envíado'.red)
+            return new BadRequestException("No se envío el identificador del equipo a eliminar. Esto posiblemente es un error de la aplicación");
+        }
 
         try {
             const eliminado = await EQP.deleteOne({_id})
 
-            if(eliminado === null || eliminado === undefined)
-                return new InternalServerException(codigos.indefinido);
+            if(eliminado === null || eliminado === undefined) {
+                console.log('Error al intentar eliminar un equipo'.red)
+                return new InternalServerException("Error al intentar eliminar el equipo");
+            }
 
-            if(eliminado.deletedCount < 1)
-                return new DataNotFoundException(codigos.datoNoEncontrado)
+            if(eliminado.deletedCount < 1) {
+                console.log("No se encontró el equipo que se intenta eliminar".red);
+                return new DataNotFoundException("No se encontró el equipo que se intenta eliminar");
+            }
 
-            await this.eliminarFolder(ruta)
-
+            await this.eliminarFolder(ruta);
         } catch(error) {
-            console.log(typeof(error));
             console.log(`Error al eliminar equipo: ${error}`.red);
-            return new InternalServerException(codigos.indefinido, error);
+            return new InternalServerException(error);
         }
     }
 
     /* Eliminacion de la carpeta de archivos de algún equipo */
-    private eliminarFolder = async (dir: string): Promise<any> => {
+    private eliminarFolder = async (dir: string): Promise<HttpException | void> => {
         try {
             const fsPromise = fs.promises;
             await fsPromise.rm(`./storage/${dir}`, { recursive: true })
@@ -264,16 +285,20 @@ class CatalogoCM {
         }
     }
 
-    public obtenerCatalogoPDF= async (laboratorio: string, tipo: string):Promise<any> => {
+    public obtenerCatalogoPDF= async (laboratorio: string, tipo: string):Promise<string | HttpException> => {
         if(tipo === undefined || tipo === null || tipo === '') 
             return new DataNotFoundException(codigos.informacionNoEnviada);
         if(laboratorio === undefined || laboratorio === null || laboratorio === '') 
             return new DataNotFoundException(codigos.informacionNoEnviada);
         //
-        const busqueda: Equipo[] | DataNotFoundException | InternalServerException = await this.obtenerEquipoTipo(tipo,laboratorio);
+        const busqueda = await this.obtenerEquipoTipo(tipo,laboratorio);
 
-        if(busqueda instanceof DataNotFoundException || busqueda instanceof InternalServerException)
+        if(busqueda instanceof HttpException)
             return busqueda;
+
+        if(busqueda === null || busqueda === undefined) {
+            return new DataNotFoundException("Error al generar el catálogo");
+        }
         
         //estructura de tipo para path
         const tipoPath = tipo.toLowerCase().replace(" ", "_");
@@ -345,13 +370,12 @@ class CatalogoCM {
             return new DataNotFoundException(codigos.datoNoEncontrado)
         }
 
-
-        
     }
     private setPortada(doc: any,  tipo: string, nombre: string) {
         let ruta = `ipnlogos/`;
         const maxW = doc.internal.pageSize.getWidth();
         const maxH = doc.internal.pageSize.getHeight();
+        
         try {
             const ipnImg = fs.readFileSync(`./storage/${ruta}ipn.jpg`, { encoding: 'base64' });
             const upiizImg = fs.readFileSync(`./storage/${ruta}upiiz.jpg`, { encoding: 'base64' });
@@ -361,6 +385,7 @@ class CatalogoCM {
         } catch(error) {
             console.log(`Error al buscar la imagen: ${error}`.red);
         }
+
         doc.setFont("Times")
         doc.text("Instituto Politecnico Nacional", 105, 20, {align: "center",maxWidth:100})
         doc.text("Unidad Profesional Interdisciplinaria de Ingeniería campus Zacatecas", 105, 27, {align: "center",maxWidth:100})

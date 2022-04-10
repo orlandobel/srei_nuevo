@@ -20,7 +20,7 @@ class MesasController implements Controller {
         this.router.get(this.path + '/alumnos/:laboratorio', this.alumnosMesas);
     }
 
-    private mesasPrestamos = async (req: Request, res: Response, next: NextFunction) => {
+    private mesasPrestamos = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { laboratorio } = req.params;
         const respuesta = await this.mesasCM.mesasPrestamos(laboratorio);
 
@@ -31,7 +31,7 @@ class MesasController implements Controller {
         }
     }
 
-    private alumnosMesas = async (req: Request, res: Response, next: NextFunction) => {
+    private alumnosMesas = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { laboratorio } = req.params;
         const respuesta = await this.mesasCM.alumnosMesas(laboratorio);
 

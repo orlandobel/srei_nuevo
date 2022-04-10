@@ -4,8 +4,7 @@ import  Controller from '../../interfaces/controller.interface';
 
 import LaboratoriosCM from './laboratorios.CM';
 
-import InternalServerException from '../../exceptions/InternalServerException';
-import DataNotFoundException from '../../exceptions/DataNotFoundException';
+import HttpException from '../../exceptions/HttpException';
 
 
 class LaboratoriosController implements Controller {
@@ -23,10 +22,10 @@ class LaboratoriosController implements Controller {
         this.router.get(this.path + '/simple', this.obtenerLABsimple);
     }
 
-    private obtenerLABsimple = async (req: Request, res: Response, next: NextFunction) => {
+    private obtenerLABsimple = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const respuesta = await this.laboratoriosCM.obtenerLABsimple();
 
-        if(respuesta instanceof DataNotFoundException || respuesta instanceof InternalServerException) {
+        if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta);
         } else {
             res.send({ status: 200, labs: respuesta });

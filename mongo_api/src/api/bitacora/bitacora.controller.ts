@@ -28,7 +28,7 @@ class BitacoraController implements Controller {
         this.router.get(this.path + "/bitacora/Semestral/:fechaI/:fechaO", this.bitacoraSemestral)
     }
 
-    private disponibilidadEquipo = async (req: Request, res: Response, next: NextFunction) => {
+    private disponibilidadEquipo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { uid } = req.params;
         const respuesta = await this.bitacoraCM.verDisponibilidadEQP(uid);
 
@@ -39,7 +39,7 @@ class BitacoraController implements Controller {
         }
     }
 
-    private crearPrestamo = async (req: Request, res: Response, next: NextFunction) => {
+    private crearPrestamo = async (req: Request, res: Response, next: NextFunction):  Promise<void> => {
         const { alumnos, equipo, laboratorio, mesa } = req.body;
         const respuesta = await this.bitacoraCM.crearPrestamo(alumnos, equipo, laboratorio, mesa);
 
@@ -50,7 +50,7 @@ class BitacoraController implements Controller {
         }
     }
 
-    private consultaPrestamosDia = async (req: Request, res: Response, next: NextFunction) => {
+    private consultaPrestamosDia = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { laboratorio } = req.params;
         const respuesta = await this.bitacoraCM.consultarBitacoraDia(laboratorio);
 
@@ -61,7 +61,7 @@ class BitacoraController implements Controller {
         }
     }
 
-    private entregarPrestamo =async (req: Request, res: Response, next: NextFunction) => {
+    private entregarPrestamo =async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         const { id } = req.body;
 
         const respuesta = await this.bitacoraCM.entregarPrestamo(id);
@@ -73,7 +73,7 @@ class BitacoraController implements Controller {
         }
     }
 
-    private bitacoraSemestral = async (req: Request, res: Response, next: NextFunction) =>{
+    private bitacoraSemestral = async (req: Request, res: Response, next: NextFunction): Promise<void> =>{
         const {fechaI, fechaO} = req.params;
         const respuesta = await this.bitacoraCM.bitacoraList(fechaI, fechaO);
         

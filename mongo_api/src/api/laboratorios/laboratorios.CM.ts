@@ -4,6 +4,7 @@ import InternalServerException from '../../exceptions/InternalServerException';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
 
 import LAB, { Laboratorio } from '../../interfaces/collections/LAB.interface';
+import HttpException from '../../exceptions/HttpException';
 
 
 
@@ -16,7 +17,7 @@ class LaboratoriosCM {
      * @returns InternalServerException si ocurre algún error inesérado en la ejecución de la consulta
      * @returns Equipo si el registro fue encontrado en la base de datos
     */
-    public obtenerLABsimple = async () => {
+    public obtenerLABsimple = async (): Promise<Laboratorio[] | HttpException> => {
         try {
             const registro = await LAB.find({},'_id, nombre').exec();
 

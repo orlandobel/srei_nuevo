@@ -8,7 +8,7 @@ import BadRequestException from "../../exceptions/BadRequestException";
 import HttpException from "../../exceptions/HttpException";
 
 class MesasCM {
-    public mesasPrestamos = async (laboratorio: string): Promise<Mesa[] | HttpException | void> => {
+    public mesasPrestamos = async (laboratorio: string): Promise<Mesa[] | HttpException> => {
         if(laboratorio === null || laboratorio === undefined || laboratorio === '') {
             return new BadRequestException("El id de laboratorio es requerido");
         }
@@ -26,7 +26,7 @@ class MesasCM {
         }
     }
 
-    public alumnosMesas = async (laboratorio: string): Promise<void | HttpException | Mesa[]> => {
+    public alumnosMesas = async (laboratorio: string): Promise<Mesa[] | HttpException> => {
         if(laboratorio === null || laboratorio === undefined || laboratorio === '') {
             console.log(`Laboratorio no envíado en modulo MesaCD.alumnosMesas`.red);
             return new BadRequestException(`Laboratorio no envíado en modulo MesaCD.alumnosMesas`);

@@ -2,7 +2,7 @@ import { codigos } from '../../exceptions/codigos';
 
 import InternalServerException from '../../exceptions/InternalServerException';
 import DataNotFoundException from '../../exceptions/DataNotFoundException';
-import HttpException from 'src/exceptions/HttpException';
+import HttpException from '../../exceptions/HttpException';
 
 import EQP, { Equipo, EquipoPrestamo } from '../../interfaces/collections/EQP.interface';
 import { Alumno } from '../../interfaces/collections/USR.interface';
@@ -14,7 +14,7 @@ import { startOfToday, startOfTomorrow } from 'date-fns';
 
 
 class BitacoraCM {
-    public verDisponibilidadEQP = async (equipo: string): Promise<boolean | HttpException | void> => {
+    public verDisponibilidadEQP = async (equipo: string): Promise<boolean | HttpException> => {
         if(equipo === null || equipo === undefined || equipo === '')
             return new DataNotFoundException(codigos.informacionNoEnviada);
 
@@ -32,7 +32,7 @@ class BitacoraCM {
     }
 
     public crearPrestamo = async(alumnos: Array<Alumno>, equipo: Array<EquipoPrestamo>, laboratorio: string, mesa_nombre: string)
-        : Promise<any | HttpException | void> => {
+        : Promise<Object | HttpException> => {
         if(alumnos === null || alumnos === undefined || alumnos.length === 0) {
             console.log('Sin alumnos registrados'.red);
             return new BadRequestException('Debe de haber al menos un alumno en el registro');
@@ -75,7 +75,7 @@ class BitacoraCM {
                     })
             });
 
-            return { prestamo: creado, mesa};
+            return { prestamo: creado, mesa };
         } catch(error) {
             console.error(`Error al generar un prestamo: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);
@@ -83,7 +83,7 @@ class BitacoraCM {
     }
 
 
-    public consultarBitacoraDia = async (laboratorio: string): Promise<void | Prestamo[] | HttpException> => {
+    public consultarBitacoraDia = async (laboratorio: string): Promise<Prestamo[] | HttpException> => {
         if(laboratorio === null || laboratorio === undefined || laboratorio == '') 
             return new BadRequestException("Laboratorio no enviado");
             
@@ -108,7 +108,7 @@ class BitacoraCM {
         }
     }
 
-    public entregarPrestamo = async (id: string): Promise<void | HttpException | Prestamo> => {
+    public entregarPrestamo = async (id: string): Promise<Prestamo | HttpException> => {
         if(id === null || id === undefined || id === '')
             return new BadRequestException("Id del prestmo no envíado");
 
@@ -137,14 +137,14 @@ class BitacoraCM {
         }
     }
 
-    public bitacoraList = async( fechaInicial: string, fechaFinal: string) =>{
+    public bitacoraList = async( fechaInicial: string, fechaFinal: string): Promise<Prestamo[] | HttpException> => {
         try {
             const registro = await PRT.find({ creado: { $gte: new Date(fechaInicial), $lte: new Date(fechaFinal) } } ).exec();
 
             if(registro === null || registro === undefined) 
                 return new DataNotFoundException(codigos.identificadorInvalido);
             
-            return registro;
+            return registro as Prestamo[];
         } catch(error) {
             console.log(`Error al obtener equipo: ${error}`.red);
             return new InternalServerException(codigos.indefinido, error);
