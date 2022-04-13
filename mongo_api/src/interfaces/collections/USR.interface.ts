@@ -10,6 +10,8 @@ export interface Usuario {
     laboratorio?: string;
     enEspera?: boolean;
     programa?: string;
+    correo?: string;
+    resetToken?: string;
 }
 
 export interface Trabajador extends Omit<Usuario, 'vetado' | 'boleta'> {
@@ -18,9 +20,10 @@ export interface Trabajador extends Omit<Usuario, 'vetado' | 'boleta'> {
     clave: string;
     laboratorio: string;
     enEspera: boolean;
+    correo: string;
 }
 
-export interface Alumno extends Omit<Usuario, 'clave' | 'laboratorio' | 'enEspera' > {
+export interface Alumno extends Omit<Usuario, 'clave' | 'laboratorio' | 'enEspera' | 'correo' | 'resetToken' > {
     programa: string
 }
 
@@ -32,7 +35,9 @@ const USRSchema = new Schema<Usuario>({
     vetado: { type: {}, required: false },
     laboratorio: { type: String, required: false },
     enEspera: { type: Boolean, required: false },
+    correo: { type: String, required: false },
     programa: { type: String, requires: false },
+    resetToken: { type: String, requires: false },
 },
 {
     timestamps: {

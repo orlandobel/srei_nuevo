@@ -3,6 +3,8 @@ import axios from 'axios';
 import 'colors';
 import * as bcrypt from 'bcrypt';
 const jsdom = require('jsdom');
+import config from '../../config/server';
+import transporter from '../../config/mailer';
 
 import DataNotFoundException from "../../exceptions/DataNotFoundException";
 import InternalServerException from "../../exceptions/InternalServerException";
@@ -244,28 +246,7 @@ class UsuariosCM {
             return new InternalServerException(error);
         }
 
-    }
-
-    public eliminarTrabajador = async (_id:string): Promise<HttpException | void> =>{
-        if(_id === null || _id === undefined)
-            return new DataNotFoundException(codigos.informacionNoEnviada);
-
-        try {
-            const eliminado = await USR.deleteOne({_id})
-
-            if(eliminado === null || eliminado === undefined)
-                return new InternalServerException(codigos.indefinido);
-
-            if(eliminado.deletedCount < 1)
-                return new DataNotFoundException(codigos.datoNoEncontrado)
-
-        } catch(error) {
-            console.log(`Error al eliminar equipo: ${error}`.red);
-            return new InternalServerException(codigos.indefinido, error);
-        }
     } 
-
-
 
     public actualizarVetado = async (id_alumno: string, laboratorio: string, veto: boolean): Promise<Alumno | HttpException> => {
         if(id_alumno === null || id_alumno === undefined || id_alumno === '') {
@@ -349,6 +330,101 @@ class UsuariosCM {
         } catch(error) {
             console.log(`${error}`.red);
             return new InternalServerException(error);
+        }
+    }
+
+    public claveOlvidada = async(usuario: string): Promise<string | HttpException> => {
+        if(usuario === null || usuario === undefined || usuario === '') {
+            console.log('Usuario no envíado al recuperar contraseña'.red);
+            return new BadRequestException("El campo usuario no puede estar vacío");
+        }
+
+        const errMsg = "Parece que algo salio mal, intentelo de nuevo más tarde";
+
+        try {
+            let trabajador = await USR.findOne({ usuario }).exec() as Trabajador;
+
+            if(trabajador === null || trabajador === undefined) {
+                return new DataNotFoundException(errMsg);
+            }
+
+            const token =  jwt.sign({ trabajadorId: trabajador._id, usuario }, TOKEN, { expiresIn: '1H' });
+            trabajador = await USR.findByIdAndUpdate(trabajador._id, { $set: { resetToken: token } }, { new: true } ).exec() as Trabajador;
+            
+            const validationlink = `http://${config.server.hostname}:${config.server.port}/usuario/clave/recuperar/${token}`;
+            
+            // TODO: Enviar correo de recuperacion
+            await transporter.sendMail({
+                from: '"Recuperación de contraseña SReI" <srei.upiiz@gmail.com>',
+                to: "orlandomalfoy@gmail.com",
+                subject: 'Recuperación de contraseña',
+                //text: validationlink,
+                html: `
+                    <b>Recuperar la contraseña</b>
+                    <a href='${validationlink}'>${validationlink}</a>
+                `
+            });
+
+            return "Verifica tu correo eléctronicao, si no encuentras el correo en la bandeja de entrada verifica en la carpeta SPAM";
+        } catch(error) {
+            console.log(`Error al envíar correo de recuperacion de contraseña: ${error}`.red);
+            return new InternalServerException(errMsg);
+        }
+
+    }
+
+    public recuperarClave = async (clave: string, resetToken: string): Promise<HttpException | void> => {
+        if(clave === null || clave === undefined || clave === '') {
+            console.log('La clave no puede estar vácia en recuperar contraseña'.red);
+            return new BadRequestException("La clave no puede estar vácia");
+        }
+
+        if(resetToken === null || resetToken === undefined || resetToken === '') {
+            console.log('El token de recuperacion no se envío'.red);
+            return new BadRequestException('Algo salio mal en la consulta, intentelo de nuevo más tarde');
+        }
+
+        try {
+            const verifyToken = await jwt.verify(resetToken, TOKEN);
+
+            if(verifyToken === null || verifyToken === undefined) {
+                console.log("Token de recuperacion invalido o inexistente".red);
+                return new BadRequestException("Link de recuperación caducado")
+            }
+
+            const usuario = await USR.findOne({ resetToken }).exec() as Trabajador;
+
+            if(usuario === null || usuario === undefined) {
+                console.log("No se encontro el usuario".red);
+                return new DataNotFoundException("Ocurrio un error inesperado al actualizar la contraseña, intentelo de nuevo más tarde");
+            }
+
+            usuario.clave = await Encrypt.cryptPassword(clave);
+            delete usuario.resetToken;
+
+            await USR.findByIdAndUpdate(usuario._id, usuario).exec();
+        } catch(error) {
+            console.log(`Error al recuperar la contraseña: ${error}`.red);
+            return new InternalServerException(error);
+        }
+    }
+
+    public eliminarTrabajador = async (_id:string): Promise<HttpException | void> =>{
+        if(_id === null || _id === undefined)
+            return new DataNotFoundException(codigos.informacionNoEnviada);
+
+        try {
+            const eliminado = await USR.deleteOne({_id})
+
+            if(eliminado === null || eliminado === undefined)
+                return new InternalServerException(codigos.indefinido);
+
+            if(eliminado.deletedCount < 1)
+                return new DataNotFoundException(codigos.datoNoEncontrado)
+
+        } catch(error) {
+            console.log(`Error al eliminar equipo: ${error}`.red);
+            return new InternalServerException(codigos.indefinido, error);
         }
     }
 

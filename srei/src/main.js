@@ -14,7 +14,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faAngleDown, faBolt, faBook, faCogs, faList, faMicrochip, faMinus, faPen, faPlus, faExchangeAlt, faQrcode, faSearch, faTrash, faUserPlus, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-axios.defaults.baseURL = 'http://localhost:3001/API_SREI/'
+axios.defaults.baseURL = 'http://192.168.186.1:3001/API_SREI/'
 axios.defaults.headers.common['Content-Type'] = 'application/json'
 axios.defaults.headers.common['Authorization'] = localStorage.getItem('usr_token')
 

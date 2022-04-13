@@ -1,7 +1,5 @@
 import 'dotenv/config';
 
-//dotenv.config();
-
 const MOGNO_OPTIONS = {
     useUnifiedTopology: true,
     useNewUrlParser: true,

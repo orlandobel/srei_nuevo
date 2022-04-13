@@ -5,7 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
 
-import config from './config';
+import config from './config/server';
 
 // Importación de la estructura de los controladores
 import Controller from './interfaces/controller.interface';
