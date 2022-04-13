@@ -46,7 +46,7 @@
                         <div class=" py-2" id="catalogos-collapse"
                             :class="{collapse: !inventario}">
                             <ul class="list-unstyled text-start ps-3">
-                                <li class="mb-2 row list-element" v-if="laboratorio.nombre.includes('Electronica')">
+                                <li class="mb-2 row list-element" v-if="laboratorio.edificio.includes('Ligeros')">
                                     <div class="col text-start">
                                         <fa-icon :icon="['fas', 'bolt']" color="white" />
                                         <router-link 
@@ -55,7 +55,7 @@
                                             class="btn d-inline-flex text-white">Electónica</router-link>
                                     </div>
                                 </li>
-                                <li class="mb-2 row list-element" v-if="laboratorio.nombre.includes('Electronica')">
+                                <li class="mb-2 row list-element" v-if="laboratorio.edificio.includes('Ligeros')">
                                     <div class="col text-start">
                                         <fa-icon :icon="['fas', 'microchip']" color="white" />
                                         <router-link
@@ -64,7 +64,7 @@
                                             class="btn d-inline-flex text-white">Tarjetas Programables</router-link>
                                     </div>
                                 </li>
-                                <li class="mb-2 row list-element" v-if="!laboratorio.nombre.includes('Electronica')">
+                                <li class="mb-2 row list-element" v-if="laboratorio.edificio.includes('Pesados')">
                                     <div class="col text-start">
                                         <fa-icon :icon="['fas', 'cogs']" color="white" />
                                         <router-link 

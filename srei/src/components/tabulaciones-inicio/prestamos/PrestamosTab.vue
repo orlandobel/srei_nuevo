@@ -12,7 +12,7 @@
                             <fa-icon :icon="['fas','qrcode']" size="2x"/>
                     </button>
                 </div>
-                <div class="col-3" v-if="laboratorio.nombre.includes('Electronica')">
+                <div class="col-3" v-if="laboratorio.edificio.includes('Ligeros')">
                     <select class="form-select" id="mesas">
                         <option disabled selected value="">Seleccione una mesa</option>
                         <option v-for="m in mesas" :key="m._id" :value="m.nombre">{{ m.nombre }}</option>
@@ -162,7 +162,7 @@ export default {
             try {
                 const alumnos = this.alumnos;
                 const equipo = this.equipos;
-                const mesa = (this.laboratorio.nombre.includes('Electronica')) ? document.getElementById('mesas').value : null;
+                const mesa = (this.laboratorio.edificio.includes('Ligeros')) ? document.getElementById('mesas').value : null;
                 
                 const prestamo = {
                     alumnos,
