@@ -20,6 +20,10 @@
                             <input type="text" name="rfc" id="rfc" class="form-control" style="text-transform: uppercase" v-model="rfc">
                         </div>
                         <div class="row mb-3">
+                            <label for="email" class="form-label text-start">Correo electrónico</label>
+                            <input type="email" name="email" id="email" class="form-control" v-model="correo">
+                        </div>
+                        <div class="row mb-3">
                             <label for="password" class="form-label text-start">Contraseña</label>
                             <input type="password" name="password" id="password" class="form-control" v-model="password">
                         </div>
@@ -59,6 +63,7 @@ export default {
             labs:[],
             nombre:'',
             rfc: '',
+            correo: '',
             password: '',
             passwordCheck:'',
             labPick:'',
@@ -93,7 +98,11 @@ export default {
                     return false;
                 }
         },
-
+        validarCorreo() {
+            const _mail_pattern =  /^[a-z-A-Z0-9.!#$%&'*+/=?^_`{|}`~-]+@[a-z-A-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+            if(_mail_pattern.test(this.correo)) return true;
+            else return false;
+        },
         ValidarPassword(){
             const _pass_pattern = "^(?=.*[A-ZÑ])(?=.*[a-zñ])(?=.*[0-9]).{8,32}$";
             if(this.password.match(_pass_pattern)){
@@ -111,6 +120,7 @@ export default {
             const params = {
                 nombre: this.nombre,
                 usuario: this.rfc.toUpperCase(),
+                correo: this.correo,
                 clave: this.password,
                 laboratorio: this.labPick,
                 passwordCheck: this.passwordCheck
@@ -119,17 +129,18 @@ export default {
 
             try {
                 //validadcion de campos vacios
-                if (params.nombre == "" || params.usuario == "" || params.clave == "" || params.laboratorio == "" || params.passwordCheck == ""){
-                    this.errorMsg += "<p><strong>¡Error al llenar formulario!</strong></p>"
+                if(params.nombre === "" || params.usuario === "" || params.correo === "" || params.clave === "" || params.laboratorio === "") {
                     this.errorMsg += "<ul>"
-                    if (params.nombre == "") this.errorMsg += "<li>Asegúrese de inscribir su nombre.</li>"
-                    if (params.usuario == "") this.errorMsg += "<li>Asegúrese de inscribir su RFC.</li>"
-                    if (params.clave == "" && params.passwordCheck == "") this.errorMsg += "<li>Asegúrese de inscribir una contraseña .</li>"
-                    if (params.clave == "" || params.passwordCheck == "") this.errorMsg += "<li>Asegúrese de validar la contraseña previamente inscrita.</li>"
-                    if (params.laboratorio == "") this.errorMsg += "<li>Asegúrese de seleccionar un laboratorio.</li>"
+                    if (params.nombre === "") this.errorMsg += "<li>Asegúrese de inscribir su nombre.</li>"
+                    if (params.usuario === "") this.errorMsg += "<li>Asegúrese de inscribir su RFC.</li>"
+                    if (params.correo === "") this.errorMsg += "<li>Asegúrese de inscribir su correo electrónico.</li>"
+                    if (params.clave === "" && params.passwordCheck === "") this.errorMsg += "<li>Asegúrese de inscribir una contraseña .</li>"
+                    if (params.clave === "" || params.passwordCheck === "") this.errorMsg += "<li>Asegúrese de validar la contraseña previamente inscrita.</li>"
+                    if (params.laboratorio === "") this.errorMsg += "<li>Asegúrese de seleccionar un laboratorio.</li>"
                     this.errorMsg += "</ul>"
                     errorFlag ++
                 }
+
                 //validar longitud minima de nombre
                 if (params.nombre.length < 3){
                     this.errorMsg += "<p><strong>¡Error en nombre!</strong></p>"
@@ -143,6 +154,13 @@ export default {
                     this.errorMsg += "<p>Necesita un RFC valido</p>"
                     errorFlag ++
                 }
+
+                if(!this.validarCorreo()) {
+                    this.errorMsg += "<p><strong>¡Error en el correo electrónico!</strong></p>"
+                    this.errorMsg += "<p>Necesita un correo valido</p>"
+                    errorFlag ++
+                }
+
                 //validacion de contraseña con campos destacados
                 if (!this.ValidarPassword()){
                     this.errorMsg += "<p><strong>¡Error al registrar contraseña!</strong></p>"
@@ -162,7 +180,6 @@ export default {
                 if (errorFlag!= 0) {
                     throw new Error('oops');
                 }
-
 
                 const response = await SignUp(params)
                 if(response.status == 200)

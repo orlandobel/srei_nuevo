@@ -10,17 +10,22 @@
                     <form action @submit.prevent="login">
                         <div class="row mb-3">
                             <label for="rfc" class="form-label text-start">RFC</label>
-                            <input type="text" name="rfc" id="rfc" class="form-control" v-model="rfc">
+                            <input type="text" name="rfc" id="rfc" 
+                                style="text-transform: uppercase"
+                                class="form-control" v-model="rfc">
                         </div>
                         <div class="row mb-3">
                             <label for="password" class="form-label text-start">Contraseña</label>
                             <input type="password" name="password" id="password" class="form-control" v-model="password">
                         </div>
                         <div class="row justify-content-end pe-xl-2 pe-xxl-3">
-                            <div class="col-xl-7">
-                                <router-link :to="{name: 'signup'}" class="btn d-inline-flex text-primary">Deseo registrarme</router-link>
+                            <div class="col-xl-6">
+                                <router-link :to="{name: 'clave_olvidada'}" class="btn d-inline-flex text-primary">Olvide mi contraseña</router-link>
                             </div>
-                            <div class="col-xl-3">
+                            <div class="col-xl-4">
+                                <router-link :to="{name: 'signup'}" class="btn d-inline-flex text-primary">Registrarse</router-link>
+                            </div>
+                            <div class="col-xl-2">
                                 <button class="btn btn-primary btn-rounded">Entrar</button>
                             </div>
                         </div>

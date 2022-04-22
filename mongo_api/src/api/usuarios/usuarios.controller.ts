@@ -29,7 +29,7 @@ class UsuariosController implements Controller {
         this.router.put(this.path + '/empleados/enEspera', this.actualizarEsperaTrabajador);
         this.router.put(this.path + '/clave/actualizar', this.actualizarClave);
         this.router.put(this.path + '/clave/olvidada', this.claveOlvidada);
-        this.router.put(this.router + '/clave/recuperar', this.recuperarClave);
+        this.router.put(this.path + '/clave/recuperar', this.recuperarClave);
         this.router.delete(this.path + '/empleados/eliminar/:id', this.eliminarEmpleado);
     }
 

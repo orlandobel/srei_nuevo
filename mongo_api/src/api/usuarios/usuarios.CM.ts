@@ -345,18 +345,18 @@ class UsuariosCM {
             let trabajador = await USR.findOne({ usuario }).exec() as Trabajador;
 
             if(trabajador === null || trabajador === undefined) {
-                return new DataNotFoundException(errMsg);
+                return new DataNotFoundException(codigos.datoNoEncontrado, "Parece que su RFC es erroneo o no está registrado");
             }
 
+            console.log(trabajador);
             const token =  jwt.sign({ trabajadorId: trabajador._id, usuario }, TOKEN, { expiresIn: '1H' });
             trabajador = await USR.findByIdAndUpdate(trabajador._id, { $set: { resetToken: token } }, { new: true } ).exec() as Trabajador;
-            
-            const validationlink = `http://${config.server.hostname}:${config.server.port}/usuario/clave/recuperar/${token}`;
+            const validationlink = `localhost:8080/recuperar-clave/${token}`;
             
             // TODO: Enviar correo de recuperacion
             await transporter.sendMail({
                 from: '"Recuperación de contraseña SReI" <srei.upiiz@gmail.com>',
-                to: "orlandomalfoy@gmail.com",
+                to: trabajador.correo,
                 subject: 'Recuperación de contraseña',
                 //text: validationlink,
                 html: `
@@ -385,7 +385,10 @@ class UsuariosCM {
         }
 
         try {
-            const verifyToken = await jwt.verify(resetToken, TOKEN);
+            const verifyToken = await jwt.verify(resetToken, TOKEN, (error: Error, usr: Usuario) => {
+                if(error) return null;
+                if(usr) return usr;
+            });
 
             if(verifyToken === null || verifyToken === undefined) {
                 console.log("Token de recuperacion invalido o inexistente".red);
@@ -403,6 +406,8 @@ class UsuariosCM {
             delete usuario.resetToken;
 
             await USR.findByIdAndUpdate(usuario._id, usuario).exec();
+
+            //TODO: loguear al usuario y retornar el token cuando se cambie la contraseña
         } catch(error) {
             console.log(`Error al recuperar la contraseña: ${error}`.red);
             return new InternalServerException(error);
