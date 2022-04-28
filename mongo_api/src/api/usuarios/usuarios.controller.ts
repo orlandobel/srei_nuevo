@@ -27,8 +27,10 @@ class UsuariosController implements Controller {
         this.router.put(this.path + '/vetado/actualizar', this.actualizarVetado);
         this.router.put(this.path + '/empleados/actualizar', this.actualizarPermisosTrabajador);
         this.router.put(this.path + '/empleados/enEspera', this.actualizarEsperaTrabajador);
-        this.router.delete(this.path + '/empleados/eliminar/:id', this.eliminarEmpleado);
         this.router.put(this.path + '/clave/actualizar', this.actualizarClave);
+        this.router.put(this.path + '/clave/olvidada', this.claveOlvidada);
+        this.router.put(this.path + '/clave/recuperar', this.recuperarClave);
+        this.router.delete(this.path + '/empleados/eliminar/:id', this.eliminarEmpleado);
     }
 
     private ingresar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -154,9 +156,10 @@ class UsuariosController implements Controller {
         }
     }
 
-    private eliminarEmpleado = async (req: Request, res: Response, next: NextFunction): Promise<void> =>  {
-        const {id} = req.params;
-        const respuesta = await this.usuariosCM.eliminarTrabajador(id);
+    public actualizarClave = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { id, clave_old, clave1, clave2 } =  req.body;
+
+        const respuesta = await this.usuariosCM.actualizarClave(id, clave_old, clave1, clave2);
 
         if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta);
@@ -165,10 +168,36 @@ class UsuariosController implements Controller {
         }
     }
 
-    public actualizarClave = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const { id, clave_old, clave1, clave2 } =  req.body;
+    public claveOlvidada = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { usuario } = req.body;
 
-        const respuesta = await this.usuariosCM.actualizarClave(id, clave_old, clave1, clave2);
+        const respuesta = await this.usuariosCM.claveOlvidada(usuario);
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, mensaje: respuesta });
+        }
+    }
+
+    public recuperarClave = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { clave } = req.body;
+        const resetToken = req.headers.reset as string;
+
+        const respuesta = await this.usuariosCM.recuperarClave(clave, resetToken);
+
+        if(respuesta instanceof HttpException) {
+            res.status(respuesta.status).send(respuesta);
+        } else {
+            res.send({ status: 200, token: respuesta });
+        }
+
+        
+    }
+
+    private eliminarEmpleado = async (req: Request, res: Response, next: NextFunction): Promise<void> =>  {
+        const { id } = req.params;
+        const respuesta = await this.usuariosCM.eliminarTrabajador(id);
 
         if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta);

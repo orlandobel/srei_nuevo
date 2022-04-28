@@ -141,7 +141,7 @@ export async function cambiarClave(data) {
         const respuesta = await axios.put(url, data);
 
         if(respuesta.status >= 400 || respuesta.data.status >= 400) {
-            throw ["Error inesperado al actualizar la clave"];
+            throw ["Error inesperado al actualizar la contraseña"];
         }
 
         return;
@@ -150,7 +150,50 @@ export async function cambiarClave(data) {
     }
 }
 
+export async function claveOlvidada(rfc) {
+    const url = '/usuarios/clave/olvidada';
+
+    try {
+        const respuesta = await axios.put(url, { usuario: rfc });
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            throw ["Error inesperado al envíar el correo de recuperación"];
+        }
+
+        return respuesta.data.mensaje;
+    } catch(error) {
+        throw manageErrors(error);
+    }
+}
+
+export async function recuperarClave(token, clave) {
+    const url =  '/usuarios/clave/recuperar';
+
+    try {
+        const data = {
+            clave
+        };
+
+        const config = {
+            headers: {
+                reset: token
+            }
+        };
+
+        const respuesta = await axios.put(url, data, config);
+
+        if(respuesta.status >= 400 || respuesta.data.status >= 400) {
+            throw ["Error inesperado recuperando la contraseña"];
+        }
+
+        return "Clave actualizada";
+    } catch(error) {
+        throw manageErrors(error);
+    }
+}
+
 function manageErrors(error) {
+    console.log(error.response);
     if(error.response) {
         if(error.response.status < 500) return [error.response.data.mensaje];
         else return ["Error inesperado en el servidor"];

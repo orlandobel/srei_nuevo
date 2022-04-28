@@ -109,5 +109,3 @@ function manageErrors(error) {
     const mensajes = error.split(",");
     return mensajes;
 }
-
-// TODO: escuchar el podcast leyendas legendarias de "el zodiaco";

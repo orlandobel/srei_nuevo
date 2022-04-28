@@ -8,6 +8,8 @@ import Catalogos from '@/views/Catalogos.vue'
 import Usuarios from '@/views/Usuarios.vue'
 import CatalogosViewer from '@/components/catalogos/CatalogosViewer.vue'
 import Perfil from '@/views/Perfil.vue';
+import RecuperarClave from '@/views/RecuperarClave.vue';
+import ClaveOlvidada from '@/views/ClaveOlvidada.vue';
 
 import isLogged from './middleware/auth';
 import store from '../store';
@@ -30,6 +32,16 @@ const routes = [
     path: '/signup',
     name: 'signup',
     component: SingUp,
+  }, 
+  {
+    path: '/clave-olvidada',
+    name: 'clave_olvidada',
+    component: ClaveOlvidada,
+  },
+  {
+    path: '/recuperar-clave/:token',
+    name: 'recuperar_clave',
+    component: RecuperarClave,
   },
   {
     path: '/profile',
