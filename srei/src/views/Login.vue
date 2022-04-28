@@ -56,7 +56,6 @@ export default {
             try {
                 const response = await this.axios.post('usuarios/login', params)
 
-                this.$store.dispatch('usuario', response.data.usuario)
                 localStorage.setItem('usr_token', response.data.token)
                 this.axios.defaults.headers.common['Authorization'] = response.data.token
 

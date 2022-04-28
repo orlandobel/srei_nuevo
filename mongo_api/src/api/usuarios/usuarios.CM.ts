@@ -3,7 +3,7 @@ import axios from 'axios';
 import 'colors';
 import * as bcrypt from 'bcrypt';
 const jsdom = require('jsdom');
-import config from '../../config/server';
+import { WEB } from '../../config/server';
 import transporter from '../../config/mailer';
 
 import DataNotFoundException from "../../exceptions/DataNotFoundException";
@@ -63,7 +63,7 @@ class UsuariosCM {
             const lab_ref = await LAB.findById(usr.laboratorio);
             const lab = lab_ref as Laboratorio;
 
-            const tkn = jwt.sign(usr_obj, TOKEN, { expiresIn: "4h"});
+            const tkn = jwt.sign(usr_obj, TOKEN, { expiresIn: "8h"});
 
             return { token: tkn, usuario: usr, laboratorio: lab };
         } catch(error) {
@@ -347,22 +347,27 @@ class UsuariosCM {
             if(trabajador === null || trabajador === undefined) {
                 return new DataNotFoundException(codigos.datoNoEncontrado, "Parece que su RFC es erroneo o no está registrado");
             }
-
-            console.log(trabajador);
             const token =  jwt.sign({ trabajadorId: trabajador._id, usuario }, TOKEN, { expiresIn: '1H' });
             trabajador = await USR.findByIdAndUpdate(trabajador._id, { $set: { resetToken: token } }, { new: true } ).exec() as Trabajador;
-            const validationlink = `localhost:8080/recuperar-clave/${token}`;
+            const validationlink = `${WEB.protocol}://${WEB.hostname}:${WEB.port}/recuperar-clave/${token}`;
             
-            // TODO: Enviar correo de recuperacion
+            // TODO: Dar formato al correo de recuperacion
             await transporter.sendMail({
                 from: '"Recuperación de contraseña SReI" <srei.upiiz@gmail.com>',
                 to: trabajador.correo,
-                subject: 'Recuperación de contraseña',
+                subject: 'Recuperación de contraseña SReI',
                 //text: validationlink,
                 html: `
-                    <b>Recuperar la contraseña</b>
-                    <a href='${validationlink}'>${validationlink}</a>
-                `
+                    <h2>Recuperar la contraseña SReI</h2>
+                    <p>
+                        EL Sistema de Registro e Inventariado (SReI) de los laboratorios de la UPIIZ ha recibido
+                        una solicitud de recuperación de contraseña. Para continuar con el proceso has clic
+                        <a href='${validationlink}'>aquí</a>.
+                        
+                        <br/><br/>
+                        El enlace caducará dentro de 1 hora. Si no reconoces este movimiento simplemente ignora este correo.
+                    </p>
+                `,
             });
 
             return "Verifica tu correo eléctronicao, si no encuentras el correo en la bandeja de entrada verifica en la carpeta SPAM";
@@ -388,6 +393,7 @@ class UsuariosCM {
             const verifyToken = await jwt.verify(resetToken, TOKEN, (error: Error, usr: Usuario) => {
                 if(error) return null;
                 if(usr) return usr;
+                return undefined;
             });
 
             if(verifyToken === null || verifyToken === undefined) {
@@ -399,15 +405,13 @@ class UsuariosCM {
 
             if(usuario === null || usuario === undefined) {
                 console.log("No se encontro el usuario".red);
-                return new DataNotFoundException("Ocurrio un error inesperado al actualizar la contraseña, intentelo de nuevo más tarde");
+                return new DataNotFoundException("El link derecuperación ha caducado");
             }
 
             usuario.clave = await Encrypt.cryptPassword(clave);
-            delete usuario.resetToken;
+            usuario.resetToken = '';
 
-            await USR.findByIdAndUpdate(usuario._id, usuario).exec();
-
-            //TODO: loguear al usuario y retornar el token cuando se cambie la contraseña
+            await USR.findByIdAndUpdate(usuario._id, usuario, { new: true }).exec();
         } catch(error) {
             console.log(`Error al recuperar la contraseña: ${error}`.red);
             return new InternalServerException(error);

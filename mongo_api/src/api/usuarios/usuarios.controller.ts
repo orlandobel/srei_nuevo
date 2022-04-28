@@ -189,7 +189,7 @@ class UsuariosController implements Controller {
         if(respuesta instanceof HttpException) {
             res.status(respuesta.status).send(respuesta);
         } else {
-            res.send({ status: 200, mensaje: respuesta });
+            res.send({ status: 200, token: respuesta });
         }
 
         

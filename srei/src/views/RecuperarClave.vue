@@ -2,9 +2,14 @@
     <div class="row bg vh-100 justify-content-center">
         <div class="col-xl-3 col-xxl-3 align-self-center">
             <div class="card">
+                <div v-if="successMsg !== ''" class="alert alert-success">
+                    <div v-html="successMsg" class="mensajeGeneral"></div>
+                </div>
+
                 <div v-if="errorMsg !== ''" class="alert alert-danger">
                     <div v-html="errorMsg" class="mensajeError"></div>
                 </div>
+                
                 <h5 class="card-header">Recuperación de contraseña</h5>
                 <div class="card-body px-4">
                     <form action @submit.prevent="enviar">
@@ -38,6 +43,7 @@ export default {
         return {
             clave1: '',
             clave2: '',
+            successMsg: '',
             errorMsg: '',
             errores: [],
         }
@@ -62,11 +68,10 @@ export default {
 
                 return;
             }
-
-            //console.log(this.$route.params.token);
             
-            recuperarClave(this.$route.params.token, this.clave1).then(res => {
-                //TODO: autologin al cambiar con exito
+            recuperarClave(this.$route.params.token, this.clave1).then(() => {
+                this.successMsg = 'Contraseña actualizada exitosamente, redirigiendo al login';
+                setTimeout(() => this.$router.push({name: 'login'}), 2000);
             }).catch(errores => {
                 this.errorMsg += "<ul>";
                 errores.forEach(error => {

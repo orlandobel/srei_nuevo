@@ -6,3 +6,5 @@ storage/
 
 lib/
 lib
+
+.env

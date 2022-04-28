@@ -1,5 +1,5 @@
 import { connect } from 'mongoose';
-import config from './config/server';
+import { MONGO } from './config/server';
 import App from './App';
 import 'colors';
 
@@ -15,8 +15,8 @@ import MesasController from './api/mesas/Mesas.controller';
 console.log('Mode: dev')
 
 // Conexion a Mongo
-connect(config.mongo.url)
-    .then(result => {
+connect(MONGO.url)
+    .then(() => {
         console.log('Conectado a la base de datos'.green);
     })
     .catch(error => {

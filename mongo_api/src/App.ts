@@ -5,7 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import * as morgan from 'morgan';
 
-import config from './config/server';
+import { SERVER } from './config/server'
 
 // Importación de la estructura de los controladores
 import Controller from './interfaces/controller.interface';
@@ -39,7 +39,7 @@ class App {
 
     // coloca el puerto a utilizar para API
     private setPort() {
-        this.app.set('port', config.server.port);
+        this.app.set('port', SERVER.port);
         this.app.listen(this.app.get('port'), () => {
             console.log('Server on port ', this.app.get('port'));
         });

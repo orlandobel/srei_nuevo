@@ -10,7 +10,8 @@
                     <form action @submit.prevent="enviar">
                         <div class="row mb-3">
                             <label for="rfc" class="form-label text-start">RFC</label>
-                            <input type="text" name="rfc" id="rfc" 
+                            <input type="text" name="rfc" id="rfc"
+                                style="text-transform: uppercase"
                                 class="form-control" v-model="rfc">
                         </div>
                         <div class="row justify-content-end pe-xl-2 pe-xxl-3">
