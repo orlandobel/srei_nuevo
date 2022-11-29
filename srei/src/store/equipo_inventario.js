@@ -37,7 +37,7 @@ export default{
         caracteristicas: (state, caracteristicas) => { state.caracteristicas = caracteristicas },
 
         // Mutaciones de checklist
-        toggle_checklist: (state, existe) => { state.tiene_checklist = existe; },
+        toggle_checklist: (state) => { state.tiene_checklist = !state.tiene_checklist; },
         add_checklist_element: (state) => { state.checklist.push({nombre: '', estatus: true})},
         remove_checklist_elements: (state, {start, end}) => { state.checklist.splice(start, end) },
         set_checklist: (state, checklist) => { state.checklist = checklist },
@@ -64,7 +64,7 @@ export default{
         set_caracteristicas: (context, caracteristicas) => { context.commit('caracteristicas', caracteristicas) },
 
         // Acciones de checklist
-        toggle_checklist: (context, existe) => { context.commit('toggle_checklist', existe) },
+        toggle_checklist: (context) => { context.commit('toggle_checklist') },
         add_checklist_element: (context) => { context.commit('add_checklist_element') },
         remove_checklist_elements: (context, {start, end}) => { context.commit('remove_checklist_elements', { start, end }) },
         set_checklist: (context, checklist) => { context.commit('set_checklist', checklist) },

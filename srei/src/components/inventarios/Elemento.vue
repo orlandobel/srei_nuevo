@@ -81,7 +81,7 @@ export default {
         },
         async buscarImagen() {
             if(this.equipo.path != null && this.equipo.path != undefined) {
-                imagen(this.equipo.path).then(res => {
+                imagen(this.equipo.path, false).then(res => {
                     this.equipo.img_path = `data:image/png;base64,${res}`;
                     this.campos = Object.keys(this.equipo);
                 });

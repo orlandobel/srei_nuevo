@@ -23,6 +23,7 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "follow-redirects": "^1.14.8",
+    "jimp": "^0.16.1",
     "jsdom": "^19.0.0",
     "jsonwebtoken": "^8.5.1",
     "jspdf": "^2.5.1",
@@ -41,11 +42,12 @@
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
+    "@types/jimp": "^0.2.28",
     "@types/jsdom": "^16.2.14",
     "@types/morgan": "^1.9.3",
     "@types/multer": "^1.4.7",
     "@types/node": "^17.0.17",
-    "@types/request-promise": "^4.1.48",
-    "@types/nodemailer": "^6.4.4"
+    "@types/nodemailer": "^6.4.4",
+    "@types/request-promise": "^4.1.48"
   }
 }

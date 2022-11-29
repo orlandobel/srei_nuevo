@@ -9,6 +9,7 @@ import autoTable, { CellInput } from 'jspdf-autotable';
 
 import 'colors';
 import fs = require('fs');
+import Jimp = require('jimp');
 import { copyFile } from 'fs';
 import path = require('path');
 import HttpException from '../../exceptions/HttpException';
@@ -171,7 +172,19 @@ class CatalogoCM {
                 fs.mkdirSync(ruta, { recursive: true });
             }
 
-            await fsPromise.writeFile(`${ruta}/imagen.${extension}`, img.buffer, 'binary')
+            await fsPromise.writeFile(`${ruta}/imagen.${extension}`, img.buffer, 'binary');
+
+            if(extension !== 'png') {
+                await Jimp.read(`${ruta}/imagen.${extension}`, (error, image) => {
+                    if(error) {
+                        return new InternalServerException("Error al guardar la imagen del equipo");
+                    } else {
+                        image.write(`${ruta}/imagen.png`);
+                        return;
+                    }
+                });
+                await fsPromise.rm(`${ruta}/imagen.${extension}`);
+            }
         } catch(error) {
             console.log(`error al guardar la imagen: ${error}`.red);
             return new InternalServerException(error);

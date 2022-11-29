@@ -11,17 +11,17 @@
                     <li class="nav-item">
                         <a href="#datos-tab" class="nav-link active" id="nav-datos-tab" data-bs-toggle="tab" >Datos</a>
                     </li>
-                    <li class="nav-item" :class="{'visually-hidden': !tiene_checklist}">
+                    <li class="nav-item" :class="{'visually-hidden': !getTieneChecklist}">
                         <a href="#checklist-tab" class="nav-link" id="nav-checklist-tab" data-bs-toggle="tab" >Checklist</a>
                     </li>
                 </ul>
                 
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="datos-tab" role="tabpanel" aria-labelledby="nav-datos-tab" >
-                        <datos ref="datos" v-on:tiene_checklist="toggle_checklist"/>
+                        <datos ref="datos" v-on:getTieneChecklist="toggle_checklist" />
                     </div>
                     <div class="tab-pane fade" id="checklist-tab" role="tabpanel" aria-labelledby="nav-checklist-tab" >
-                        <checklist />
+                        <checklist ref="checklistTab" />
                         
                     </div>
                 </div>
@@ -55,7 +55,7 @@ const getters = [
     'nombre',
     'imagen',
     'caracteristicas',
-    'tiene_checklist',
+    
     'checklist',
     'creacion',
 ]
@@ -74,7 +74,10 @@ export default {
         }
     },
     computed: {
-        ...mapGetters('equipo_inventario', getters)
+        ...mapGetters('equipo_inventario', getters),
+        ...mapGetters('equipo_inventario', {
+            getTieneChecklist: 'tiene_checklist',
+        }),
     },
     methods: {
         ...mapActions('equipo_inventario', actions),
@@ -85,18 +88,19 @@ export default {
                 serie: '',
                 descripcion: '',
                 laboratorio: this.laboratorio,
-            }
+            };
 
-            this.set_id('')
-            this.set_nombre('')
-            this.set_caracteristicas(caracteristicas_template)
-            this.set_checklist([])
-            this.set_imagen(null)
-            this.toggle_checklist(false)
+            this.set_id('');
+            this.set_nombre('');
+            this.set_caracteristicas(caracteristicas_template);
+            this.set_checklist([]);
+            this.set_imagen(null);
+            this.toggle_checklist(false);
 
-            this.$refs.datos.reiniciar_imagen()
+            this.$refs.datos.reiniciar_imagen();
+            this.$refs.checklistTab.reiniciar();
 
-            this.errores = []
+            this.errores = [];
         },
         async guardar() {
 
@@ -113,7 +117,7 @@ export default {
             if(!this.creacion)
                 equipo._id = this.id
 
-            if(this.tiene_checklist) {
+            if(this.getTieneChecklist) {
                 equipo.checklist = this.checklist
             }
 

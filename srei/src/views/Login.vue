@@ -11,7 +11,7 @@
                         <div class="row mb-3">
                             <label for="rfc" class="form-label text-start">RFC</label>
                             <input type="text" name="rfc" id="rfc" 
-                                style="text-transform: uppercase"
+                                
                                 class="form-control" v-model="rfc">
                         </div>
                         <div class="row mb-3">

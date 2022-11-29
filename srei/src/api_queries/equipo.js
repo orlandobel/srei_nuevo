@@ -7,9 +7,10 @@ export async function listar(tipo, lab) {
     return response.data.eqps
 }
 
-export async function imagen(ruta) {
+export async function imagen(ruta, qr=true) {
     try {
-        const url = `equipo/${ruta}/qr.png`;
+        const img = qr? 'qr' : 'imagen';
+        const url = `equipo/${ruta}/${img}.png`;
         const response = await axios.get(url);
 
         if(response.status >= 400)

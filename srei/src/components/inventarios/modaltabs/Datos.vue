@@ -109,8 +109,7 @@ export default {
     methods: {
         ...mapActions('equipo_inventario', actions),
         toggle() {
-            const existe = !this.tiene_checklist
-            this.toggle_checklist(existe)
+            this.toggle_checklist()
         },
         update_nombre() {
             this.set_nombre(this.$refs.nombre_field.value)

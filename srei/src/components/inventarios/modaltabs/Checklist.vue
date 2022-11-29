@@ -27,7 +27,7 @@ export default {
     name: 'Checklist',
     data() {
         return {
-            checklist_length : 0,
+            checklist_length: 0,
         }
     },
     computed: {
@@ -48,10 +48,9 @@ export default {
             }
 
         },
-    },
-    updated() {
-        if(this.checklist_length < this.checklist.length) this.checklist_length = this.checklist.length
-        if(this.checklist.length === 0 && this.checklist_length > 0) this.checklist_length = 0
+        reiniciar() {
+            this.checklist_length = 0;
+        }
     }
 }
 </script>
